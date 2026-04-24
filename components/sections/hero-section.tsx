@@ -32,26 +32,26 @@ export function HeroSection() {
       ref={containerRef}
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white"
     >
-      {/* Subtle gradient that follows cursor */}
+      {/* Ultra subtle gradient that follows cursor */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-30 transition-opacity duration-1000"
+        className="pointer-events-none absolute inset-0 opacity-20 transition-opacity duration-1000"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, rgba(0,0,0,0.03), transparent 40%)`,
+          background: `radial-gradient(800px circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, rgba(0,0,0,0.02), transparent 50%)`,
         }}
       />
 
-      {/* Main word */}
+      {/* Main text */}
       <h1
         className={`
           cursor-default select-none
-          text-6xl font-light tracking-[0.15em] text-neutral-900
-          transition-all duration-700 ease-out
-          hover:scale-[1.02] hover:opacity-80
-          sm:text-7xl md:text-8xl lg:text-9xl
-          ${isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}
+          text-5xl font-extralight tracking-[0.2em] text-neutral-800
+          transition-all duration-1000 ease-out
+          hover:scale-[1.02] hover:text-neutral-600
+          sm:text-6xl md:text-7xl lg:text-8xl
+          ${isVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}
         `}
       >
-        Alone
+        Stay Alone
       </h1>
 
       {/* Scroll indicator */}
