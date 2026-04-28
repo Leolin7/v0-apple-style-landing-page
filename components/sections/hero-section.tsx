@@ -15,6 +15,7 @@ export function HeroSection() {
   const [isMounted, setIsMounted] = useState(false)
   const [visitorCount, setVisitorCount] = useState<number | null>(null)
   const [loadingState, setLoadingState] = useState<"loading" | "success" | "error">("loading")
+  const [isHovered, setIsHovered] = useState(false)
   const containerRef = useRef<HTMLElement>(null)
   const hasCalledApi = useRef(false)
 
@@ -68,51 +69,56 @@ export function HeroSection() {
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f7f7f5]"
       style={{ paddingBottom: "4vh" }}
     >
-      {/* Subtle cursor light effect - only on desktop */}
+      {/* Subtle ambient cursor light - extremely soft, large radius */}
       {isMounted && (
         <div
-          className="pointer-events-none absolute inset-0 transition-opacity duration-700 ease-out"
+          className="pointer-events-none absolute inset-0 transition-opacity duration-1000 ease-out"
           style={{
-            background: `radial-gradient(600px circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, rgba(255,255,255,0.35), transparent 40%)`,
-            opacity: 0.8,
+            background: `radial-gradient(520px circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, rgba(255,255,255,0.25), transparent 50%)`,
+            opacity: 0.6,
           }}
         />
       )}
 
       {/* Content container */}
       <div className="flex flex-col items-center">
-        {/* Main text with breathing animation */}
+        {/* Main text with refined breathing animation */}
         <h1
-          className={`
-            cursor-default select-none
-            text-[2.5rem] font-light tracking-[0.08em] text-[#1d1d1f]
-            sm:text-5xl md:text-6xl lg:text-7xl
-          `}
+          className="cursor-default select-none text-[#1d1d1f]"
           style={{
+            fontSize: "clamp(2.75rem, 8vw, 5.5rem)",
             fontWeight: 300,
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 1200ms cubic-bezier(0.25, 0.1, 0.25, 1), transform 1200ms cubic-bezier(0.25, 0.1, 0.25, 1)",
-            animation: isVisible ? "breathe 7s ease-in-out infinite 1.5s" : "none",
+            letterSpacing: "0.2em",
+            opacity: isVisible ? (isHovered ? 1 : 0.96) : 0,
+            transform: isVisible 
+              ? `translateY(0) scale(${isHovered ? 1.003 : 1})` 
+              : "translateY(10px) scale(1)",
+            transition: "opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1), transform 1400ms cubic-bezier(0.22, 1, 0.36, 1)",
+            animation: isVisible ? "breathe 9s ease-in-out infinite 1.8s" : "none",
           }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
           Stay Alone
         </h1>
 
-        {/* Visitor counter */}
+        {/* Visitor counter - quiet whisper */}
         <p
-          className="mt-12 cursor-default select-none text-xs tracking-[0.12em] text-[#86868b] sm:mt-16 sm:text-sm"
+          className="cursor-default select-none text-[#8e8e93]"
           style={{
+            marginTop: "clamp(1.75rem, 4vw, 2.5rem)",
+            fontSize: "clamp(0.75rem, 1.5vw, 0.875rem)",
             fontWeight: 300,
+            letterSpacing: "0.1em",
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? "translateY(0)" : "translateY(6px)",
-            transition: "opacity 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms, transform 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms",
+            transition: "opacity 1000ms cubic-bezier(0.22, 1, 0.36, 1) 450ms, transform 1000ms cubic-bezier(0.22, 1, 0.36, 1) 450ms",
           }}
         >
           {loadingState === "loading" && "Finding your place in the stillness..."}
           {loadingState === "error" && "Choosing stillness."}
           {loadingState === "success" && visitorCount !== null && (
-            <>You are the <span className="font-medium text-[#6e6e73]">{getOrdinalSuffix(visitorCount)}</span> soul choosing to stay alone.</>
+            <>You are the <span style={{ fontWeight: 500, color: "#6e6e73" }}>{getOrdinalSuffix(visitorCount)}</span> soul choosing to stay alone.</>
           )}
         </p>
       </div>
@@ -120,12 +126,12 @@ export function HeroSection() {
       <style jsx>{`
         @keyframes breathe {
           0%, 100% {
-            opacity: 1;
+            opacity: 0.96;
             transform: scale(1);
           }
           50% {
-            opacity: 0.92;
-            transform: scale(1.008);
+            opacity: 1;
+            transform: scale(1.006);
           }
         }
       `}</style>
