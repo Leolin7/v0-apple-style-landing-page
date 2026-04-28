@@ -85,7 +85,7 @@ export function HeroSection() {
             transition: "opacity 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms, transform 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms",
           }}
         >
-          The {visitorCount.toLocaleString()}th to choose stillness.
+          You are the {visitorCount.toLocaleString()}th soul choosing to stay alone.
         </p>
       </div>
 
