@@ -8,6 +8,9 @@ export function HeroSection() {
   const [isMounted, setIsMounted] = useState(false)
   const containerRef = useRef<HTMLElement>(null)
 
+  // Placeholder visitor count - can be connected to a real counter later
+  const visitorCount = 1327
+
   useEffect(() => {
     setIsMounted(true)
     const timer = setTimeout(() => setIsVisible(true), 50)
@@ -52,23 +55,39 @@ export function HeroSection() {
         />
       )}
 
-      {/* Main text with breathing animation */}
-      <h1
-        className={`
-          cursor-default select-none
-          text-[2.5rem] font-light tracking-[0.08em] text-[#1d1d1f]
-          sm:text-5xl md:text-6xl lg:text-7xl
-        `}
-        style={{
-          fontWeight: 300,
-          opacity: isVisible ? 1 : 0,
-          transform: isVisible ? "translateY(0)" : "translateY(8px)",
-          transition: "opacity 1200ms cubic-bezier(0.25, 0.1, 0.25, 1), transform 1200ms cubic-bezier(0.25, 0.1, 0.25, 1)",
-          animation: isVisible ? "breathe 7s ease-in-out infinite 1.5s" : "none",
-        }}
-      >
-        Stay Alone
-      </h1>
+      {/* Content container */}
+      <div className="flex flex-col items-center">
+        {/* Main text with breathing animation */}
+        <h1
+          className={`
+            cursor-default select-none
+            text-[2.5rem] font-light tracking-[0.08em] text-[#1d1d1f]
+            sm:text-5xl md:text-6xl lg:text-7xl
+          `}
+          style={{
+            fontWeight: 300,
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(8px)",
+            transition: "opacity 1200ms cubic-bezier(0.25, 0.1, 0.25, 1), transform 1200ms cubic-bezier(0.25, 0.1, 0.25, 1)",
+            animation: isVisible ? "breathe 7s ease-in-out infinite 1.5s" : "none",
+          }}
+        >
+          Stay Alone
+        </h1>
+
+        {/* Visitor counter */}
+        <p
+          className="mt-12 cursor-default select-none text-xs tracking-[0.12em] text-[#86868b] sm:mt-16 sm:text-sm"
+          style={{
+            fontWeight: 300,
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(6px)",
+            transition: "opacity 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms, transform 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms",
+          }}
+        >
+          You are the {visitorCount.toLocaleString()}th soul choosing to stay alone.
+        </p>
+      </div>
 
       <style jsx>{`
         @keyframes breathe {
