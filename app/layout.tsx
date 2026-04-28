@@ -11,7 +11,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Alone',
   description: 'Not loneliness. Just clarity.',
-  generator: 'v0.app',
   icons: {
     icon: [
       {

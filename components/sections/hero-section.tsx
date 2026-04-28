@@ -112,7 +112,7 @@ export function HeroSection() {
           {loadingState === "loading" && "Finding your place in the stillness..."}
           {loadingState === "error" && "Choosing stillness."}
           {loadingState === "success" && visitorCount !== null && (
-            <>You are the {getOrdinalSuffix(visitorCount)} soul choosing to stay alone.</>
+            <>You are the <span className="font-medium text-[#6e6e73]">{getOrdinalSuffix(visitorCount)}</span> soul choosing to stay alone.</>
           )}
         </p>
       </div>
