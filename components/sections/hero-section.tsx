@@ -1,21 +1,45 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
+
+// Formats number with ordinal suffix (1st, 2nd, 3rd, 4th, etc.)
+function getOrdinalSuffix(n: number): string {
+  const s = ["th", "st", "nd", "rd"]
+  const v = n % 100
+  return n.toLocaleString() + (s[(v - 20) % 10] || s[v] || s[0])
+}
 
 export function HeroSection() {
   const [isVisible, setIsVisible] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 })
   const [isMounted, setIsMounted] = useState(false)
+  const [visitorCount, setVisitorCount] = useState<number | null>(null)
+  const [loadingState, setLoadingState] = useState<"loading" | "success" | "error">("loading")
   const containerRef = useRef<HTMLElement>(null)
+  const hasCalledApi = useRef(false)
 
-  // Placeholder visitor count - can be connected to a real counter later
-  const visitorCount = 1327
+  // Fetch visitor count from API
+  const fetchVisitorCount = useCallback(async () => {
+    if (hasCalledApi.current) return
+    hasCalledApi.current = true
+
+    try {
+      const response = await fetch("/api/visit")
+      if (!response.ok) throw new Error("Failed to fetch")
+      const data = await response.json()
+      setVisitorCount(data.count)
+      setLoadingState("success")
+    } catch {
+      setLoadingState("error")
+    }
+  }, [])
 
   useEffect(() => {
     setIsMounted(true)
     const timer = setTimeout(() => setIsVisible(true), 50)
+    fetchVisitorCount()
     return () => clearTimeout(timer)
-  }, [])
+  }, [fetchVisitorCount])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -85,7 +109,11 @@ export function HeroSection() {
             transition: "opacity 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms, transform 1400ms cubic-bezier(0.25, 0.1, 0.25, 1) 200ms",
           }}
         >
-          You are the {visitorCount.toLocaleString()}th soul choosing to stay alone.
+          {loadingState === "loading" && "Finding your place in the stillness..."}
+          {loadingState === "error" && "Choosing stillness."}
+          {loadingState === "success" && visitorCount !== null && (
+            <>You are the {getOrdinalSuffix(visitorCount)} soul choosing to stay alone.</>
+          )}
         </p>
       </div>
 
