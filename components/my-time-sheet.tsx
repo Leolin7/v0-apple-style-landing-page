@@ -1,7 +1,7 @@
 "use client"
 
 import { useLanguage } from "@/lib/language-context"
-import { formatDuration } from "@/lib/translations"
+import { formatDuration, formatElapsedDuration } from "@/lib/translations"
 import type { UserStats, TriggerType } from "@/lib/storage"
 import {
   Sheet,
@@ -38,9 +38,12 @@ export function MyTimeSheet({
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
   }
 
-  // Format recent session display: "30 minutes · Short videos"
-  const formatSessionDisplay = (duration: number, trigger: TriggerType) => {
-    const durationStr = formatDuration(duration, language)
+  // Format recent session display: "14 minutes 38 seconds · Short videos"
+  const formatSessionDisplay = (durationSeconds: number | undefined, duration: number, trigger: TriggerType) => {
+    // Use elapsed seconds if available, otherwise fall back to minutes
+    const durationStr = durationSeconds !== undefined
+      ? formatElapsedDuration(durationSeconds, language)
+      : formatDuration(duration, language)
     const triggerStr = t.triggers[trigger]
     return `${durationStr} · ${triggerStr}`
   }
@@ -122,7 +125,7 @@ export function MyTimeSheet({
                           className="flex items-center justify-between rounded-xl border border-[#e5e5e5] bg-[#fafafa] px-4 py-3"
                         >
                           <p className="text-sm font-light text-[#1a1a1a]">
-                            {formatSessionDisplay(session.duration, session.trigger)}
+                            {formatSessionDisplay(session.durationSeconds, session.duration, session.trigger)}
                           </p>
                           <p className="text-xs font-light text-[#a1a1a6]">
                             {formatSessionDate(session.date)}

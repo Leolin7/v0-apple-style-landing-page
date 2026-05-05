@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useLanguage } from "@/lib/language-context"
-import { getOrdinal, formatDuration } from "@/lib/translations"
+import { getOrdinal, formatElapsedDuration } from "@/lib/translations"
 import {
   type TriggerType,
   loadStats,
@@ -43,8 +43,9 @@ export function StayAloneApp() {
   const [myTimeOpen, setMyTimeOpen] = useState(false)
   const [authMode, setAuthMode] = useState<"signin" | "create" | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [completedDuration, setCompletedDuration] = useState(0)
+  const [completedElapsedSeconds, setCompletedElapsedSeconds] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const startTimestampRef = useRef<number | null>(null)
   const hasCalledApi = useRef(false)
 
   // Fetch visitor count
@@ -94,20 +95,28 @@ export function StayAloneApp() {
   const startTimer = () => {
     setTimeRemaining(selectedTime * 60)
     setPulledAwayCount(0)
+    startTimestampRef.current = Date.now()
     setStep("timer")
   }
 
   const completeSession = (completed: boolean) => {
     if (timerRef.current) clearInterval(timerRef.current)
-    const actualMinutes = completed
-      ? selectedTime
-      : Math.floor((selectedTime * 60 - timeRemaining) / 60)
-    setCompletedDuration(actualMinutes)
+    
+    // Calculate actual elapsed time
+    const endTimestamp = Date.now()
+    const startTimestamp = startTimestampRef.current || endTimestamp
+    const elapsedMs = endTimestamp - startTimestamp
+    const elapsedSeconds = Math.floor(elapsedMs / 1000)
+    const elapsedMinutes = Math.floor(elapsedSeconds / 60)
+    
+    setCompletedElapsedSeconds(elapsedSeconds)
+    
     const newStats = addSession(
-      actualMinutes,
+      elapsedMinutes > 0 ? elapsedMinutes : 1, // Store at least 1 minute for stats
       selectedTrigger,
       completed,
-      pulledAwayCount
+      pulledAwayCount,
+      elapsedSeconds // Pass actual elapsed seconds for display
     )
     setStats(newStats)
     setStep("complete")
@@ -123,7 +132,8 @@ export function StayAloneApp() {
     setSelectedTrigger("world")
     setTimeRemaining(0)
     setPulledAwayCount(0)
-    setCompletedDuration(0)
+    setCompletedElapsedSeconds(0)
+    startTimestampRef.current = null
   }
 
   const formatTime = (seconds: number) => {
@@ -153,12 +163,10 @@ export function StayAloneApp() {
     }
   }
 
-  // Format completion message: "This was your 30 minutes" / "这是属于你的 30 分钟"
+  // Format completion message with actual elapsed time
+  // "This was your 14 minutes 38 seconds" / "这是属于你的 14 分 38 秒"
   const getCompletionMessage = () => {
-    const duration = formatDuration(completedDuration, language)
-    if (language === "zh") {
-      return `${t.completionPrefix} ${duration}`
-    }
+    const duration = formatElapsedDuration(completedElapsedSeconds, language)
     return `${t.completionPrefix} ${duration}`
   }
 

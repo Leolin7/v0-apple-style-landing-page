@@ -95,9 +95,9 @@ export const translations = {
   },
   zh: {
     // Counter line
-    counterLine: "个灵魂，选择 ·",
+    counterLine: "个灵魂选择 ·",
     counterPrefix: "第",
-    counterSuffix: "个灵魂，选择 ·",
+    counterSuffix: "个灵魂选择 ·",
     
     // Hero
     heroLine1: "让世界继续",
@@ -208,4 +208,54 @@ export function formatDuration(minutes: number, lang: Language): string {
   }
   if (mins === 0) return `${hours} 小时`
   return `${hours} 小时 ${mins} 分钟`
+}
+
+// Format elapsed duration with seconds precision
+export function formatElapsedDuration(totalSeconds: number, lang: Language): string {
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  if (lang === "en") {
+    // Under 1 minute: show seconds only
+    if (hours === 0 && minutes === 0) {
+      return `${seconds} second${seconds !== 1 ? "s" : ""}`
+    }
+    // Under 1 hour
+    if (hours === 0) {
+      if (seconds === 0) {
+        return `${minutes} minute${minutes !== 1 ? "s" : ""}`
+      }
+      return `${minutes} minute${minutes !== 1 ? "s" : ""} ${seconds} second${seconds !== 1 ? "s" : ""}`
+    }
+    // 1 hour or more
+    if (minutes === 0 && seconds === 0) {
+      return `${hours} hour${hours !== 1 ? "s" : ""}`
+    }
+    if (seconds === 0) {
+      return `${hours} hour${hours !== 1 ? "s" : ""} ${minutes} minute${minutes !== 1 ? "s" : ""}`
+    }
+    return `${hours} hour${hours !== 1 ? "s" : ""} ${minutes} minute${minutes !== 1 ? "s" : ""} ${seconds} second${seconds !== 1 ? "s" : ""}`
+  }
+
+  // Chinese
+  // Under 1 minute: show seconds only
+  if (hours === 0 && minutes === 0) {
+    return `${seconds} 秒`
+  }
+  // Under 1 hour
+  if (hours === 0) {
+    if (seconds === 0) {
+      return `${minutes} 分钟`
+    }
+    return `${minutes} 分 ${seconds} 秒`
+  }
+  // 1 hour or more
+  if (minutes === 0 && seconds === 0) {
+    return `${hours} 小时`
+  }
+  if (seconds === 0) {
+    return `${hours} 小时 ${minutes} 分钟`
+  }
+  return `${hours} 小时 ${minutes} 分 ${seconds} 秒`
 }

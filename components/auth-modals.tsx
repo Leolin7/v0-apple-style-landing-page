@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog"
 
 interface AuthModalsProps {
@@ -125,6 +126,9 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
           <DialogTitle className="text-center text-xl font-light tracking-wide text-[#1a1a1a]">
             {mode === "signin" ? t.enterMySpace : t.createMySpace}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {mode === "signin" ? "Sign in to your account" : "Create a new account"}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-5">

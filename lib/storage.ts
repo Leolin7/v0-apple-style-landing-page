@@ -3,7 +3,8 @@ export type TriggerType = "shortVideos" | "messages" | "work" | "ai" | "anxiety"
 export interface Session {
   id: string
   date: string
-  duration: number // in minutes
+  duration: number // in minutes (for stats)
+  durationSeconds?: number // actual elapsed seconds (for display)
   trigger: TriggerType
   completed: boolean
   pulledAwayCount: number
@@ -119,7 +120,8 @@ export function addSession(
   duration: number,
   trigger: TriggerType,
   completed: boolean,
-  pulledAwayCount: number
+  pulledAwayCount: number,
+  durationSeconds?: number
 ): UserStats {
   const stats = loadStats()
   const now = new Date().toISOString()
@@ -128,6 +130,7 @@ export function addSession(
     id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     date: now,
     duration,
+    durationSeconds,
     trigger,
     completed,
     pulledAwayCount,
