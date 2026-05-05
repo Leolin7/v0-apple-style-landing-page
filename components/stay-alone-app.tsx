@@ -1,0 +1,380 @@
+"use client"
+
+import { useState, useEffect, useCallback, useRef } from "react"
+import { useLanguage } from "@/lib/language-context"
+import { getOrdinal, formatDuration } from "@/lib/translations"
+import {
+  type TriggerType,
+  loadStats,
+  addSession,
+  getMostCommonTrigger,
+  type UserStats,
+} from "@/lib/storage"
+import { WorldPresence } from "./world-presence"
+import { MyTimeSheet } from "./my-time-sheet"
+
+type AppStep = "landing" | "time" | "trigger" | "timer" | "complete"
+
+const TIME_OPTIONS = [15, 30, 60] as const
+
+const TRIGGER_KEYS: TriggerType[] = [
+  "shortVideos",
+  "messages",
+  "work",
+  "ai",
+  "anxiety",
+  "boredom",
+  "world",
+]
+
+export function StayAloneApp() {
+  const { language, setLanguage, t } = useLanguage()
+  const [step, setStep] = useState<AppStep>("landing")
+  const [selectedTime, setSelectedTime] = useState<number>(30)
+  const [selectedTrigger, setSelectedTrigger] = useState<TriggerType>("world")
+  const [timeRemaining, setTimeRemaining] = useState(0)
+  const [pulledAwayCount, setPulledAwayCount] = useState(0)
+  const [stats, setStats] = useState<UserStats | null>(null)
+  const [visitorCount, setVisitorCount] = useState<number | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const [myTimeOpen, setMyTimeOpen] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const hasCalledApi = useRef(false)
+
+  // Fetch visitor count
+  const fetchVisitorCount = useCallback(async () => {
+    if (hasCalledApi.current) return
+    hasCalledApi.current = true
+
+    try {
+      const response = await fetch("/api/visit")
+      if (!response.ok) throw new Error("Failed to fetch")
+      const data = await response.json()
+      setVisitorCount(data.count)
+    } catch {
+      setVisitorCount(1337) // Fallback
+    }
+  }, [])
+
+  useEffect(() => {
+    setStats(loadStats())
+    fetchVisitorCount()
+    const timer = setTimeout(() => setIsVisible(true), 100)
+    return () => clearTimeout(timer)
+  }, [fetchVisitorCount])
+
+  // Timer logic
+  useEffect(() => {
+    if (step === "timer" && timeRemaining > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            if (timerRef.current) clearInterval(timerRef.current)
+            completeSession(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step])
+
+  const startTimer = () => {
+    setTimeRemaining(selectedTime * 60)
+    setPulledAwayCount(0)
+    setStep("timer")
+  }
+
+  const completeSession = (completed: boolean) => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    const actualMinutes = completed
+      ? selectedTime
+      : Math.floor((selectedTime * 60 - timeRemaining) / 60)
+    const newStats = addSession(
+      actualMinutes,
+      selectedTrigger,
+      completed,
+      pulledAwayCount
+    )
+    setStats(newStats)
+    setStep("complete")
+  }
+
+  const handlePulledAway = () => {
+    setPulledAwayCount((prev) => prev + 1)
+  }
+
+  const resetToLanding = () => {
+    setStep("landing")
+    setSelectedTime(30)
+    setSelectedTrigger("world")
+    setTimeRemaining(0)
+    setPulledAwayCount(0)
+  }
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, "0")}`
+  }
+
+  return (
+    <div className="relative flex min-h-screen flex-col bg-[#141414] text-[#fafafa]">
+      {/* Header */}
+      <header className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-10">
+        {/* Language toggle */}
+        <button
+          onClick={() => setLanguage(language === "en" ? "zh" : "en")}
+          className="text-sm font-light tracking-wide text-[#8e8e93] transition-colors hover:text-[#fafafa]"
+        >
+          {language === "en" ? "中文" : "EN"}
+        </button>
+
+        {/* Sign in / My Time */}
+        <button
+          onClick={() => setMyTimeOpen(true)}
+          className="text-sm font-light tracking-wide text-[#8e8e93] transition-colors hover:text-[#fafafa]"
+        >
+          {stats && stats.completedBlocks > 0 ? t.myTime : t.signIn}
+        </button>
+      </header>
+
+      {/* Main content */}
+      <main className="flex flex-1 flex-col items-center justify-center px-6">
+        {/* Landing */}
+        {step === "landing" && (
+          <div
+            className="flex flex-col items-center text-center"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? "translateY(0)" : "translateY(20px)",
+              transition: "all 1000ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            {/* Counter line */}
+            <p
+              className="mb-10 text-sm font-light tracking-wide text-[#6e6e73] md:mb-14"
+              style={{
+                opacity: isVisible ? 0.8 : 0,
+                transition: "opacity 1200ms ease 200ms",
+              }}
+            >
+              {visitorCount !== null && (
+                <>
+                  {getOrdinal(visitorCount, language)}
+                  {t.counterSuffix}
+                </>
+              )}
+            </p>
+
+            {/* Hero */}
+            <h1
+              className="mb-4 text-3xl font-extralight leading-relaxed tracking-wide md:text-5xl lg:text-6xl"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1000ms ease 100ms",
+              }}
+            >
+              <span className="block">{t.heroLine1}</span>
+              <span className="block">{t.heroLine2}</span>
+            </h1>
+
+            {/* CTA */}
+            <button
+              onClick={() => setStep("time")}
+              className="mt-12 rounded-2xl border border-[#3a3a3a] bg-transparent px-8 py-4 text-base font-light tracking-wide text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f] md:mt-16 md:px-10 md:py-5 md:text-lg"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1000ms ease 400ms",
+              }}
+            >
+              {t.ctaButton}
+            </button>
+          </div>
+        )}
+
+        {/* Time selection */}
+        {step === "time" && (
+          <div
+            className="flex flex-col items-center text-center"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? "translateY(0)" : "translateY(20px)",
+              transition: "all 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <h2 className="mb-12 max-w-md text-2xl font-extralight leading-relaxed tracking-wide md:mb-16 md:text-3xl">
+              {t.timeQuestion}
+            </h2>
+
+            <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+              {TIME_OPTIONS.map((time) => (
+                <button
+                  key={time}
+                  onClick={() => {
+                    setSelectedTime(time)
+                    setStep("trigger")
+                  }}
+                  className="min-w-[140px] rounded-2xl border border-[#3a3a3a] bg-transparent px-8 py-4 text-base font-light tracking-wide text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f] md:px-10 md:py-5"
+                >
+                  {time === 15 && t.minutes15}
+                  {time === 30 && t.minutes30}
+                  {time === 60 && t.minutes60}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setStep("landing")}
+              className="mt-10 text-sm font-light text-[#6e6e73] transition-colors hover:text-[#8e8e93]"
+            >
+              {t.back}
+            </button>
+          </div>
+        )}
+
+        {/* Trigger selection */}
+        {step === "trigger" && (
+          <div
+            className="flex flex-col items-center text-center"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? "translateY(0)" : "translateY(20px)",
+              transition: "all 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <h2 className="mb-10 max-w-md text-2xl font-extralight leading-relaxed tracking-wide md:mb-14 md:text-3xl">
+              {t.triggerQuestion}
+            </h2>
+
+            <div className="flex max-w-lg flex-wrap justify-center gap-3 md:gap-4">
+              {TRIGGER_KEYS.map((key) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    setSelectedTrigger(key)
+                    startTimer()
+                  }}
+                  className="rounded-2xl border border-[#3a3a3a] bg-transparent px-5 py-3 text-sm font-light tracking-wide text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f] md:px-6 md:py-4 md:text-base"
+                >
+                  {t.triggers[key]}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setStep("time")}
+              className="mt-10 text-sm font-light text-[#6e6e73] transition-colors hover:text-[#8e8e93]"
+            >
+              {t.back}
+            </button>
+          </div>
+        )}
+
+        {/* Timer */}
+        {step === "timer" && (
+          <div
+            className="flex flex-col items-center text-center"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transition: "all 600ms ease",
+            }}
+          >
+            <p className="mb-8 text-lg font-extralight tracking-wide text-[#8e8e93] md:mb-10 md:text-xl">
+              {t.timerTitle}
+            </p>
+
+            <div
+              className="mb-8 font-extralight tracking-wider md:mb-10"
+              style={{ fontSize: "clamp(4rem, 15vw, 8rem)" }}
+            >
+              {formatTime(timeRemaining)}
+            </div>
+
+            <p className="mb-12 max-w-sm text-base font-extralight leading-relaxed text-[#6e6e73] md:mb-16 md:text-lg">
+              {t.timerMessages[selectedTrigger]}
+            </p>
+
+            <div className="flex gap-4 md:gap-6">
+              <button
+                onClick={handlePulledAway}
+                className="rounded-2xl border border-[#2a2a2a] bg-transparent px-5 py-3 text-sm font-light text-[#6e6e73] transition-all hover:border-[#3a3a3a] hover:text-[#8e8e93]"
+              >
+                {t.pulledAway}
+                {pulledAwayCount > 0 && ` (${pulledAwayCount})`}
+              </button>
+              <button
+                onClick={() => completeSession(true)}
+                className="rounded-2xl border border-[#3a3a3a] bg-transparent px-6 py-3 text-sm font-light text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f]"
+              >
+                {t.finish}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Completion */}
+        {step === "complete" && stats && (
+          <div
+            className="flex flex-col items-center text-center"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? "translateY(0)" : "translateY(20px)",
+              transition: "all 800ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <h2 className="mb-10 text-2xl font-extralight leading-relaxed tracking-wide md:mb-14 md:text-3xl lg:text-4xl">
+              {t.completionTitle}
+            </h2>
+
+            <div className="mb-12 flex flex-col gap-2 text-base font-light text-[#8e8e93] md:mb-16 md:text-lg">
+              <p>
+                {t.today}: {formatDuration(stats.todayMinutes, language)}
+              </p>
+              <p>
+                {t.thisWeek}: {formatDuration(stats.weekMinutes, language)}
+              </p>
+            </div>
+
+            {/* Account prompt */}
+            <div className="mb-10 md:mb-12">
+              <p className="mb-6 text-lg font-extralight tracking-wide text-[#fafafa] md:text-xl">
+                {t.savePrompt}
+              </p>
+              <div className="flex flex-col gap-3 md:flex-row md:gap-4">
+                <button
+                  onClick={() => setMyTimeOpen(true)}
+                  className="rounded-2xl border border-[#3a3a3a] bg-transparent px-6 py-3 text-sm font-light text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f]"
+                >
+                  {t.createAccount}
+                </button>
+                <button
+                  onClick={resetToLanding}
+                  className="rounded-2xl border border-[#2a2a2a] bg-transparent px-6 py-3 text-sm font-light text-[#6e6e73] transition-all hover:border-[#3a3a3a] hover:text-[#8e8e93]"
+                >
+                  {t.continueWithout}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* World presence */}
+      <WorldPresence />
+
+      {/* My Time Sheet */}
+      <MyTimeSheet
+        open={myTimeOpen}
+        onOpenChange={setMyTimeOpen}
+        stats={stats}
+        mostCommonTrigger={stats ? getMostCommonTrigger(stats) : null}
+      />
+    </div>
+  )
+}

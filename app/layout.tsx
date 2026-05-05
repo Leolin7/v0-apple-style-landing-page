@@ -1,25 +1,27 @@
-import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import './globals.css'
+import type { Metadata, Viewport } from "next"
+import { Inter } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import { LanguageProvider } from "@/lib/language-context"
+import "./globals.css"
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
-  variable: '--font-inter',
+  variable: "--font-inter",
 })
 
 export const metadata: Metadata = {
-  title: 'Stay Alone',
-  description: 'Not loneliness. Just clarity.',
+  title: "Stay Alone",
+  description:
+    "Turn passive free time into time you actively own. Not loneliness—just clarity.",
   icons: {
-    icon: '/icon.svg',
-    apple: '/apple-icon.svg',
+    icon: "/icon.svg",
+    apple: "/apple-icon.svg",
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#f7f7f5',
-  width: 'device-width',
+  themeColor: "#141414",
+  width: "device-width",
   initialScale: 1,
 }
 
@@ -29,10 +31,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-[#f7f7f5]">
+    <html lang="en" className="bg-[#141414]">
       <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <LanguageProvider>{children}</LanguageProvider>
+        {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
   )
