@@ -10,7 +10,6 @@ import {
   getMostCommonTrigger,
   type UserStats,
 } from "@/lib/storage"
-import { WorldPresence } from "./world-presence"
 import { MyTimeSheet } from "./my-time-sheet"
 
 type AppStep = "landing" | "time" | "trigger" | "timer" | "complete"
@@ -124,13 +123,13 @@ export function StayAloneApp() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#141414] text-[#fafafa]">
+    <div className="relative flex min-h-screen flex-col bg-white text-[#1a1a1a]">
       {/* Header */}
       <header className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-10">
         {/* Language toggle */}
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="text-sm font-light tracking-wide text-[#8e8e93] transition-colors hover:text-[#fafafa]"
+          className="text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
         >
           {language === "en" ? "中文" : "EN"}
         </button>
@@ -138,7 +137,7 @@ export function StayAloneApp() {
         {/* Sign in / My Time */}
         <button
           onClick={() => setMyTimeOpen(true)}
-          className="text-sm font-light tracking-wide text-[#8e8e93] transition-colors hover:text-[#fafafa]"
+          className="text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
         >
           {stats && stats.completedBlocks > 0 ? t.myTime : t.signIn}
         </button>
@@ -158,9 +157,9 @@ export function StayAloneApp() {
           >
             {/* Counter line */}
             <p
-              className="mb-10 text-sm font-light tracking-wide text-[#6e6e73] md:mb-14"
+              className="mb-16 text-sm font-light tracking-wide text-[#a1a1a6] md:mb-20"
               style={{
-                opacity: isVisible ? 0.8 : 0,
+                opacity: isVisible ? 1 : 0,
                 transition: "opacity 1200ms ease 200ms",
               }}
             >
@@ -172,22 +171,33 @@ export function StayAloneApp() {
               )}
             </p>
 
-            {/* Hero */}
+            {/* Stay Alone wordmark */}
             <h1
-              className="mb-4 text-3xl font-extralight leading-relaxed tracking-wide md:text-5xl lg:text-6xl"
+              className="mb-10 text-4xl font-extralight tracking-[0.3em] text-[#1a1a1a] md:mb-12 md:text-5xl lg:text-6xl"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1000ms ease 100ms",
               }}
             >
+              Stay Alone
+            </h1>
+
+            {/* Subtitle */}
+            <p
+              className="mb-4 max-w-md text-lg font-extralight leading-relaxed tracking-wide text-[#6e6e73] md:text-xl"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1000ms ease 200ms",
+              }}
+            >
               <span className="block">{t.heroLine1}</span>
               <span className="block">{t.heroLine2}</span>
-            </h1>
+            </p>
 
             {/* CTA */}
             <button
               onClick={() => setStep("time")}
-              className="mt-12 rounded-2xl border border-[#3a3a3a] bg-transparent px-8 py-4 text-base font-light tracking-wide text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f] md:mt-16 md:px-10 md:py-5 md:text-lg"
+              className="mt-14 rounded-full border border-[#e5e5e5] bg-transparent px-8 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa] md:mt-16 md:px-10 md:py-4 md:text-base"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1000ms ease 400ms",
@@ -208,11 +218,11 @@ export function StayAloneApp() {
               transition: "all 600ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <h2 className="mb-12 max-w-md text-2xl font-extralight leading-relaxed tracking-wide md:mb-16 md:text-3xl">
+            <h2 className="mb-14 max-w-md text-xl font-extralight leading-relaxed tracking-wide text-[#1a1a1a] md:mb-16 md:text-2xl">
               {t.timeQuestion}
             </h2>
 
-            <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+            <div className="flex flex-col gap-4 md:flex-row md:gap-5">
               {TIME_OPTIONS.map((time) => (
                 <button
                   key={time}
@@ -220,7 +230,7 @@ export function StayAloneApp() {
                     setSelectedTime(time)
                     setStep("trigger")
                   }}
-                  className="min-w-[140px] rounded-2xl border border-[#3a3a3a] bg-transparent px-8 py-4 text-base font-light tracking-wide text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f] md:px-10 md:py-5"
+                  className="min-w-[140px] rounded-full border border-[#e5e5e5] bg-transparent px-8 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa] md:px-10 md:py-4"
                 >
                   {time === 15 && t.minutes15}
                   {time === 30 && t.minutes30}
@@ -231,7 +241,7 @@ export function StayAloneApp() {
 
             <button
               onClick={() => setStep("landing")}
-              className="mt-10 text-sm font-light text-[#6e6e73] transition-colors hover:text-[#8e8e93]"
+              className="mt-12 text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
             >
               {t.back}
             </button>
@@ -248,7 +258,7 @@ export function StayAloneApp() {
               transition: "all 600ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <h2 className="mb-10 max-w-md text-2xl font-extralight leading-relaxed tracking-wide md:mb-14 md:text-3xl">
+            <h2 className="mb-12 max-w-md text-xl font-extralight leading-relaxed tracking-wide text-[#1a1a1a] md:mb-14 md:text-2xl">
               {t.triggerQuestion}
             </h2>
 
@@ -260,7 +270,7 @@ export function StayAloneApp() {
                     setSelectedTrigger(key)
                     startTimer()
                   }}
-                  className="rounded-2xl border border-[#3a3a3a] bg-transparent px-5 py-3 text-sm font-light tracking-wide text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f] md:px-6 md:py-4 md:text-base"
+                  className="rounded-full border border-[#e5e5e5] bg-transparent px-5 py-2.5 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa] md:px-6 md:py-3"
                 >
                   {t.triggers[key]}
                 </button>
@@ -269,7 +279,7 @@ export function StayAloneApp() {
 
             <button
               onClick={() => setStep("time")}
-              className="mt-10 text-sm font-light text-[#6e6e73] transition-colors hover:text-[#8e8e93]"
+              className="mt-12 text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
             >
               {t.back}
             </button>
@@ -285,32 +295,28 @@ export function StayAloneApp() {
               transition: "all 600ms ease",
             }}
           >
-            <p className="mb-8 text-lg font-extralight tracking-wide text-[#8e8e93] md:mb-10 md:text-xl">
+            <p className="mb-10 text-lg font-extralight tracking-wide text-[#6e6e73] md:mb-12 md:text-xl">
               {t.timerTitle}
             </p>
 
             <div
-              className="mb-8 font-extralight tracking-wider md:mb-10"
+              className="mb-10 font-extralight tracking-wider text-[#1a1a1a] md:mb-12"
               style={{ fontSize: "clamp(4rem, 15vw, 8rem)" }}
             >
               {formatTime(timeRemaining)}
             </div>
 
-            <p className="mb-12 max-w-sm text-base font-extralight leading-relaxed text-[#6e6e73] md:mb-16 md:text-lg">
-              {t.timerMessages[selectedTrigger]}
-            </p>
-
-            <div className="flex gap-4 md:gap-6">
+            <div className="flex gap-4 md:gap-5">
               <button
                 onClick={handlePulledAway}
-                className="rounded-2xl border border-[#2a2a2a] bg-transparent px-5 py-3 text-sm font-light text-[#6e6e73] transition-all hover:border-[#3a3a3a] hover:text-[#8e8e93]"
+                className="rounded-full border border-[#e5e5e5] bg-transparent px-5 py-2.5 text-xs font-light tracking-wide text-[#a1a1a6] transition-all hover:border-[#c5c5c5] hover:text-[#6e6e73]"
               >
                 {t.pulledAway}
                 {pulledAwayCount > 0 && ` (${pulledAwayCount})`}
               </button>
               <button
                 onClick={() => completeSession(true)}
-                className="rounded-2xl border border-[#3a3a3a] bg-transparent px-6 py-3 text-sm font-light text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f]"
+                className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-2.5 text-xs font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
               >
                 {t.finish}
               </button>
@@ -328,11 +334,11 @@ export function StayAloneApp() {
               transition: "all 800ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <h2 className="mb-10 text-2xl font-extralight leading-relaxed tracking-wide md:mb-14 md:text-3xl lg:text-4xl">
+            <h2 className="mb-12 text-xl font-extralight leading-relaxed tracking-wide text-[#1a1a1a] md:mb-14 md:text-2xl lg:text-3xl">
               {t.completionTitle}
             </h2>
 
-            <div className="mb-12 flex flex-col gap-2 text-base font-light text-[#8e8e93] md:mb-16 md:text-lg">
+            <div className="mb-14 flex flex-col gap-2 text-sm font-light text-[#a1a1a6] md:mb-16 md:text-base">
               <p>
                 {t.today}: {formatDuration(stats.todayMinutes, language)}
               </p>
@@ -343,19 +349,19 @@ export function StayAloneApp() {
 
             {/* Account prompt */}
             <div className="mb-10 md:mb-12">
-              <p className="mb-6 text-lg font-extralight tracking-wide text-[#fafafa] md:text-xl">
+              <p className="mb-8 text-base font-extralight tracking-wide text-[#6e6e73] md:text-lg">
                 {t.savePrompt}
               </p>
               <div className="flex flex-col gap-3 md:flex-row md:gap-4">
                 <button
                   onClick={() => setMyTimeOpen(true)}
-                  className="rounded-2xl border border-[#3a3a3a] bg-transparent px-6 py-3 text-sm font-light text-[#fafafa] transition-all hover:border-[#5a5a5a] hover:bg-[#1f1f1f]"
+                  className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
                 >
                   {t.createAccount}
                 </button>
                 <button
                   onClick={resetToLanding}
-                  className="rounded-2xl border border-[#2a2a2a] bg-transparent px-6 py-3 text-sm font-light text-[#6e6e73] transition-all hover:border-[#3a3a3a] hover:text-[#8e8e93]"
+                  className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#a1a1a6] transition-all hover:border-[#c5c5c5] hover:text-[#6e6e73]"
                 >
                   {t.continueWithout}
                 </button>
@@ -364,9 +370,6 @@ export function StayAloneApp() {
           </div>
         )}
       </main>
-
-      {/* World presence */}
-      <WorldPresence />
 
       {/* My Time Sheet */}
       <MyTimeSheet

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#141414",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 }
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-[#141414]">
+    <html lang="en" className="bg-white">
       <body className={`${inter.variable} font-sans antialiased`}>
         <LanguageProvider>{children}</LanguageProvider>
         {process.env.NODE_ENV === "production" && <Analytics />}
