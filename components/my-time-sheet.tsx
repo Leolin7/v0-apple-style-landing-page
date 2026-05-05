@@ -53,12 +53,10 @@ export function MyTimeSheet({
       >
         <SheetHeader className="pb-6">
           <SheetTitle className="text-xl font-light tracking-wide text-[#1a1a1a]">
-            {t.myTime}
+            {t.mySpace}
           </SheetTitle>
-          <SheetDescription className="text-sm font-light text-[#a1a1a6]">
-            {stats
-              ? formatDuration(stats.totalMinutes, language)
-              : formatDuration(0, language)}
+          <SheetDescription className="sr-only">
+            Your personal Stay Alone space
           </SheetDescription>
         </SheetHeader>
 
@@ -66,6 +64,11 @@ export function MyTimeSheet({
           {/* Stats */}
           {stats && (
             <>
+              {/* My Time section header */}
+              <h3 className="text-sm font-light uppercase tracking-wider text-[#6e6e73]">
+                {t.myTime}
+              </h3>
+
               <div className="grid grid-cols-1 gap-6">
                 {/* Total time made yours */}
                 <div>

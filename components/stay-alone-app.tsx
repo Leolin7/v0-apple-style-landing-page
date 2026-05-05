@@ -153,13 +153,13 @@ export function StayAloneApp() {
     }
   }
 
-  // Format completion message
+  // Format completion message: "This was your 30 minutes" / "这是属于你的 30 分钟"
   const getCompletionMessage = () => {
     const duration = formatDuration(completedDuration, language)
     if (language === "zh") {
-      return `${duration}${t.completionMadeYours}`
+      return `${t.completionPrefix} ${duration}`
     }
-    return `${duration} ${t.completionMadeYours}`
+    return `${t.completionPrefix} ${duration}`
   }
 
   return (
@@ -174,12 +174,12 @@ export function StayAloneApp() {
           {language === "en" ? "中文" : "EN"}
         </button>
 
-        {/* Sign in / My Time */}
+        {/* My Space */}
         <button
           onClick={handleHeaderClick}
           className="text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
         >
-          {isLoggedIn ? t.myTime : t.signIn}
+          {t.mySpace}
         </button>
       </header>
 
@@ -383,20 +383,20 @@ export function StayAloneApp() {
             {!isLoggedIn && (
               <div className="mb-10 md:mb-12">
                 <p className="mb-8 text-base font-extralight tracking-wide text-[#a1a1a6] md:text-lg">
-                  {t.saveToAccount}
+                  {t.savePrompt}
                 </p>
                 <div className="flex flex-col gap-3 md:flex-row md:gap-4">
                   <button
                     onClick={() => setAuthMode("create")}
                     className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
                   >
-                    {t.createAccount}
+                    {t.createMySpace}
                   </button>
                   <button
                     onClick={resetToLanding}
                     className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#a1a1a6] transition-all hover:border-[#c5c5c5] hover:text-[#6e6e73]"
                   >
-                    {t.notNow}
+                    {t.later}
                   </button>
                 </div>
               </div>
@@ -409,7 +409,7 @@ export function StayAloneApp() {
                   onClick={() => setMyTimeOpen(true)}
                   className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
                 >
-                  {t.myTime}
+                  {t.mySpace}
                 </button>
                 <button
                   onClick={resetToLanding}

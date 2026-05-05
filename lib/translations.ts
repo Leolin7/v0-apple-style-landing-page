@@ -34,7 +34,7 @@ export const translations = {
     },
     
     // Timer
-    timerTitle: "This time is yours.",
+    timerTitle: "This time is yours",
     timerMessages: {
       shortVideos: "Don't look for stimulation. Stay with the time.",
       messages: "Not everything needs you right now.",
@@ -48,12 +48,14 @@ export const translations = {
     finish: "Finish",
     
     // Completion
-    completionMadeYours: "made yours",
-    saveToAccount: "Save this moment to your account.",
-    createAccount: "Create account",
-    notNow: "Not now",
+    completionPrefix: "This was your",
+    savePrompt: "Save your time",
+    createMySpace: "Create My Space",
+    later: "Later",
     
-    // Account / My Time
+    // My Space
+    mySpace: "My Space",
+    enterMySpace: "Enter My Space",
     myTime: "My Time",
     totalTimeMadeYours: "Total time made yours",
     completedBlocks: "Completed blocks",
@@ -66,10 +68,10 @@ export const translations = {
     confirmPassword: "Confirm password",
     continueWithGoogle: "Continue with Google",
     continueWithApple: "Continue with Apple",
-    signInButton: "Sign in",
-    createAccountButton: "Create account",
-    noAccount: "No account?",
-    haveAccount: "Have an account?",
+    enterButton: "Enter",
+    createMySpaceButton: "Create My Space",
+    noSpace: "No space yet?",
+    haveSpace: "Have a space?",
     signOut: "Sign out",
     
     // Validation
@@ -124,7 +126,7 @@ export const translations = {
     },
     
     // Timer
-    timerTitle: "这段时间属于你。",
+    timerTitle: "这段时间属于你",
     timerMessages: {
       shortVideos: "不追刺激，留在这段时间里。",
       messages: "此刻，不是所有事都需要你。",
@@ -138,12 +140,14 @@ export const translations = {
     finish: "结束",
     
     // Completion
-    completionMadeYours: "，属于你了",
-    saveToAccount: "保存到你的账户。",
-    createAccount: "创建账户",
-    notNow: "暂不",
+    completionPrefix: "这是属于你的",
+    savePrompt: "保存你的时间",
+    createMySpace: "创建我的空间",
+    later: "稍后",
     
-    // Account / My Time
+    // My Space
+    mySpace: "我的空间",
+    enterMySpace: "进入我的空间",
     myTime: "我的时间",
     totalTimeMadeYours: "属于你的总时间",
     completedBlocks: "完成次数",
@@ -151,15 +155,15 @@ export const translations = {
     recentSessions: "最近记录",
     
     // Auth
-    email: "电子邮箱",
+    email: "邮箱",
     password: "密码",
     confirmPassword: "确认密码",
     continueWithGoogle: "使用 Google 继续",
     continueWithApple: "使用 Apple 继续",
-    signInButton: "登录",
-    createAccountButton: "创建账户",
-    noAccount: "没有账户？",
-    haveAccount: "已有账户？",
+    enterButton: "进入",
+    createMySpaceButton: "创建我的空间",
+    noSpace: "还没有空间？",
+    haveSpace: "已有空间？",
     signOut: "退出登录",
     
     // Validation

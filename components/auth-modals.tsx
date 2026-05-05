@@ -123,7 +123,7 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
       <DialogContent className="border-[#e5e5e5] bg-white p-8 sm:max-w-[400px]">
         <DialogHeader className="pb-6">
           <DialogTitle className="text-center text-xl font-light tracking-wide text-[#1a1a1a]">
-            {mode === "signin" ? t.signIn : t.createAccount}
+            {mode === "signin" ? t.enterMySpace : t.createMySpace}
           </DialogTitle>
         </DialogHeader>
 
@@ -224,18 +224,18 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
               disabled={isSubmitting}
               className="mt-2 h-11 w-full rounded-full bg-[#1a1a1a] text-sm font-light tracking-wide text-white transition-all hover:bg-[#333] disabled:opacity-50"
             >
-              {mode === "signin" ? t.signInButton : t.createAccountButton}
+              {mode === "signin" ? t.enterButton : t.createMySpaceButton}
             </button>
           </div>
 
           {/* Switch mode link */}
           <p className="text-center text-sm font-light text-[#a1a1a6]">
-            {mode === "signin" ? t.noAccount : t.haveAccount}{" "}
+            {mode === "signin" ? t.noSpace : t.haveSpace}{" "}
             <button
               onClick={handleSwitchMode}
               className="text-[#1a1a1a] underline underline-offset-2 transition-colors hover:text-[#6e6e73]"
             >
-              {mode === "signin" ? t.createAccount : t.signIn}
+              {mode === "signin" ? t.createMySpace : t.enterMySpace}
             </button>
           </p>
         </div>
