@@ -197,7 +197,7 @@ export function StayAloneApp() {
             {/* CTA */}
             <button
               onClick={() => setStep("time")}
-              className="mt-14 rounded-full border border-[#e5e5e5] bg-transparent px-8 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa] md:mt-16 md:px-10 md:py-4 md:text-base"
+              className="mt-16 h-11 rounded-full border border-[#d2d2d7] bg-white/80 px-8 text-[15px] font-normal tracking-wide text-[#1d1d1f] shadow-[0_0_0_0_transparent] backdrop-blur-sm transition-all duration-200 hover:border-[#86868b] hover:text-[#000000] hover:shadow-[0_1px_3px_rgba(0,0,0,0.08)] md:mt-20"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1000ms ease 400ms",
