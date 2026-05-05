@@ -9,8 +9,12 @@ import {
   addSession,
   getMostCommonTrigger,
   type UserStats,
+  getCurrentUser,
+  isSignedIn,
+  signOut,
 } from "@/lib/storage"
 import { MyTimeSheet } from "./my-time-sheet"
+import { AuthModals } from "./auth-modals"
 
 type AppStep = "landing" | "time" | "trigger" | "timer" | "complete"
 
@@ -37,6 +41,9 @@ export function StayAloneApp() {
   const [visitorCount, setVisitorCount] = useState<number | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [myTimeOpen, setMyTimeOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<"signin" | "create" | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [completedDuration, setCompletedDuration] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const hasCalledApi = useRef(false)
 
@@ -57,6 +64,7 @@ export function StayAloneApp() {
 
   useEffect(() => {
     setStats(loadStats())
+    setIsLoggedIn(isSignedIn())
     fetchVisitorCount()
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
@@ -94,6 +102,7 @@ export function StayAloneApp() {
     const actualMinutes = completed
       ? selectedTime
       : Math.floor((selectedTime * 60 - timeRemaining) / 60)
+    setCompletedDuration(actualMinutes)
     const newStats = addSession(
       actualMinutes,
       selectedTrigger,
@@ -114,12 +123,43 @@ export function StayAloneApp() {
     setSelectedTrigger("world")
     setTimeRemaining(0)
     setPulledAwayCount(0)
+    setCompletedDuration(0)
   }
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, "0")}`
+  }
+
+  const handleAuthSuccess = () => {
+    setAuthMode(null)
+    setIsLoggedIn(true)
+    setStats(loadStats())
+    setMyTimeOpen(true)
+  }
+
+  const handleSignOut = () => {
+    signOut()
+    setIsLoggedIn(false)
+    setMyTimeOpen(false)
+  }
+
+  const handleHeaderClick = () => {
+    if (isLoggedIn) {
+      setMyTimeOpen(true)
+    } else {
+      setAuthMode("signin")
+    }
+  }
+
+  // Format completion message
+  const getCompletionMessage = () => {
+    const duration = formatDuration(completedDuration, language)
+    if (language === "zh") {
+      return `${duration}${t.completionMadeYours}`
+    }
+    return `${duration} ${t.completionMadeYours}`
   }
 
   return (
@@ -136,10 +176,10 @@ export function StayAloneApp() {
 
         {/* Sign in / My Time */}
         <button
-          onClick={() => setMyTimeOpen(true)}
+          onClick={handleHeaderClick}
           className="text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
         >
-          {stats && stats.completedBlocks > 0 ? t.myTime : t.signIn}
+          {isLoggedIn ? t.myTime : t.signIn}
         </button>
       </header>
 
@@ -325,7 +365,7 @@ export function StayAloneApp() {
         )}
 
         {/* Completion */}
-        {step === "complete" && stats && (
+        {step === "complete" && (
           <div
             className="flex flex-col items-center text-center"
             style={{
@@ -334,39 +374,51 @@ export function StayAloneApp() {
               transition: "all 800ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <h2 className="mb-12 text-xl font-extralight leading-relaxed tracking-wide text-[#1a1a1a] md:mb-14 md:text-2xl lg:text-3xl">
-              {t.completionTitle}
+            {/* Duration made yours */}
+            <h2 className="mb-10 text-2xl font-extralight leading-relaxed tracking-wide text-[#1a1a1a] md:mb-12 md:text-3xl lg:text-4xl">
+              {getCompletionMessage()}
             </h2>
 
-            <div className="mb-14 flex flex-col gap-2 text-sm font-light text-[#a1a1a6] md:mb-16 md:text-base">
-              <p>
-                {t.today}: {formatDuration(stats.todayMinutes, language)}
-              </p>
-              <p>
-                {t.thisWeek}: {formatDuration(stats.weekMinutes, language)}
-              </p>
-            </div>
+            {/* Save prompt - only show if not logged in */}
+            {!isLoggedIn && (
+              <div className="mb-10 md:mb-12">
+                <p className="mb-8 text-base font-extralight tracking-wide text-[#a1a1a6] md:text-lg">
+                  {t.saveToAccount}
+                </p>
+                <div className="flex flex-col gap-3 md:flex-row md:gap-4">
+                  <button
+                    onClick={() => setAuthMode("create")}
+                    className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
+                  >
+                    {t.createAccount}
+                  </button>
+                  <button
+                    onClick={resetToLanding}
+                    className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#a1a1a6] transition-all hover:border-[#c5c5c5] hover:text-[#6e6e73]"
+                  >
+                    {t.notNow}
+                  </button>
+                </div>
+              </div>
+            )}
 
-            {/* Account prompt */}
-            <div className="mb-10 md:mb-12">
-              <p className="mb-8 text-base font-extralight tracking-wide text-[#6e6e73] md:text-lg">
-                {t.savePrompt}
-              </p>
+            {/* If logged in, just show a continue button */}
+            {isLoggedIn && (
               <div className="flex flex-col gap-3 md:flex-row md:gap-4">
                 <button
                   onClick={() => setMyTimeOpen(true)}
                   className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
                 >
-                  {t.createAccount}
+                  {t.myTime}
                 </button>
                 <button
                   onClick={resetToLanding}
                   className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#a1a1a6] transition-all hover:border-[#c5c5c5] hover:text-[#6e6e73]"
                 >
-                  {t.continueWithout}
+                  {t.back}
                 </button>
               </div>
-            </div>
+            )}
           </div>
         )}
       </main>
@@ -377,6 +429,15 @@ export function StayAloneApp() {
         onOpenChange={setMyTimeOpen}
         stats={stats}
         mostCommonTrigger={stats ? getMostCommonTrigger(stats) : null}
+        onSignOut={handleSignOut}
+        isLoggedIn={isLoggedIn}
+      />
+
+      {/* Auth Modals */}
+      <AuthModals
+        mode={authMode}
+        onClose={() => setAuthMode(null)}
+        onSuccess={handleAuthSuccess}
       />
     </div>
   )

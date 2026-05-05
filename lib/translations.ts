@@ -3,13 +3,13 @@ export type Language = "en" | "zh"
 export const translations = {
   en: {
     // Counter line
-    counterLine: "soul chooses—",
+    counterLine: "soul chooses ·",
     counterPrefix: "The",
-    counterSuffix: "soul chooses—",
+    counterSuffix: "soul chooses ·",
     
     // Hero
-    heroLine1: "Let the world move.",
-    heroLine2: "Stay with yourself.",
+    heroLine1: "Let the world move",
+    heroLine2: "Stay with yourself",
     
     // CTA
     ctaButton: "Make it yours",
@@ -48,21 +48,36 @@ export const translations = {
     finish: "Finish",
     
     // Completion
-    completionTitle: "You made this time yours.",
-    today: "Today",
-    thisWeek: "This week",
-    
-    // Account prompt
-    savePrompt: "Save your time.",
+    completionMadeYours: "made yours",
+    saveToAccount: "Save this moment to your account.",
     createAccount: "Create account",
-    continueWithout: "Continue without account",
+    notNow: "Not now",
     
     // Account / My Time
     myTime: "My Time",
-    timeMadeYours: "Time made yours",
+    totalTimeMadeYours: "Total time made yours",
     completedBlocks: "Completed blocks",
-    whatPullsYou: "What pulls you away",
+    whatPullsYouMost: "What pulls you away most",
     recentSessions: "Recent sessions",
+    
+    // Auth
+    email: "Email address",
+    password: "Password",
+    confirmPassword: "Confirm password",
+    continueWithGoogle: "Continue with Google",
+    continueWithApple: "Continue with Apple",
+    signInButton: "Sign in",
+    createAccountButton: "Create account",
+    noAccount: "No account?",
+    haveAccount: "Have an account?",
+    signOut: "Sign out",
+    
+    // Validation
+    emailRequired: "Email is required",
+    emailInvalid: "Please enter a valid email",
+    passwordRequired: "Password is required",
+    passwordTooShort: "Password must be at least 8 characters",
+    passwordsMustMatch: "Passwords must match",
     
     // Future features
     futureTitle: "Personal Stay Alone modes are coming.",
@@ -74,16 +89,17 @@ export const translations = {
     noSessions: "No sessions yet",
     block: "block",
     blocks: "blocks",
+    or: "or",
   },
   zh: {
     // Counter line
-    counterLine: "个灵魂，选择——",
+    counterLine: "个灵魂，选择 ·",
     counterPrefix: "第",
-    counterSuffix: "个灵魂，选择——",
+    counterSuffix: "个灵魂，选择 ·",
     
     // Hero
-    heroLine1: "让世界继续。",
-    heroLine2: "你回到自己。",
+    heroLine1: "让世界继续",
+    heroLine2: "你回到自己",
     
     // CTA
     ctaButton: "开始",
@@ -122,21 +138,36 @@ export const translations = {
     finish: "结束",
     
     // Completion
-    completionTitle: "这段时间，属于你了。",
-    today: "今天",
-    thisWeek: "本周",
-    
-    // Account prompt
-    savePrompt: "保存你的时间。",
+    completionMadeYours: "，属于你了",
+    saveToAccount: "保存到你的账户。",
     createAccount: "创建账户",
-    continueWithout: "暂不注册",
+    notNow: "暂不",
     
     // Account / My Time
     myTime: "我的时间",
-    timeMadeYours: "属于你的时间",
+    totalTimeMadeYours: "属于你的总时间",
     completedBlocks: "完成次数",
-    whatPullsYou: "什么把你带走",
+    whatPullsYouMost: "最常把你带走的事",
     recentSessions: "最近记录",
+    
+    // Auth
+    email: "电子邮箱",
+    password: "密码",
+    confirmPassword: "确认密码",
+    continueWithGoogle: "使用 Google 继续",
+    continueWithApple: "使用 Apple 继续",
+    signInButton: "登录",
+    createAccountButton: "创建账户",
+    noAccount: "没有账户？",
+    haveAccount: "已有账户？",
+    signOut: "退出登录",
+    
+    // Validation
+    emailRequired: "请输入邮箱",
+    emailInvalid: "请输入有效的邮箱地址",
+    passwordRequired: "请输入密码",
+    passwordTooShort: "密码至少需要 8 个字符",
+    passwordsMustMatch: "两次密码不一致",
     
     // Future features
     futureTitle: "属于你的 Stay Alone 模式，即将开放。",
@@ -148,6 +179,7 @@ export const translations = {
     noSessions: "暂无记录",
     block: "次",
     blocks: "次",
+    or: "或",
   },
 } as const
 

@@ -22,6 +22,14 @@ export interface UserStats {
 
 const STORAGE_KEY = "stayalone_stats"
 const VISITOR_KEY = "stayalone_visitor"
+const USER_KEY = "stayalone_user"
+
+export interface UserAccount {
+  id: string
+  email: string
+  passwordHash: string // Simple hash for mock auth
+  createdAt: string
+}
 
 export function getDefaultStats(): UserStats {
   return {
@@ -178,4 +186,87 @@ export function hasVisited(): boolean {
 export function markVisited(): void {
   if (typeof window === "undefined") return
   localStorage.setItem(VISITOR_KEY, "true")
+}
+
+// Simple hash function for mock auth (not secure, just for demo)
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return Math.abs(hash).toString(36)
+}
+
+export function createAccount(email: string, password: string): { success: boolean; error?: string } {
+  if (typeof window === "undefined") return { success: false, error: "Not available" }
+  
+  try {
+    // Check if user already exists
+    const existingUser = localStorage.getItem(USER_KEY)
+    if (existingUser) {
+      const user = JSON.parse(existingUser) as UserAccount
+      if (user.email === email) {
+        return { success: false, error: "Account already exists" }
+      }
+    }
+    
+    const user: UserAccount = {
+      id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      email,
+      passwordHash: simpleHash(password),
+      createdAt: new Date().toISOString(),
+    }
+    
+    localStorage.setItem(USER_KEY, JSON.stringify(user))
+    return { success: true }
+  } catch {
+    return { success: false, error: "Failed to create account" }
+  }
+}
+
+export function signIn(email: string, password: string): { success: boolean; error?: string } {
+  if (typeof window === "undefined") return { success: false, error: "Not available" }
+  
+  try {
+    const stored = localStorage.getItem(USER_KEY)
+    if (!stored) {
+      return { success: false, error: "Account not found" }
+    }
+    
+    const user = JSON.parse(stored) as UserAccount
+    if (user.email !== email) {
+      return { success: false, error: "Account not found" }
+    }
+    
+    if (user.passwordHash !== simpleHash(password)) {
+      return { success: false, error: "Invalid password" }
+    }
+    
+    return { success: true }
+  } catch {
+    return { success: false, error: "Failed to sign in" }
+  }
+}
+
+export function signOut(): void {
+  if (typeof window === "undefined") return
+  localStorage.removeItem(USER_KEY)
+}
+
+export function getCurrentUser(): UserAccount | null {
+  if (typeof window === "undefined") return null
+  
+  try {
+    const stored = localStorage.getItem(USER_KEY)
+    if (!stored) return null
+    return JSON.parse(stored) as UserAccount
+  } catch {
+    return null
+  }
+}
+
+export function isSignedIn(): boolean {
+  return getCurrentUser() !== null
 }

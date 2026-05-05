@@ -16,6 +16,8 @@ interface MyTimeSheetProps {
   onOpenChange: (open: boolean) => void
   stats: UserStats | null
   mostCommonTrigger: TriggerType | null
+  onSignOut: () => void
+  isLoggedIn: boolean
 }
 
 export function MyTimeSheet({
@@ -23,6 +25,8 @@ export function MyTimeSheet({
   onOpenChange,
   stats,
   mostCommonTrigger,
+  onSignOut,
+  isLoggedIn,
 }: MyTimeSheetProps) {
   const { language, t } = useLanguage()
 
@@ -32,6 +36,13 @@ export function MyTimeSheet({
       return `${date.getMonth() + 1}月${date.getDate()}日`
     }
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  }
+
+  // Format recent session display: "30 minutes · Short videos"
+  const formatSessionDisplay = (duration: number, trigger: TriggerType) => {
+    const durationStr = formatDuration(duration, language)
+    const triggerStr = t.triggers[trigger]
+    return `${durationStr} · ${triggerStr}`
   }
 
   return (
@@ -55,23 +66,18 @@ export function MyTimeSheet({
           {/* Stats */}
           {stats && (
             <>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
+                {/* Total time made yours */}
                 <div>
                   <p className="mb-1 text-xs font-light uppercase tracking-wider text-[#a1a1a6]">
-                    {t.today}
+                    {t.totalTimeMadeYours}
                   </p>
-                  <p className="text-lg font-light text-[#1a1a1a]">
-                    {formatDuration(stats.todayMinutes, language)}
-                  </p>
-                </div>
-                <div>
-                  <p className="mb-1 text-xs font-light uppercase tracking-wider text-[#a1a1a6]">
-                    {t.thisWeek}
-                  </p>
-                  <p className="text-lg font-light text-[#1a1a1a]">
-                    {formatDuration(stats.weekMinutes, language)}
+                  <p className="text-2xl font-light text-[#1a1a1a]">
+                    {formatDuration(stats.totalMinutes, language)}
                   </p>
                 </div>
+
+                {/* Completed blocks */}
                 <div>
                   <p className="mb-1 text-xs font-light uppercase tracking-wider text-[#a1a1a6]">
                     {t.completedBlocks}
@@ -81,9 +87,11 @@ export function MyTimeSheet({
                     {stats.completedBlocks === 1 ? t.block : t.blocks}
                   </p>
                 </div>
+
+                {/* What pulls you away most */}
                 <div>
                   <p className="mb-1 text-xs font-light uppercase tracking-wider text-[#a1a1a6]">
-                    {t.whatPullsYou}
+                    {t.whatPullsYouMost}
                   </p>
                   <p className="text-lg font-light text-[#1a1a1a]">
                     {mostCommonTrigger ? t.triggers[mostCommonTrigger] : "—"}
@@ -102,30 +110,28 @@ export function MyTimeSheet({
                   </p>
                 ) : (
                   <div className="flex flex-col gap-3">
-                    {stats.sessions.slice(0, 10).map((session) => (
-                      <div
-                        key={session.id}
-                        className="flex items-center justify-between rounded-xl border border-[#e5e5e5] bg-[#fafafa] px-4 py-3"
-                      >
-                        <div>
+                    {stats.sessions
+                      .filter((s) => s.completed)
+                      .slice(0, 10)
+                      .map((session) => (
+                        <div
+                          key={session.id}
+                          className="flex items-center justify-between rounded-xl border border-[#e5e5e5] bg-[#fafafa] px-4 py-3"
+                        >
                           <p className="text-sm font-light text-[#1a1a1a]">
-                            {t.triggers[session.trigger]}
+                            {formatSessionDisplay(session.duration, session.trigger)}
                           </p>
                           <p className="text-xs font-light text-[#a1a1a6]">
                             {formatSessionDate(session.date)}
                           </p>
                         </div>
-                        <p className="text-sm font-light text-[#6e6e73]">
-                          {formatDuration(session.duration, language)}
-                        </p>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </div>
 
               {/* Future features placeholder */}
-              <div className="mt-4 rounded-2xl border border-[#e5e5e5] bg-[#fafafa] p-5">
+              <div className="rounded-2xl border border-[#e5e5e5] bg-[#fafafa] p-5">
                 <p className="mb-2 text-sm font-light text-[#6e6e73]">
                   {t.futureTitle}
                 </p>
@@ -133,6 +139,16 @@ export function MyTimeSheet({
                   {t.futureSubcopy}
                 </p>
               </div>
+
+              {/* Sign out button */}
+              {isLoggedIn && (
+                <button
+                  onClick={onSignOut}
+                  className="mt-2 text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
+                >
+                  {t.signOut}
+                </button>
+              )}
             </>
           )}
 
