@@ -55,12 +55,12 @@ export const translations = {
     
     // My Space
     mySpace: "My Space",
+    mySpaceSubline: "The time you made yours.",
     enterMySpace: "Enter My Space",
-    myTime: "My Time",
-    totalTimeMadeYours: "Total time made yours",
-    completedBlocks: "Completed blocks",
-    whatPullsYouMost: "What pulls you away most",
-    recentSessions: "Recent sessions",
+    madeYours: "made yours",
+    blocksCompleted: "blocks completed",
+    mostPulledAwayBy: "Most often pulled away by",
+    recentMoments: "Recent moments",
     
     // Auth
     email: "Email address",
@@ -82,7 +82,7 @@ export const translations = {
     passwordsMustMatch: "Passwords must match",
     
     // Future features
-    futureTitle: "Personal Stay Alone modes are coming.",
+    futureTitle: "Personal modes are coming",
     futureSubcopy: "Soon, Stay Alone will learn what helps you return to your own time.",
     
     // Misc
@@ -147,12 +147,13 @@ export const translations = {
     
     // My Space
     mySpace: "我的空间",
+    mySpaceSubline: "你留给自己的时间。",
     enterMySpace: "进入我的空间",
-    myTime: "我的时间",
-    totalTimeMadeYours: "属于你的总时间",
-    completedBlocks: "完成次数",
-    whatPullsYouMost: "最常把你带走的事",
-    recentSessions: "最近记录",
+    madeYours: "属于你",
+    blocksCompleted: "次",
+    mostPulledAwayBy: "最常被",
+    mostPulledAwayBySuffix: "带走",
+    recentMoments: "最近的时间",
     
     // Auth
     email: "邮箱",
@@ -174,7 +175,7 @@ export const translations = {
     passwordsMustMatch: "两次密码不一致",
     
     // Future features
-    futureTitle: "属于你的 Stay Alone 模式，即将开放。",
+    futureTitle: "属于你的模式，即将开放",
     futureSubcopy: "之后，Stay Alone 会更懂你如何回到自己的时间。",
     
     // Misc
