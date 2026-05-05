@@ -1,6 +1,5 @@
 "use client"
 
-import { X } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { formatDuration, formatElapsedDuration } from "@/lib/translations"
 import type { UserStats, TriggerType } from "@/lib/storage"
@@ -60,15 +59,6 @@ export function MyTimeSheet({
         side="right"
         className="w-full border-l border-[#f0f0f0] bg-white p-0 sm:max-w-[520px]"
       >
-        {/* Custom close button */}
-        <button
-          onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-[#a1a1a6] transition-colors hover:bg-[#f5f5f7] hover:text-[#6e6e73]"
-          aria-label="Close"
-        >
-          <X className="h-4 w-4" />
-        </button>
-
         {/* Content container - centered with max-width */}
         <div className="mx-auto h-full max-w-[440px] overflow-y-auto px-6 pb-10 pt-16">
           {/* Header */}
