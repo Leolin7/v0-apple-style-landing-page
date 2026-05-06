@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
-import { createAccount, signIn } from "@/lib/storage"
+import { signIn } from "@/lib/storage"
+import { supabase } from "@/lib/supabase"
 import {
   Dialog,
   DialogContent,
@@ -24,12 +25,14 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirm?: string; general?: string }>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [signUpSuccess, setSignUpSuccess] = useState(false)
 
   const resetForm = () => {
     setEmail("")
     setPassword("")
     setConfirmPassword("")
     setErrors({})
+    setSignUpSuccess(false)
   }
 
   const validateEmail = (email: string): boolean => {
@@ -97,13 +100,32 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
     setIsSubmitting(true)
     setErrors({})
 
-    const result = createAccount(email, password)
-    
-    if (result.success) {
-      resetForm()
-      onSuccess()
-    } else {
-      setErrors({ general: result.error })
+    try {
+      // Get the site URL for email redirect
+      const siteUrl = typeof window !== "undefined" ? window.location.origin : ""
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: siteUrl,
+        },
+      })
+
+      if (error) {
+        console.error("[v0] Supabase signUp error:", error.message, error)
+        setErrors({ general: error.message || t.signUpFailed })
+        setIsSubmitting(false)
+        return
+      }
+
+      console.log("[v0] Supabase signUp success:", data)
+      
+      // Show "Check your email" message
+      setSignUpSuccess(true)
+    } catch (err) {
+      console.error("[v0] Unexpected error during signUp:", err)
+      setErrors({ general: t.signUpFailed })
     }
     
     setIsSubmitting(false)
@@ -122,16 +144,57 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
   return (
     <Dialog open={mode !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="border-[#e5e5e5] bg-white p-8 sm:max-w-[400px]">
-        <DialogHeader className="pb-6">
-          <DialogTitle className="text-center text-xl font-light tracking-wide text-[#1a1a1a]">
-            {mode === "signin" ? t.enterMySpace : t.createMySpace}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            {mode === "signin" ? "Sign in to your account" : "Create a new account"}
-          </DialogDescription>
-        </DialogHeader>
+        {/* Success state after signup */}
+        {signUpSuccess && mode === "create" ? (
+          <>
+            <DialogHeader className="pb-6">
+              <DialogTitle className="text-center text-xl font-light tracking-wide text-[#1a1a1a]">
+                {t.checkYourEmail}
+              </DialogTitle>
+              <DialogDescription className="sr-only">
+                Check your email to confirm your account
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col items-center gap-6 py-4">
+              <svg
+                className="h-16 w-16 text-[#34c759]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                />
+              </svg>
+              <p className="text-center text-sm font-light text-[#6e6e73]">
+                {email}
+              </p>
+              <button
+                onClick={() => {
+                  resetForm()
+                  onClose()
+                }}
+                className="mt-2 h-11 w-full rounded-full bg-[#1a1a1a] text-sm font-light tracking-wide text-white transition-all hover:bg-[#333]"
+              >
+                {t.close}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader className="pb-6">
+              <DialogTitle className="text-center text-xl font-light tracking-wide text-[#1a1a1a]">
+                {mode === "signin" ? t.enterMySpace : t.createMySpace}
+              </DialogTitle>
+              <DialogDescription className="sr-only">
+                {mode === "signin" ? "Sign in to your account" : "Create a new account"}
+              </DialogDescription>
+            </DialogHeader>
 
-        <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5">
           {/* Social buttons */}
           <div className="flex flex-col gap-3">
             <button
@@ -232,17 +295,19 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
             </button>
           </div>
 
-          {/* Switch mode link */}
-          <p className="text-center text-sm font-light text-[#a1a1a6]">
-            {mode === "signin" ? t.noSpace : t.haveSpace}{" "}
-            <button
-              onClick={handleSwitchMode}
-              className="text-[#1a1a1a] underline underline-offset-2 transition-colors hover:text-[#6e6e73]"
-            >
-              {mode === "signin" ? t.createMySpace : t.enterMySpace}
-            </button>
-          </p>
-        </div>
+              {/* Switch mode link */}
+              <p className="text-center text-sm font-light text-[#a1a1a6]">
+                {mode === "signin" ? t.noSpace : t.haveSpace}{" "}
+                <button
+                  onClick={handleSwitchMode}
+                  className="text-[#1a1a1a] underline underline-offset-2 transition-colors hover:text-[#6e6e73]"
+                >
+                  {mode === "signin" ? t.createMySpace : t.enterMySpace}
+                </button>
+              </p>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   )

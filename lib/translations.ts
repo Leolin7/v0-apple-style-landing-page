@@ -81,6 +81,10 @@ export const translations = {
     passwordTooShort: "Password must be at least 8 characters",
     passwordsMustMatch: "Passwords must match",
     
+    // Auth success/error
+    checkYourEmail: "Check your email",
+    signUpFailed: "Failed to create account. Please try again.",
+    
     // Future features
     futureTitle: "Personal modes are coming",
     futureSubcopy: "Soon, Stay Alone will learn what helps you return to your own time.",
@@ -173,6 +177,10 @@ export const translations = {
     passwordRequired: "请输入密码",
     passwordTooShort: "密码至少需要 8 个字符",
     passwordsMustMatch: "两次密码不一致",
+    
+    // Auth success/error
+    checkYourEmail: "查看你的邮箱",
+    signUpFailed: "创建账号失败，请重试。",
     
     // Future features
     futureTitle: "属于你的模式，即将开放",
