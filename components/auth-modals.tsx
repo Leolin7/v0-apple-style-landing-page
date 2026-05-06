@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
-import { signIn } from "@/lib/storage"
 import { supabase } from "@/lib/supabase"
 import {
   Dialog,
@@ -36,6 +35,12 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
     setSignUpSuccess(false)
   }
 
+  const clearErrors = () => {
+    if (Object.keys(errors).length > 0) {
+      setErrors({})
+    }
+  }
+
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
@@ -44,9 +49,11 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
   const handleSignIn = async () => {
     const newErrors: typeof errors = {}
 
-    if (!email.trim()) {
+    const normalizedEmail = email.trim().toLowerCase()
+
+    if (!normalizedEmail) {
       newErrors.email = t.emailRequired
-    } else if (!validateEmail(email)) {
+    } else if (!validateEmail(normalizedEmail)) {
       newErrors.email = t.emailInvalid
     }
 
@@ -62,13 +69,47 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
     setIsSubmitting(true)
     setErrors({})
 
-    const result = signIn(email, password)
-    
-    if (result.success) {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+      })
+
+      if (error) {
+        console.log("[v0] Supabase signIn error:", error.message, error)
+        
+        // Map Supabase errors to user-friendly messages
+        let errorMessage = t.signInFailed
+        if (error.message.toLowerCase().includes("invalid login credentials")) {
+          errorMessage = t.invalidCredentials
+        } else if (error.message.toLowerCase().includes("email not confirmed")) {
+          errorMessage = t.emailNotConfirmed
+        }
+        
+        setErrors({ general: errorMessage })
+        setIsSubmitting(false)
+        return
+      }
+
+      console.log("[v0] Supabase signIn success:", data)
+
+      // Verify user exists
+      const { data: userData, error: userError } = await supabase.auth.getUser()
+      
+      if (userError || !userData.user) {
+        console.log("[v0] Failed to get user after sign in:", userError)
+        setErrors({ general: t.signInFailed })
+        setIsSubmitting(false)
+        return
+      }
+
+      console.log("[v0] User verified:", userData.user.email)
+      
       resetForm()
       onSuccess()
-    } else {
-      setErrors({ general: result.error })
+    } catch (err) {
+      console.error("[v0] Unexpected error during signIn:", err)
+      setErrors({ general: t.signInFailed })
     }
     
     setIsSubmitting(false)
@@ -191,11 +232,12 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
             </DialogHeader>
 
             <div className="flex flex-col gap-5">
-          {/* Social buttons */}
+          {/* Social buttons - Coming soon */}
           <div className="flex flex-col gap-3">
             <button
               type="button"
-              className="flex h-11 w-full items-center justify-center gap-3 rounded-full border border-[#e5e5e5] bg-white text-sm font-light text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
+              disabled
+              className="relative flex h-11 w-full cursor-not-allowed items-center justify-center gap-3 rounded-full border border-[#e5e5e5] bg-[#fafafa] text-sm font-light text-[#a1a1a6] opacity-60"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -216,15 +258,18 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
                 />
               </svg>
               {t.continueWithGoogle}
+              <span className="absolute right-3 text-xs">({t.comingSoon})</span>
             </button>
             <button
               type="button"
-              className="flex h-11 w-full items-center justify-center gap-3 rounded-full border border-[#e5e5e5] bg-white text-sm font-light text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
+              disabled
+              className="relative flex h-11 w-full cursor-not-allowed items-center justify-center gap-3 rounded-full border border-[#e5e5e5] bg-[#fafafa] text-sm font-light text-[#a1a1a6] opacity-60"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
               </svg>
               {t.continueWithApple}
+              <span className="absolute right-3 text-xs">({t.comingSoon})</span>
             </button>
           </div>
 
@@ -245,7 +290,10 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  clearErrors()
+                }}
                 placeholder={t.email}
                 className="h-11 w-full rounded-xl border border-[#e5e5e5] bg-white px-4 text-sm font-light text-[#1a1a1a] placeholder-[#a1a1a6] transition-colors focus:border-[#86868b] focus:outline-none"
               />
@@ -258,7 +306,10 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  clearErrors()
+                }}
                 placeholder={t.password}
                 className="h-11 w-full rounded-xl border border-[#e5e5e5] bg-white px-4 text-sm font-light text-[#1a1a1a] placeholder-[#a1a1a6] transition-colors focus:border-[#86868b] focus:outline-none"
               />
@@ -272,7 +323,10 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
                 <input
                   type="password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value)
+                    clearErrors()
+                  }}
                   placeholder={t.confirmPassword}
                   className="h-11 w-full rounded-xl border border-[#e5e5e5] bg-white px-4 text-sm font-light text-[#1a1a1a] placeholder-[#a1a1a6] transition-colors focus:border-[#86868b] focus:outline-none"
                 />
