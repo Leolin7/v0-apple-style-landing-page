@@ -84,6 +84,10 @@ export const translations = {
     // Auth success/error
     checkYourEmail: "Check your email",
     signUpFailed: "Failed to create account. Please try again.",
+    invalidCredentials: "Email or password is incorrect.",
+    emailNotConfirmed: "Please verify your email first.",
+    signInFailed: "Failed to sign in. Please try again.",
+    comingSoon: "Coming soon",
     
     // Future features
     futureTitle: "Personal modes are coming",
@@ -181,6 +185,10 @@ export const translations = {
     // Auth success/error
     checkYourEmail: "查看你的邮箱",
     signUpFailed: "创建账号失败，请重试。",
+    invalidCredentials: "邮箱或密码不正确。",
+    emailNotConfirmed: "请先验证你的邮箱。",
+    signInFailed: "登录失败，请重试。",
+    comingSoon: "即将推出",
     
     // Future features
     futureTitle: "属于你的模式，即将开放",
