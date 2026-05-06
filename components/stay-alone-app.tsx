@@ -5,14 +5,23 @@ import { useLanguage } from "@/lib/language-context"
 import { getOrdinal, formatElapsedDuration } from "@/lib/translations"
 import {
   type TriggerType,
-  loadStats,
-  addSession,
-  getMostCommonTrigger,
   type UserStats,
-  getCurrentUser,
-  isSignedIn,
-  signOut,
+  loadLocalStats,
+  addLocalSession,
+  getMostCommonTrigger,
+  getUnsyncedLocalSessions,
+  markLocalSessionsSynced,
+  supabaseSessionsToStats,
+  mergeStats,
 } from "@/lib/storage"
+import {
+  supabase,
+  getCurrentUser,
+  signOut as supabaseSignOut,
+  saveStayAloneSession,
+  getStayAloneSessions,
+  uploadLocalSessions,
+} from "@/lib/supabase"
 import { MyTimeSheet } from "./my-time-sheet"
 import { AuthModals } from "./auth-modals"
 
@@ -44,9 +53,60 @@ export function StayAloneApp() {
   const [authMode, setAuthMode] = useState<"signin" | "create" | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [completedElapsedSeconds, setCompletedElapsedSeconds] = useState(0)
+  const [showLocalSyncPrompt, setShowLocalSyncPrompt] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [sessionSaved, setSessionSaved] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimestampRef = useRef<number | null>(null)
   const hasCalledApi = useRef(false)
+  const authChecked = useRef(false)
+
+  // Check auth state on mount
+  useEffect(() => {
+    if (authChecked.current) return
+    authChecked.current = true
+
+    const checkAuth = async () => {
+      const user = await getCurrentUser()
+      if (user) {
+        setIsLoggedIn(true)
+        // Load stats from Supabase
+        await loadSupabaseStats()
+      } else {
+        // Load local stats
+        setStats(loadLocalStats())
+      }
+    }
+
+    checkAuth()
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setIsLoggedIn(true)
+        await loadSupabaseStats()
+      } else if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false)
+        setStats(loadLocalStats())
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const loadSupabaseStats = async () => {
+    const result = await getStayAloneSessions()
+    if (result.success && result.data) {
+      const supabaseStats = supabaseSessionsToStats(result.data)
+      const localStats = loadLocalStats()
+      // Merge local and supabase stats
+      const merged = mergeStats(localStats, supabaseStats)
+      setStats(merged)
+    }
+  }
 
   // Fetch visitor count
   const fetchVisitorCount = useCallback(async () => {
@@ -64,8 +124,6 @@ export function StayAloneApp() {
   }, [])
 
   useEffect(() => {
-    setStats(loadStats())
-    setIsLoggedIn(isSignedIn())
     fetchVisitorCount()
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
@@ -96,10 +154,11 @@ export function StayAloneApp() {
     setTimeRemaining(selectedTime * 60)
     setPulledAwayCount(0)
     startTimestampRef.current = Date.now()
+    setSessionSaved(false)
     setStep("timer")
   }
 
-  const completeSession = (completed: boolean) => {
+  const completeSession = async (completed: boolean) => {
     if (timerRef.current) clearInterval(timerRef.current)
     
     // Calculate actual elapsed time
@@ -111,14 +170,43 @@ export function StayAloneApp() {
     
     setCompletedElapsedSeconds(elapsedSeconds)
     
-    const newStats = addSession(
-      elapsedMinutes > 0 ? elapsedMinutes : 1, // Store at least 1 minute for stats
+    const status: 'completed' | 'pulled_away' | 'finished_early' = 
+      !completed ? 'pulled_away' : 
+      (elapsedSeconds < selectedTime * 60) ? 'finished_early' : 'completed'
+    
+    // Always save locally first
+    const newStats = addLocalSession(
+      elapsedMinutes > 0 ? elapsedMinutes : 1,
       selectedTrigger,
       completed,
       pulledAwayCount,
-      elapsedSeconds // Pass actual elapsed seconds for display
+      elapsedSeconds,
+      startTimestamp,
+      endTimestamp
     )
     setStats(newStats)
+    
+    // If logged in, also save to Supabase
+    if (isLoggedIn) {
+      const result = await saveStayAloneSession({
+        startTimestamp,
+        endTimestamp,
+        actualElapsedSeconds: elapsedSeconds,
+        selectedDurationSeconds: selectedTime * 60,
+        trigger: selectedTrigger,
+        status,
+      })
+      
+      if (result.success) {
+        setSessionSaved(true)
+        // Mark the local session as synced
+        const latestSession = newStats.sessions[0]
+        if (latestSession) {
+          markLocalSessionsSynced([latestSession.id])
+        }
+      }
+    }
+    
     setStep("complete")
   }
 
@@ -133,6 +221,7 @@ export function StayAloneApp() {
     setTimeRemaining(0)
     setPulledAwayCount(0)
     setCompletedElapsedSeconds(0)
+    setSessionSaved(false)
     startTimestampRef.current = null
   }
 
@@ -142,17 +231,59 @@ export function StayAloneApp() {
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = async () => {
     setAuthMode(null)
     setIsLoggedIn(true)
-    setStats(loadStats())
+    
+    // Check for unsynced local sessions
+    const unsyncedSessions = getUnsyncedLocalSessions()
+    if (unsyncedSessions.length > 0) {
+      setShowLocalSyncPrompt(true)
+    } else {
+      await loadSupabaseStats()
+      setMyTimeOpen(true)
+    }
+  }
+
+  const handleSyncLocalSessions = async () => {
+    setIsSyncing(true)
+    const unsyncedSessions = getUnsyncedLocalSessions()
+    
+    if (unsyncedSessions.length > 0) {
+      const sessionsToUpload = unsyncedSessions.map(s => ({
+        startTimestamp: s.startTimestamp || new Date(s.date).getTime() - (s.durationSeconds || s.duration * 60) * 1000,
+        endTimestamp: s.endTimestamp || new Date(s.date).getTime(),
+        actualElapsedSeconds: s.durationSeconds || s.duration * 60,
+        selectedDurationSeconds: s.duration * 60,
+        trigger: s.trigger,
+        status: s.status || (s.completed ? 'completed' : 'pulled_away') as 'completed' | 'pulled_away' | 'finished_early',
+      }))
+      
+      const result = await uploadLocalSessions(sessionsToUpload)
+      
+      if (result.success) {
+        // Mark local sessions as synced
+        markLocalSessionsSynced(unsyncedSessions.map(s => s.id))
+      }
+    }
+    
+    setIsSyncing(false)
+    setShowLocalSyncPrompt(false)
+    await loadSupabaseStats()
     setMyTimeOpen(true)
   }
 
-  const handleSignOut = () => {
-    signOut()
+  const handleSkipSync = async () => {
+    setShowLocalSyncPrompt(false)
+    await loadSupabaseStats()
+    setMyTimeOpen(true)
+  }
+
+  const handleSignOut = async () => {
+    await supabaseSignOut()
     setIsLoggedIn(false)
     setMyTimeOpen(false)
+    setStats(loadLocalStats())
   }
 
   const handleHeaderClick = () => {
@@ -163,8 +294,11 @@ export function StayAloneApp() {
     }
   }
 
+  const handleSwitchAuthMode = (mode: "signin" | "create") => {
+    setAuthMode(mode)
+  }
+
   // Format completion message with actual elapsed time
-  // "This was your 14 minutes 38 seconds" / "这是属于你的 14 分 38 秒"
   const getCompletionMessage = () => {
     const duration = formatElapsedDuration(completedElapsedSeconds, language)
     return `${t.completionPrefix} ${duration}`
@@ -387,6 +521,13 @@ export function StayAloneApp() {
               {getCompletionMessage()}
             </h2>
 
+            {/* Save status for logged in users */}
+            {isLoggedIn && sessionSaved && (
+              <p className="mb-8 text-sm font-light tracking-wide text-[#86868b]">
+                {t.savedToMySpace}
+              </p>
+            )}
+
             {/* Save prompt - only show if not logged in */}
             {!isLoggedIn && (
               <div className="mb-10 md:mb-12">
@@ -410,7 +551,7 @@ export function StayAloneApp() {
               </div>
             )}
 
-            {/* If logged in, just show a continue button */}
+            {/* If logged in, show continue options */}
             {isLoggedIn && (
               <div className="flex flex-col gap-3 md:flex-row md:gap-4">
                 <button
@@ -431,6 +572,33 @@ export function StayAloneApp() {
         )}
       </main>
 
+      {/* Local sync prompt modal */}
+      {showLocalSyncPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
+          <div className="w-full max-w-[360px] rounded-2xl border border-[#e5e5e5] bg-white p-8 text-center">
+            <p className="mb-6 text-base font-light text-[#1a1a1a]">
+              {t.saveLocalToMySpace}
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleSyncLocalSessions}
+                disabled={isSyncing}
+                className="h-11 w-full rounded-full bg-[#1a1a1a] text-sm font-light tracking-wide text-white transition-all hover:bg-[#333] disabled:opacity-50"
+              >
+                {isSyncing ? "..." : t.saveButton}
+              </button>
+              <button
+                onClick={handleSkipSync}
+                disabled={isSyncing}
+                className="h-11 w-full rounded-full border border-[#e5e5e5] bg-transparent text-sm font-light tracking-wide text-[#a1a1a6] transition-all hover:border-[#c5c5c5] hover:text-[#6e6e73] disabled:opacity-50"
+              >
+                {t.notNow}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* My Time Sheet */}
       <MyTimeSheet
         open={myTimeOpen}
@@ -446,6 +614,7 @@ export function StayAloneApp() {
         mode={authMode}
         onClose={() => setAuthMode(null)}
         onSuccess={handleAuthSuccess}
+        onSwitchMode={handleSwitchAuthMode}
       />
     </div>
   )

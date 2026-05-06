@@ -8,6 +8,11 @@ export interface Session {
   trigger: TriggerType
   completed: boolean
   pulledAwayCount: number
+  // New fields for Supabase sync
+  startTimestamp?: number
+  endTimestamp?: number
+  status?: 'completed' | 'pulled_away' | 'finished_early'
+  syncedToSupabase?: boolean
 }
 
 export interface UserStats {
@@ -21,16 +26,8 @@ export interface UserStats {
   lastSessionDate: string | null
 }
 
-const STORAGE_KEY = "stayalone_stats"
-const VISITOR_KEY = "stayalone_visitor"
-const USER_KEY = "stayalone_user"
-
-export interface UserAccount {
-  id: string
-  email: string
-  passwordHash: string // Simple hash for mock auth
-  createdAt: string
-}
+const LOCAL_STORAGE_KEY = "stayalone_local_stats"
+const UPLOADED_IDS_KEY = "stayalone_uploaded_ids"
 
 export function getDefaultStats(): UserStats {
   return {
@@ -92,11 +89,12 @@ function recalculateStats(stats: UserStats): UserStats {
   }
 }
 
-export function loadStats(): UserStats {
+// Local storage functions (for unauthenticated users)
+export function loadLocalStats(): UserStats {
   if (typeof window === "undefined") return getDefaultStats()
   
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
     if (!stored) return getDefaultStats()
     
     const stats = JSON.parse(stored) as UserStats
@@ -106,34 +104,44 @@ export function loadStats(): UserStats {
   }
 }
 
-export function saveStats(stats: UserStats): void {
+export function saveLocalStats(stats: UserStats): void {
   if (typeof window === "undefined") return
   
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats))
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stats))
   } catch {
     // Storage full or unavailable
   }
 }
 
-export function addSession(
+export function addLocalSession(
   duration: number,
   trigger: TriggerType,
   completed: boolean,
   pulledAwayCount: number,
-  durationSeconds?: number
+  durationSeconds?: number,
+  startTimestamp?: number,
+  endTimestamp?: number
 ): UserStats {
-  const stats = loadStats()
+  const stats = loadLocalStats()
   const now = new Date().toISOString()
   
+  const status: 'completed' | 'pulled_away' | 'finished_early' = 
+    !completed ? 'pulled_away' : 
+    (durationSeconds && durationSeconds < duration * 60) ? 'finished_early' : 'completed'
+  
   const session: Session = {
-    id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     date: now,
     duration,
     durationSeconds,
     trigger,
     completed,
     pulledAwayCount,
+    startTimestamp,
+    endTimestamp,
+    status,
+    syncedToSupabase: false,
   }
   
   stats.sessions.unshift(session)
@@ -163,10 +171,60 @@ export function addSession(
   }
   
   const updatedStats = recalculateStats(stats)
-  saveStats(updatedStats)
+  saveLocalStats(updatedStats)
   return updatedStats
 }
 
+// Get unsynced local sessions for upload to Supabase
+export function getUnsyncedLocalSessions(): Session[] {
+  const stats = loadLocalStats()
+  return stats.sessions.filter(s => !s.syncedToSupabase && s.completed)
+}
+
+// Mark local sessions as synced
+export function markLocalSessionsSynced(sessionIds: string[]): void {
+  const stats = loadLocalStats()
+  stats.sessions = stats.sessions.map(session => {
+    if (sessionIds.includes(session.id)) {
+      return { ...session, syncedToSupabase: true }
+    }
+    return session
+  })
+  saveLocalStats(stats)
+  
+  // Also track uploaded IDs to prevent duplicates
+  const existingIds = getUploadedSessionIds()
+  const newIds = [...new Set([...existingIds, ...sessionIds])]
+  saveUploadedSessionIds(newIds)
+}
+
+// Track which session IDs have been uploaded
+function getUploadedSessionIds(): string[] {
+  if (typeof window === "undefined") return []
+  try {
+    const stored = localStorage.getItem(UPLOADED_IDS_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+function saveUploadedSessionIds(ids: string[]): void {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.setItem(UPLOADED_IDS_KEY, JSON.stringify(ids))
+  } catch {
+    // Storage full or unavailable
+  }
+}
+
+// Clear local stats after successful sync
+export function clearLocalStats(): void {
+  if (typeof window === "undefined") return
+  localStorage.removeItem(LOCAL_STORAGE_KEY)
+}
+
+// Helper to get most common trigger
 export function getMostCommonTrigger(stats: UserStats): TriggerType | null {
   let maxCount = 0
   let mostCommon: TriggerType | null = null
@@ -181,95 +239,88 @@ export function getMostCommonTrigger(stats: UserStats): TriggerType | null {
   return mostCommon
 }
 
-export function hasVisited(): boolean {
-  if (typeof window === "undefined") return false
-  return localStorage.getItem(VISITOR_KEY) === "true"
-}
-
-export function markVisited(): void {
-  if (typeof window === "undefined") return
-  localStorage.setItem(VISITOR_KEY, "true")
-}
-
-// Simple hash function for mock auth (not secure, just for demo)
-function simpleHash(str: string): string {
-  let hash = 0
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash
-  }
-  return Math.abs(hash).toString(36)
-}
-
-export function createAccount(email: string, password: string): { success: boolean; error?: string } {
-  if (typeof window === "undefined") return { success: false, error: "Not available" }
+// Convert Supabase sessions to UserStats format
+export function supabaseSessionsToStats(sessions: Array<{
+  id: string
+  start_timestamp: string
+  end_timestamp: string | null
+  actual_elapsed_seconds: number
+  selected_duration_seconds: number | null
+  trigger: string | null
+  status: string
+  created_at: string
+}>): UserStats {
+  const stats = getDefaultStats()
   
-  try {
-    // Check if user already exists
-    const existingUser = localStorage.getItem(USER_KEY)
-    if (existingUser) {
-      const user = JSON.parse(existingUser) as UserAccount
-      if (user.email === email) {
-        return { success: false, error: "Account already exists" }
-      }
+  sessions.forEach(session => {
+    const trigger = (session.trigger || 'world') as TriggerType
+    const completed = session.status === 'completed' || session.status === 'finished_early'
+    const durationMinutes = Math.ceil(session.actual_elapsed_seconds / 60)
+    
+    const localSession: Session = {
+      id: session.id,
+      date: session.created_at,
+      duration: durationMinutes,
+      durationSeconds: session.actual_elapsed_seconds,
+      trigger,
+      completed,
+      pulledAwayCount: session.status === 'pulled_away' ? 1 : 0,
+      startTimestamp: new Date(session.start_timestamp).getTime(),
+      endTimestamp: session.end_timestamp ? new Date(session.end_timestamp).getTime() : undefined,
+      status: session.status as 'completed' | 'pulled_away' | 'finished_early',
+      syncedToSupabase: true,
     }
     
-    const user: UserAccount = {
-      id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      email,
-      passwordHash: simpleHash(password),
-      createdAt: new Date().toISOString(),
-    }
+    stats.sessions.push(localSession)
     
-    localStorage.setItem(USER_KEY, JSON.stringify(user))
-    return { success: true }
-  } catch {
-    return { success: false, error: "Failed to create account" }
-  }
-}
-
-export function signIn(email: string, password: string): { success: boolean; error?: string } {
-  if (typeof window === "undefined") return { success: false, error: "Not available" }
+    if (completed) {
+      stats.totalMinutes += durationMinutes
+      stats.completedBlocks += 1
+      stats.triggerCounts[trigger] = (stats.triggerCounts[trigger] || 0) + 1
+    }
+  })
   
-  try {
-    const stored = localStorage.getItem(USER_KEY)
-    if (!stored) {
-      return { success: false, error: "Account not found" }
-    }
-    
-    const user = JSON.parse(stored) as UserAccount
-    if (user.email !== email) {
-      return { success: false, error: "Account not found" }
-    }
-    
-    if (user.passwordHash !== simpleHash(password)) {
-      return { success: false, error: "Invalid password" }
-    }
-    
-    return { success: true }
-  } catch {
-    return { success: false, error: "Failed to sign in" }
-  }
-}
-
-export function signOut(): void {
-  if (typeof window === "undefined") return
-  localStorage.removeItem(USER_KEY)
-}
-
-export function getCurrentUser(): UserAccount | null {
-  if (typeof window === "undefined") return null
+  // Sort sessions by date (newest first)
+  stats.sessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   
-  try {
-    const stored = localStorage.getItem(USER_KEY)
-    if (!stored) return null
-    return JSON.parse(stored) as UserAccount
-  } catch {
-    return null
+  if (stats.sessions.length > 0) {
+    stats.lastSessionDate = stats.sessions[0].date
   }
+  
+  return recalculateStats(stats)
 }
 
-export function isSignedIn(): boolean {
-  return getCurrentUser() !== null
+// Merge local and Supabase stats (for display when user has both)
+export function mergeStats(local: UserStats, supabase: UserStats): UserStats {
+  const merged = getDefaultStats()
+  
+  // Combine sessions, avoiding duplicates
+  const allSessions = [...supabase.sessions]
+  const supabaseIds = new Set(supabase.sessions.map(s => s.id))
+  
+  local.sessions.forEach(session => {
+    if (!supabaseIds.has(session.id) && !session.syncedToSupabase) {
+      allSessions.push(session)
+    }
+  })
+  
+  // Sort by date
+  allSessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  
+  merged.sessions = allSessions
+  
+  // Recalculate totals
+  allSessions.forEach(session => {
+    if (session.completed) {
+      merged.totalMinutes += session.duration
+      merged.completedBlocks += 1
+      merged.triggerCounts[session.trigger] = (merged.triggerCounts[session.trigger] || 0) + 1
+    }
+  })
+  
+  if (allSessions.length > 0) {
+    merged.lastSessionDate = allSessions[0].date
+  }
+  
+  return recalculateStats(merged)
 }

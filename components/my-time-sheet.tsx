@@ -146,8 +146,11 @@ export function MyTimeSheet({
           ) : (
             /* No stats yet */
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-[14px] font-light text-[#86868b]">
+              <p className="text-[14px] font-light text-[#1d1d1f]">
                 {t.noSessions}
+              </p>
+              <p className="mt-2 text-[13px] font-light text-[#86868b]">
+                {t.noSessionsSubline}
               </p>
             </div>
           )}

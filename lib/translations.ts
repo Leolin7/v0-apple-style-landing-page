@@ -81,6 +81,17 @@ export const translations = {
     passwordTooShort: "Password must be at least 8 characters",
     passwordsMustMatch: "Passwords must match",
     
+    // Email verification
+    checkYourEmail: "Check your email",
+    emailVerificationSent: "We sent you a link to enter My Space.",
+    pleaseVerifyEmail: "Please verify your email first.",
+    
+    // Local data upload
+    saveLocalToMySpace: "Save your local time to My Space?",
+    saveButton: "Save",
+    notNow: "Not now",
+    savedToMySpace: "Saved to My Space",
+    
     // Future features
     futureTitle: "Personal modes are coming",
     futureSubcopy: "Soon, Stay Alone will learn what helps you return to your own time.",
@@ -88,7 +99,8 @@ export const translations = {
     // Misc
     back: "Back",
     close: "Close",
-    noSessions: "No sessions yet",
+    noSessions: "No time saved yet",
+    noSessionsSubline: "Begin a Stay Alone block and save it here.",
     block: "block",
     blocks: "blocks",
     or: "or",
@@ -174,6 +186,17 @@ export const translations = {
     passwordTooShort: "密码至少需要 8 个字符",
     passwordsMustMatch: "两次密码不一致",
     
+    // Email verification
+    checkYourEmail: "查看你的邮箱",
+    emailVerificationSent: "我们已发送链接，验证后即可进入我的空间。",
+    pleaseVerifyEmail: "请先验证你的邮箱。",
+    
+    // Local data upload
+    saveLocalToMySpace: "把本地记录保存到我的空间？",
+    saveButton: "保存",
+    notNow: "暂不",
+    savedToMySpace: "已保存到我的空间",
+    
     // Future features
     futureTitle: "属于你的模式，即将开放",
     futureSubcopy: "之后，Stay Alone 会更懂你如何回到自己的时间。",
@@ -181,7 +204,8 @@ export const translations = {
     // Misc
     back: "返回",
     close: "关闭",
-    noSessions: "暂无记录",
+    noSessions: "还没有保存的时间",
+    noSessionsSubline: "开始一段 Stay Alone，然后把它留在这里。",
     block: "次",
     blocks: "次",
     or: "或",
