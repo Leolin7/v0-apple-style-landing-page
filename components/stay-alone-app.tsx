@@ -5,13 +5,16 @@ import { useLanguage } from "@/lib/language-context"
 import { getOrdinal, formatElapsedDuration } from "@/lib/translations"
 import {
   type TriggerType,
+  type SessionStatus,
   loadStats,
   addSession,
   getMostCommonTrigger,
   type UserStats,
-  getCurrentUser,
-  isSignedIn,
-  signOut,
+  saveSessionToSupabase,
+  loadSessionsFromSupabase,
+  buildStatsFromSessions,
+  checkSupabaseAuth,
+  signOutSupabase,
 } from "@/lib/storage"
 import { MyTimeSheet } from "./my-time-sheet"
 import { AuthModals } from "./auth-modals"
@@ -44,8 +47,10 @@ export function StayAloneApp() {
   const [authMode, setAuthMode] = useState<"signin" | "create" | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [completedElapsedSeconds, setCompletedElapsedSeconds] = useState(0)
+  const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimestampRef = useRef<number | null>(null)
+  const startDateRef = useRef<Date | null>(null)
   const hasCalledApi = useRef(false)
 
   // Fetch visitor count
@@ -64,8 +69,26 @@ export function StayAloneApp() {
   }, [])
 
   useEffect(() => {
-    setStats(loadStats())
-    setIsLoggedIn(isSignedIn())
+    const initAuth = async () => {
+      const { isSignedIn: supabaseSignedIn } = await checkSupabaseAuth()
+      console.log("[v0] Initial auth check - Supabase signed in:", supabaseSignedIn)
+      setIsLoggedIn(supabaseSignedIn)
+      
+      if (supabaseSignedIn) {
+        // Load stats from Supabase
+        const { sessions, error } = await loadSessionsFromSupabase()
+        if (!error && sessions.length > 0) {
+          setStats(buildStatsFromSessions(sessions))
+        } else {
+          setStats(loadStats()) // Fallback to localStorage
+        }
+      } else {
+        // Not signed in, use localStorage
+        setStats(loadStats())
+      }
+    }
+    
+    initAuth()
     fetchVisitorCount()
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
@@ -78,7 +101,7 @@ export function StayAloneApp() {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
             if (timerRef.current) clearInterval(timerRef.current)
-            completeSession(true)
+            completeSession(true, false)
             return 0
           }
           return prev - 1
@@ -96,34 +119,92 @@ export function StayAloneApp() {
     setTimeRemaining(selectedTime * 60)
     setPulledAwayCount(0)
     startTimestampRef.current = Date.now()
+    startDateRef.current = new Date()
+    setSaveMessage(null)
     setStep("timer")
   }
 
-  const completeSession = (completed: boolean) => {
+  const completeSession = async (completed: boolean, isPulledAway: boolean = false) => {
     if (timerRef.current) clearInterval(timerRef.current)
     
     // Calculate actual elapsed time
     const endTimestamp = Date.now()
+    const endDate = new Date()
     const startTimestamp = startTimestampRef.current || endTimestamp
+    const startDate = startDateRef.current || endDate
     const elapsedMs = endTimestamp - startTimestamp
     const elapsedSeconds = Math.floor(elapsedMs / 1000)
     const elapsedMinutes = Math.floor(elapsedSeconds / 60)
+    const selectedDurationSeconds = selectedTime * 60
+    
+    // Determine status
+    let status: SessionStatus
+    if (isPulledAway) {
+      status = "pulled_away"
+    } else if (timeRemaining > 0) {
+      status = "finished_early"
+    } else {
+      status = "completed"
+    }
     
     setCompletedElapsedSeconds(elapsedSeconds)
     
-    const newStats = addSession(
-      elapsedMinutes > 0 ? elapsedMinutes : 1, // Store at least 1 minute for stats
-      selectedTrigger,
-      completed,
-      pulledAwayCount,
-      elapsedSeconds // Pass actual elapsed seconds for display
-    )
-    setStats(newStats)
+    // Check if user is signed in to Supabase
+    const { isSignedIn: supabaseSignedIn } = await checkSupabaseAuth()
+    
+    if (supabaseSignedIn) {
+      // Save to Supabase
+      const result = await saveSessionToSupabase(
+        startDate,
+        endDate,
+        elapsedSeconds,
+        selectedDurationSeconds,
+        selectedTrigger,
+        status
+      )
+      
+      if (result.success) {
+        setSaveMessage(t.savedToMySpace)
+        // Reload stats from Supabase
+        const { sessions } = await loadSessionsFromSupabase()
+        if (sessions.length > 0) {
+          setStats(buildStatsFromSessions(sessions))
+        }
+      } else {
+        setSaveMessage(t.couldNotSave)
+        // Fallback to localStorage
+        const newStats = addSession(
+          elapsedMinutes > 0 ? elapsedMinutes : 1,
+          selectedTrigger,
+          completed && !isPulledAway,
+          pulledAwayCount,
+          elapsedSeconds
+        )
+        setStats(newStats)
+      }
+    } else {
+      // Not signed in - use localStorage only
+      const newStats = addSession(
+        elapsedMinutes > 0 ? elapsedMinutes : 1,
+        selectedTrigger,
+        completed && !isPulledAway,
+        pulledAwayCount,
+        elapsedSeconds
+      )
+      setStats(newStats)
+    }
+    
     setStep("complete")
+    
+    // Clear save message after 3 seconds
+    if (supabaseSignedIn) {
+      setTimeout(() => setSaveMessage(null), 3000)
+    }
   }
 
   const handlePulledAway = () => {
-    setPulledAwayCount((prev) => prev + 1)
+    // End the session with pulled_away status
+    completeSession(false, true)
   }
 
   const resetToLanding = () => {
@@ -133,7 +214,9 @@ export function StayAloneApp() {
     setTimeRemaining(0)
     setPulledAwayCount(0)
     setCompletedElapsedSeconds(0)
+    setSaveMessage(null)
     startTimestampRef.current = null
+    startDateRef.current = null
   }
 
   const formatTime = (seconds: number) => {
@@ -142,17 +225,26 @@ export function StayAloneApp() {
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = async () => {
     setAuthMode(null)
     setIsLoggedIn(true)
-    setStats(loadStats())
+    
+    // Load stats from Supabase
+    const { sessions, error } = await loadSessionsFromSupabase()
+    if (!error && sessions.length > 0) {
+      setStats(buildStatsFromSessions(sessions))
+    } else {
+      setStats(loadStats()) // Fallback to localStorage
+    }
+    
     setMyTimeOpen(true)
   }
 
-  const handleSignOut = () => {
-    signOut()
+  const handleSignOut = async () => {
+    await signOutSupabase()
     setIsLoggedIn(false)
     setMyTimeOpen(false)
+    setStats(loadStats()) // Load localStorage stats for signed-out state
   }
 
   const handleHeaderClick = () => {
@@ -360,10 +452,9 @@ export function StayAloneApp() {
                 className="rounded-full border border-[#e5e5e5] bg-transparent px-5 py-2.5 text-xs font-light tracking-wide text-[#a1a1a6] transition-all hover:border-[#c5c5c5] hover:text-[#6e6e73]"
               >
                 {t.pulledAway}
-                {pulledAwayCount > 0 && ` (${pulledAwayCount})`}
               </button>
               <button
-                onClick={() => completeSession(true)}
+                onClick={() => completeSession(true, false)}
                 className="rounded-full border border-[#e5e5e5] bg-transparent px-6 py-2.5 text-xs font-light tracking-wide text-[#1a1a1a] transition-all hover:border-[#c5c5c5] hover:bg-[#fafafa]"
               >
                 {t.finish}
@@ -408,6 +499,13 @@ export function StayAloneApp() {
                   </button>
                 </div>
               </div>
+            )}
+
+            {/* Save message for logged in users */}
+            {isLoggedIn && saveMessage && (
+              <p className="mb-6 text-sm font-light tracking-wide text-[#34c759] md:mb-8">
+                {saveMessage}
+              </p>
             )}
 
             {/* If logged in, just show a continue button */}

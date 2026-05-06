@@ -1,4 +1,7 @@
+import { supabase } from "@/lib/supabase"
+
 export type TriggerType = "shortVideos" | "messages" | "work" | "ai" | "anxiety" | "boredom" | "world"
+export type SessionStatus = "completed" | "finished_early" | "pulled_away"
 
 export interface Session {
   id: string
@@ -8,6 +11,19 @@ export interface Session {
   trigger: TriggerType
   completed: boolean
   pulledAwayCount: number
+  status?: SessionStatus
+}
+
+export interface SupabaseSession {
+  id: string
+  user_id: string
+  start_timestamp: string
+  end_timestamp: string
+  actual_elapsed_seconds: number
+  selected_duration_seconds: number
+  trigger: TriggerType
+  status: SessionStatus
+  created_at?: string
 }
 
 export interface UserStats {
@@ -30,6 +46,133 @@ export interface UserAccount {
   email: string
   passwordHash: string // Simple hash for mock auth
   createdAt: string
+}
+
+// Supabase session functions
+export async function saveSessionToSupabase(
+  startTimestamp: Date,
+  endTimestamp: Date,
+  actualElapsedSeconds: number,
+  selectedDurationSeconds: number,
+  trigger: TriggerType,
+  status: SessionStatus
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Get current user from Supabase Auth
+    const { data: userData, error: userError } = await supabase.auth.getUser()
+    
+    console.log("[v0] Current user id:", userData?.user?.id)
+    
+    if (userError || !userData.user) {
+      console.log("[v0] No authenticated user found:", userError)
+      return { success: false, error: "Not authenticated" }
+    }
+
+    const sessionPayload = {
+      user_id: userData.user.id,
+      start_timestamp: startTimestamp.toISOString(),
+      end_timestamp: endTimestamp.toISOString(),
+      actual_elapsed_seconds: actualElapsedSeconds,
+      selected_duration_seconds: selectedDurationSeconds,
+      trigger,
+      status,
+    }
+
+    console.log("[v0] Session payload before insert:", sessionPayload)
+
+    const { data, error } = await supabase
+      .from("stay_alone_sessions")
+      .insert(sessionPayload)
+      .select()
+
+    if (error) {
+      console.log("[v0] Supabase insert error:", error)
+      return { success: false, error: error.message }
+    }
+
+    console.log("[v0] Supabase insert result:", data)
+    return { success: true }
+  } catch (err) {
+    console.log("[v0] Unexpected error saving session:", err)
+    return { success: false, error: "Unexpected error" }
+  }
+}
+
+export async function loadSessionsFromSupabase(): Promise<{
+  sessions: Session[]
+  error?: string
+}> {
+  try {
+    // Get current user from Supabase Auth
+    const { data: userData, error: userError } = await supabase.auth.getUser()
+    
+    if (userError || !userData.user) {
+      console.log("[v0] No authenticated user for loading sessions:", userError)
+      return { sessions: [], error: "Not authenticated" }
+    }
+
+    const { data, error } = await supabase
+      .from("stay_alone_sessions")
+      .select("*")
+      .eq("user_id", userData.user.id)
+      .order("created_at", { ascending: false })
+
+    if (error) {
+      console.log("[v0] Supabase load error:", error)
+      return { sessions: [], error: error.message }
+    }
+
+    console.log("[v0] Number of records loaded into My Space:", data?.length || 0)
+
+    // Convert Supabase sessions to local Session format
+    const sessions: Session[] = (data || []).map((s: SupabaseSession) => ({
+      id: s.id,
+      date: s.end_timestamp,
+      duration: Math.floor(s.actual_elapsed_seconds / 60) || 1,
+      durationSeconds: s.actual_elapsed_seconds,
+      trigger: s.trigger,
+      completed: s.status === "completed" || s.status === "finished_early",
+      pulledAwayCount: 0,
+      status: s.status,
+    }))
+
+    return { sessions }
+  } catch (err) {
+    console.log("[v0] Unexpected error loading sessions:", err)
+    return { sessions: [], error: "Unexpected error" }
+  }
+}
+
+export function buildStatsFromSessions(sessions: Session[]): UserStats {
+  const stats = getDefaultStats()
+  stats.sessions = sessions
+
+  sessions.forEach((session) => {
+    if (session.completed) {
+      stats.totalMinutes += session.duration
+      stats.completedBlocks += 1
+      stats.triggerCounts[session.trigger] = (stats.triggerCounts[session.trigger] || 0) + 1
+    }
+  })
+
+  // Recalculate today/week stats
+  return recalculateStats(stats)
+}
+
+export async function checkSupabaseAuth(): Promise<{ isSignedIn: boolean; userId?: string }> {
+  try {
+    const { data: userData, error } = await supabase.auth.getUser()
+    if (error || !userData.user) {
+      return { isSignedIn: false }
+    }
+    return { isSignedIn: true, userId: userData.user.id }
+  } catch {
+    return { isSignedIn: false }
+  }
+}
+
+export async function signOutSupabase(): Promise<void> {
+  await supabase.auth.signOut()
 }
 
 export function getDefaultStats(): UserStats {
@@ -70,7 +213,7 @@ function isThisWeek(dateStr: string): boolean {
   return date >= weekAgo && date <= today
 }
 
-function recalculateStats(stats: UserStats): UserStats {
+export function recalculateStats(stats: UserStats): UserStats {
   let todayMinutes = 0
   let weekMinutes = 0
 
