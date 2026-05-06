@@ -343,7 +343,7 @@ export function StayAloneApp() {
               transition: "all 600ms ease",
             }}
           >
-            <p className="mb-10 text-lg font-extralight tracking-wide text-[#6e6e73] md:mb-12 md:text-xl">
+            <p className="mb-10 text-lg font-light tracking-wide text-[#4a4a4a] md:mb-12 md:text-xl">
               {t.timerTitle}
             </p>
 

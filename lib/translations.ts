@@ -44,7 +44,7 @@ export const translations = {
       boredom: "Boredom is not failure.",
       world: "Let the world move. Stay with yourself.",
     },
-    pulledAway: "I was pulled away",
+    pulledAway: "I drifted",
     finish: "Finish",
     
     // Completion
@@ -144,7 +144,7 @@ export const translations = {
       boredom: "无聊不是失败。",
       world: "让世界继续。你回到自己。",
     },
-    pulledAway: "我被带走了",
+    pulledAway: "分心了一下",
     finish: "结束",
     
     // Completion
