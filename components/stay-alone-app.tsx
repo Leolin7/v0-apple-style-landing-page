@@ -446,6 +446,7 @@ export function StayAloneApp() {
         mode={authMode}
         onClose={() => setAuthMode(null)}
         onSuccess={handleAuthSuccess}
+        onModeChange={setAuthMode}
       />
     </div>
   )

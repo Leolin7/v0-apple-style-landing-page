@@ -16,9 +16,10 @@ interface AuthModalsProps {
   mode: "signin" | "create" | null
   onClose: () => void
   onSuccess: () => void
+  onModeChange: (mode: "signin" | "create") => void
 }
 
-export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
+export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModalsProps) {
   const { t } = useLanguage()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -133,12 +134,7 @@ export function AuthModals({ mode, onClose, onSuccess }: AuthModalsProps) {
 
   const handleSwitchMode = () => {
     resetForm()
-    if (mode === "signin") {
-      onClose()
-      setTimeout(() => {
-        // This will be handled by parent
-      }, 100)
-    }
+    onModeChange(mode === "signin" ? "create" : "signin")
   }
 
   return (
