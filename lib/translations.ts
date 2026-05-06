@@ -93,6 +93,10 @@ export const translations = {
     futureTitle: "Personal modes are coming",
     futureSubcopy: "Soon, Stay Alone will learn what helps you return to your own time.",
     
+    // Save messages
+    savedToMySpace: "Saved to My Space",
+    couldNotSave: "Could not save to My Space",
+    
     // Misc
     back: "Back",
     close: "Close",
@@ -193,6 +197,10 @@ export const translations = {
     // Future features
     futureTitle: "属于你的模式，即将开放",
     futureSubcopy: "之后，Stay Alone 会更懂你如何回到自己的时间。",
+    
+    // Save messages
+    savedToMySpace: "已保存到我的空间",
+    couldNotSave: "暂时无法保存到我的空间",
     
     // Misc
     back: "返回",
