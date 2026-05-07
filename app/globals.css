@@ -4,39 +4,39 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fafafa;
-  --foreground: #1a1a1a;
-  --card: #fafafa;
-  --card-foreground: #1a1a1a;
+  --background: #FAFAF8;
+  --foreground: #222222;
+  --card: #FAFAF8;
+  --card-foreground: #222222;
   --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  --primary: #1a1a1a;
+  --popover-foreground: #222222;
+  --primary: #222222;
   --primary-foreground: #ffffff;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #1a1a1a;
-  --muted: #f5f5f5;
-  --muted-foreground: #8e8e93;
-  --accent: #f5f5f5;
-  --accent-foreground: #1a1a1a;
+  --secondary: #f5f5f3;
+  --secondary-foreground: #222222;
+  --muted: #f5f5f3;
+  --muted-foreground: #9A9AA0;
+  --accent: #f5f5f3;
+  --accent-foreground: #222222;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #a1a1a6;
+  --border: #E3E3E3;
+  --input: #E3E3E3;
+  --ring: #9A9AA0;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: #fafafa;
-  --sidebar-foreground: #1a1a1a;
-  --sidebar-primary: #1a1a1a;
+  --sidebar: #FAFAF8;
+  --sidebar-foreground: #222222;
+  --sidebar-primary: #222222;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5f5f5;
-  --sidebar-accent-foreground: #1a1a1a;
-  --sidebar-border: #e5e5e5;
-  --sidebar-ring: #a1a1a6;
+  --sidebar-accent: #f5f5f3;
+  --sidebar-accent-foreground: #222222;
+  --sidebar-border: #E3E3E3;
+  --sidebar-ring: #9A9AA0;
 }
 
 @theme inline {
@@ -91,8 +91,8 @@
 
 /* Custom selection colors */
 ::selection {
-  background-color: rgba(26, 26, 26, 0.1);
-  color: #1a1a1a;
+  background-color: rgba(34, 34, 34, 0.1);
+  color: #222222;
 }
 
 /* Smooth scrolling */
@@ -107,4 +107,38 @@ html {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Stay Alone wordmark responsive typography */
+.wordmark {
+  font-size: clamp(42px, 13vw, 58px);
+  letter-spacing: 0.22em;
+}
+
+@media (min-width: 768px) {
+  .wordmark {
+    font-size: clamp(76px, 7.5vw, 112px);
+    letter-spacing: 0.30em;
+  }
+}
+
+.wordmark-zh {
+  letter-spacing: 0.08em;
+}
+
+@media (min-width: 768px) {
+  .wordmark-zh {
+    letter-spacing: 0.12em;
+  }
+}
+
+/* Hero copy responsive typography */
+.hero-copy {
+  font-size: clamp(20px, 5vw, 24px);
+}
+
+@media (min-width: 768px) {
+  .hero-copy {
+    font-size: clamp(24px, 2vw, 30px);
+  }
 }
