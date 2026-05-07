@@ -8,8 +8,8 @@ export const translations = {
     counterSuffix: "soul chooses ·",
     
     // Hero
-    heroLine1: "Let the world move",
-    heroLine2: "Stay with yourself",
+    heroLine1: "The world keeps going",
+    heroLine2: "You don't have to",
     
     // CTA
     ctaButton: "Make it yours",
@@ -42,7 +42,7 @@ export const translations = {
       ai: "Leave the question open.",
       anxiety: "You don't need to solve everything in this block.",
       boredom: "Boredom is not failure.",
-      world: "Let the world move. Stay with yourself.",
+      world: "The world keeps going. You don't have to.",
     },
     pulledAway: "I drifted",
     finish: "Finish",
@@ -214,11 +214,11 @@ export const translations = {
 
 export function getOrdinal(n: number, lang: Language): string {
   if (lang === "zh") {
-    return `第 ${n.toLocaleString()} `
+    return `${n.toLocaleString()}`
   }
   const s = ["th", "st", "nd", "rd"]
   const v = n % 100
-  return `The ${n.toLocaleString()}${s[(v - 20) % 10] || s[v] || s[0]} `
+  return `${n.toLocaleString()}${s[(v - 20) % 10] || s[v] || s[0]} `
 }
 
 export function formatDuration(minutes: number, lang: Language): string {

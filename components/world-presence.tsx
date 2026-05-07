@@ -54,14 +54,6 @@ export function WorldPresence() {
         transition: "opacity 2000ms ease",
       }}
     >
-      {/* Subtle horizontal line suggesting horizon */}
-      <div
-        className="absolute left-1/2 top-1/2 h-px w-[50%] -translate-x-1/2 -translate-y-1/2"
-        style={{
-          background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.04), transparent)",
-        }}
-      />
-
       {/* Soft breathing dots */}
       {dots.map((dot) => (
         <div
