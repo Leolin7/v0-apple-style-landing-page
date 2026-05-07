@@ -293,9 +293,9 @@ export function StayAloneApp() {
               <span className="breathing-dot" />
               <p className={`text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
                 {language === "zh" ? (
-                  <>第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择 Stay Alone</>
+                  <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
-                  <>For the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}time, someone chose Stay Alone</>
+                  <>For the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}time, someone chose</>
                 )}
               </p>
             </div>
