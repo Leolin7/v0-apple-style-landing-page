@@ -18,6 +18,7 @@ import {
 } from "@/lib/storage"
 import { MyTimeSheet } from "./my-time-sheet"
 import { AuthModals } from "./auth-modals"
+import { WorldPresence } from "./world-presence"
 
 type AppStep = "landing" | "time" | "trigger" | "timer" | "complete"
 
@@ -71,7 +72,6 @@ export function StayAloneApp() {
   useEffect(() => {
     const initAuth = async () => {
       const { isSignedIn: supabaseSignedIn } = await checkSupabaseAuth()
-      console.log("[v0] Initial auth check - Supabase signed in:", supabaseSignedIn)
       setIsLoggedIn(supabaseSignedIn)
       
       if (supabaseSignedIn) {
@@ -263,13 +263,15 @@ export function StayAloneApp() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-white text-[#1a1a1a]">
+    <div className="relative flex min-h-screen flex-col bg-[#fafafa] text-[#1a1a1a]">
+      {/* Subtle world presence at bottom - only on landing */}
+      {step === "landing" && <WorldPresence />}
       {/* Header */}
-      <header className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-10">
+      <header className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-10 md:py-9">
         {/* Language toggle */}
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
+          className="text-[13px] font-light tracking-[0.03em] text-[#a1a1a6] transition-colors duration-200 hover:text-[#6e6e73]"
         >
           {language === "en" ? "中文" : "EN"}
         </button>
@@ -277,7 +279,7 @@ export function StayAloneApp() {
         {/* My Space */}
         <button
           onClick={handleHeaderClick}
-          className="text-xs font-light tracking-wide text-[#a1a1a6] transition-colors hover:text-[#6e6e73]"
+          className="text-[13px] font-light tracking-[0.03em] text-[#a1a1a6] transition-colors duration-200 hover:text-[#6e6e73]"
         >
           {t.mySpace}
         </button>
@@ -290,17 +292,18 @@ export function StayAloneApp() {
           <div
             className="flex flex-col items-center text-center"
             style={{
+              marginTop: "-5vh",
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "all 1000ms cubic-bezier(0.22, 1, 0.36, 1)",
+              transform: isVisible ? "translateY(0)" : "translateY(16px)",
+              transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            {/* Counter line */}
+            {/* Counter line - whisper-like */}
             <p
-              className="mb-16 text-sm font-light tracking-wide text-[#a1a1a6] md:mb-20"
+              className="mb-[90px] text-[15px] font-light tracking-[0.04em] text-[#a1a1a6] md:mb-[110px] md:text-[16px]"
               style={{
-                opacity: isVisible ? 1 : 0,
-                transition: "opacity 1200ms ease 200ms",
+                opacity: isVisible ? 0.85 : 0,
+                transition: "opacity 1400ms ease 300ms",
               }}
             >
               {visitorCount !== null && (
@@ -311,36 +314,36 @@ export function StayAloneApp() {
               )}
             </p>
 
-            {/* Stay Alone wordmark */}
+            {/* Stay Alone wordmark - brand mark feel */}
             <h1
-              className="mb-10 text-4xl font-extralight tracking-[0.3em] text-[#1a1a1a] md:mb-12 md:text-5xl lg:text-6xl"
+              className="mb-12 text-[44px] font-extralight tracking-[0.35em] text-[#2d2d2d] md:mb-14 md:text-[76px] lg:text-[88px]"
               style={{
                 opacity: isVisible ? 1 : 0,
-                transition: "opacity 1000ms ease 100ms",
+                transition: "opacity 1100ms ease 150ms",
               }}
             >
               Stay Alone
             </h1>
 
-            {/* Subtitle */}
+            {/* Hero copy - elegant and breathable */}
             <p
-              className="mb-4 max-w-md text-lg font-extralight leading-relaxed tracking-wide text-[#6e6e73] md:text-xl"
+              className="max-w-md text-[20px] font-extralight leading-[1.7] tracking-[0.02em] text-[#6e6e73] md:text-[26px] md:leading-[1.65]"
               style={{
                 opacity: isVisible ? 1 : 0,
-                transition: "opacity 1000ms ease 200ms",
+                transition: "opacity 1100ms ease 250ms",
               }}
             >
               <span className="block">{t.heroLine1}</span>
               <span className="block">{t.heroLine2}</span>
             </p>
 
-            {/* CTA */}
+            {/* CTA - Apple-like pill button */}
             <button
               onClick={() => setStep("time")}
-              className="mt-16 h-11 rounded-full border border-[#d2d2d7] bg-white/80 px-8 text-[15px] font-normal tracking-wide text-[#1d1d1f] shadow-[0_0_0_0_transparent] backdrop-blur-sm transition-all duration-200 hover:border-[#86868b] hover:text-[#000000] hover:shadow-[0_1px_3px_rgba(0,0,0,0.08)] md:mt-20"
+              className="mt-[72px] h-[44px] rounded-full border border-[#d2d2d7] bg-white/90 px-8 text-[15px] font-normal tracking-[0.02em] text-[#1d1d1f] backdrop-blur-sm transition-all duration-300 hover:border-[#a1a1a6] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] md:mt-[84px] md:h-[46px] md:px-9"
               style={{
                 opacity: isVisible ? 1 : 0,
-                transition: "opacity 1000ms ease 400ms",
+                transition: "opacity 1100ms ease 450ms",
               }}
             >
               {t.ctaButton}

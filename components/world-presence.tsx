@@ -12,56 +12,68 @@ interface Dot {
 
 export function WorldPresence() {
   const [dots, setDots] = useState<Dot[]>([])
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    // Create initial dots
-    const initialDots: Dot[] = Array.from({ length: 8 }, (_, i) => ({
+    // Fade in after a delay
+    const fadeTimer = setTimeout(() => setIsVisible(true), 800)
+
+    // Create initial dots - subtle presence
+    const initialDots: Dot[] = Array.from({ length: 6 }, (_, i) => ({
       id: i,
-      x: 10 + Math.random() * 80,
-      y: 20 + Math.random() * 60,
+      x: 15 + Math.random() * 70,
+      y: 30 + Math.random() * 40,
       opacity: 0,
-      scale: 0.5 + Math.random() * 0.5,
+      scale: 0.4 + Math.random() * 0.4,
     }))
     setDots(initialDots)
 
-    // Animate dots appearing and disappearing
+    // Animate dots with gentle breathing
     const interval = setInterval(() => {
       setDots((prev) =>
         prev.map((dot) => ({
           ...dot,
-          opacity: Math.random() > 0.5 ? Math.random() * 0.4 : dot.opacity * 0.8,
-          x: dot.x + (Math.random() - 0.5) * 2,
-          y: dot.y + (Math.random() - 0.5) * 2,
+          opacity: Math.random() > 0.6 ? 0.15 + Math.random() * 0.25 : dot.opacity * 0.85,
+          x: dot.x + (Math.random() - 0.5) * 0.8,
+          y: dot.y + (Math.random() - 0.5) * 0.8,
         }))
       )
-    }, 2000)
+    }, 2500)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearTimeout(fadeTimer)
+      clearInterval(interval)
+    }
   }, [])
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 overflow-hidden opacity-30">
-      {/* Subtle horizontal line suggesting earth/horizon */}
+    <div 
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-24 overflow-hidden"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transition: "opacity 2000ms ease",
+      }}
+    >
+      {/* Subtle horizontal line suggesting horizon */}
       <div
-        className="absolute left-1/2 top-1/2 h-px w-[60%] -translate-x-1/2 -translate-y-1/2"
+        className="absolute left-1/2 top-1/2 h-px w-[50%] -translate-x-1/2 -translate-y-1/2"
         style={{
-          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
+          background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.04), transparent)",
         }}
       />
 
-      {/* Glowing dots */}
+      {/* Soft breathing dots */}
       {dots.map((dot) => (
         <div
           key={dot.id}
-          className="absolute rounded-full transition-all duration-[2000ms] ease-in-out"
+          className="absolute rounded-full transition-all duration-[2500ms] ease-in-out"
           style={{
             left: `${dot.x}%`,
             top: `${dot.y}%`,
-            width: `${4 * dot.scale}px`,
-            height: `${4 * dot.scale}px`,
-            backgroundColor: "rgba(255, 255, 255, 0.6)",
+            width: `${3 * dot.scale}px`,
+            height: `${3 * dot.scale}px`,
+            backgroundColor: "rgba(0, 0, 0, 0.12)",
             opacity: dot.opacity,
-            boxShadow: "0 0 8px rgba(255, 255, 255, 0.3)",
           }}
         />
       ))}
