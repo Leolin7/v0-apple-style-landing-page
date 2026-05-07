@@ -180,12 +180,12 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
 
   return (
     <Dialog open={mode !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="border-[#E3E3E3] bg-[#FAFAF8] p-8 sm:max-w-[400px]">
+      <DialogContent className="border-[#DDD8D2] bg-[#F7F5F2] p-8 sm:max-w-[400px]">
         {/* Success state after signup */}
         {signUpSuccess && mode === "create" ? (
           <>
             <DialogHeader className="pb-6">
-              <DialogTitle className="text-center text-xl font-light tracking-wide text-[#222222]">
+              <DialogTitle className="text-center text-xl font-light tracking-wide text-[#1A1A1A]">
                 {t.checkYourEmail}
               </DialogTitle>
               <DialogDescription className="sr-only">
@@ -194,7 +194,7 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
             </DialogHeader>
             <div className="flex flex-col items-center gap-6 py-4">
               <svg
-                className="h-16 w-16 text-[#34c759]"
+                className="h-16 w-16 text-[#E8A87C]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -206,7 +206,7 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
                   d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
                 />
               </svg>
-              <p className="text-center text-sm font-light text-[#77777D]">
+              <p className="text-center text-sm font-light text-[#8A8A8A]">
                 {email}
               </p>
               <button
@@ -214,7 +214,7 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
                   resetForm()
                   onClose()
                 }}
-                className="mt-2 h-11 w-full rounded-full bg-[#222222] text-sm font-light tracking-wide text-white transition-all hover:bg-[#333]"
+                className="mt-2 h-11 w-full rounded-full bg-[#1A1A1A] text-sm font-light tracking-wide text-white transition-all hover:bg-[#333]"
               >
                 {t.close}
               </button>
@@ -223,7 +223,7 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
         ) : (
           <>
             <DialogHeader className="pb-6">
-              <DialogTitle className="text-center text-xl font-light tracking-wide text-[#222222]">
+              <DialogTitle className="text-center text-xl font-light tracking-wide text-[#1A1A1A]">
                 {mode === "signin" ? t.enterMySpace : t.createMySpace}
               </DialogTitle>
               <DialogDescription className="sr-only">
@@ -247,7 +247,7 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
                   clearErrors()
                 }}
                 placeholder={t.email}
-                className="h-11 w-full rounded-full border border-[#E3E3E3] bg-white px-5 text-sm font-light text-[#222222] placeholder-[#9A9AA0] transition-colors focus:border-[#CFCFCF] focus:outline-none"
+                className="h-11 w-full rounded-full border border-[#DDD8D2] bg-white px-5 text-sm font-light text-[#1A1A1A] placeholder-[#8A8A8A] transition-colors focus:border-[#C5C0BA] focus:outline-none"
               />
               {errors.email && (
                 <p className="mt-1 text-xs text-red-500">{errors.email}</p>
@@ -263,7 +263,7 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
                   clearErrors()
                 }}
                 placeholder={t.password}
-                className="h-11 w-full rounded-full border border-[#E3E3E3] bg-white px-5 text-sm font-light text-[#222222] placeholder-[#9A9AA0] transition-colors focus:border-[#CFCFCF] focus:outline-none"
+                className="h-11 w-full rounded-full border border-[#DDD8D2] bg-white px-5 text-sm font-light text-[#1A1A1A] placeholder-[#8A8A8A] transition-colors focus:border-[#C5C0BA] focus:outline-none"
               />
               {errors.password && (
                 <p className="mt-1 text-xs text-red-500">{errors.password}</p>
@@ -280,7 +280,7 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
                     clearErrors()
                   }}
                   placeholder={t.confirmPassword}
-                  className="h-11 w-full rounded-full border border-[#E3E3E3] bg-white px-5 text-sm font-light text-[#222222] placeholder-[#9A9AA0] transition-colors focus:border-[#CFCFCF] focus:outline-none"
+                  className="h-11 w-full rounded-full border border-[#DDD8D2] bg-white px-5 text-sm font-light text-[#1A1A1A] placeholder-[#8A8A8A] transition-colors focus:border-[#C5C0BA] focus:outline-none"
                 />
                 {errors.confirm && (
                   <p className="mt-1 text-xs text-red-500">{errors.confirm}</p>
@@ -291,18 +291,18 @@ export function AuthModals({ mode, onClose, onSuccess, onModeChange }: AuthModal
             <button
               onClick={mode === "signin" ? handleSignIn : handleCreateAccount}
               disabled={isSubmitting}
-              className="mt-2 h-11 w-full rounded-full bg-[#222222] text-sm font-light tracking-wide text-white transition-all hover:bg-[#333] disabled:opacity-50"
+              className="mt-2 h-11 w-full rounded-full bg-[#1A1A1A] text-sm font-light tracking-wide text-white transition-all hover:bg-[#333] disabled:opacity-50"
             >
               {mode === "signin" ? t.enterButton : t.createMySpaceButton}
             </button>
           </div>
 
               {/* Switch mode link */}
-              <p className="text-center text-sm font-light text-[#9A9AA0]">
+              <p className="text-center text-sm font-light text-[#8A8A8A]">
                 {mode === "signin" ? t.noSpace : t.haveSpace}{" "}
                 <button
                   onClick={handleSwitchMode}
-                  className="text-[#222222] underline underline-offset-2 transition-colors hover:text-[#77777D]"
+                  className="text-[#1A1A1A] underline underline-offset-2 transition-colors hover:text-[#5A5A5A]"
                 >
                   {mode === "signin" ? t.createMySpace : t.enterMySpace}
                 </button>

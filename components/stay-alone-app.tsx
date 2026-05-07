@@ -20,7 +20,7 @@ import { MyTimeSheet } from "./my-time-sheet"
 import { AuthModals } from "./auth-modals"
 import { WorldPresence } from "./world-presence"
 
-type AppStep = "landing" | "time" | "trigger" | "timer" | "complete"
+type AppStep = "landing" | "trigger" | "timer" | "complete"
 
 const TIME_OPTIONS = [15, 30, 60] as const
 
@@ -263,63 +263,48 @@ export function StayAloneApp() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#FAFAF8] text-[#222222]">
+    <div className="relative flex min-h-screen flex-col bg-[#F7F5F2] text-[#1A1A1A]">
       {/* Subtle world presence at bottom - only on landing */}
       {step === "landing" && <WorldPresence />}
       {/* Header - positioned independently from hero */}
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-50 flex items-start justify-between px-6 pt-6 md:px-[52px] md:pt-10">
-        {/* Language toggle */}
-        <button
-          onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="pointer-events-auto text-[13px] font-normal tracking-[0.02em] text-[#9A9AA0] transition-colors duration-200 hover:text-[#77777D] md:text-[14px]"
-        >
-          {language === "en" ? "中文" : "EN"}
-        </button>
-
-        {/* My Space */}
-        <button
-          onClick={handleHeaderClick}
-          className="pointer-events-auto text-[13px] font-normal tracking-[0.02em] text-[#9A9AA0] transition-colors duration-200 hover:text-[#77777D] md:text-[14px]"
-        >
-          {t.mySpace}
-        </button>
-      </header>
+      
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
-        {/* Landing */}
+        {/* Landing - with time selection directly on first screen */}
         {step === "landing" && (
           <div
-            className="flex min-h-svh w-full max-w-[1100px] flex-col items-center justify-center py-24 text-center md:min-h-screen md:py-28"
+            className="flex min-h-svh w-full max-w-[600px] flex-col items-center justify-center text-center md:min-h-screen"
             style={{
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0) translateY(-2vh)" : "translateY(12px) translateY(-2vh)",
+              transform: isVisible ? "translateY(0)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            {/* Counter line - whisper-like */}
-            <p
-              className="font-light leading-[1.4] tracking-[0.04em] text-[#A7A7AD]"
+            {/* Counter line with breathing dot */}
+            <div
+              className="flex items-center gap-2"
               style={{
-                fontSize: "clamp(13px, 1.2vw, 16px)",
-                marginBottom: "clamp(56px, 8vh, 96px)",
-                opacity: isVisible ? 0.8 : 0,
+                marginBottom: "clamp(48px, 7vh, 88px)",
+                opacity: isVisible ? 0.9 : 0,
                 transition: "opacity 1400ms ease 300ms",
               }}
             >
-              {visitorCount !== null && (
-                <>
-                  {getOrdinal(visitorCount, language)}
-                  {t.counterSuffix}
-                </>
-              )}
-            </p>
+              <span className="breathing-dot" />
+              <p className={`text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+                {language === "zh" ? (
+                  <>你是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 个选择的人</>
+                ) : (
+                  <>You are the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}to choose</>
+                )}
+              </p>
+            </div>
 
-            {/* Stay Alone wordmark - brand mark feel */}
+            {/* Stay Alone wordmark - mono font */}
             <h1
-              className={`wordmark font-light leading-none text-[#202020] ${language === "zh" ? "wordmark-zh" : ""}`}
+              className="wordmark text-[#1A1A1A]"
               style={{
-                marginBottom: "clamp(40px, 6vh, 64px)",
+                marginBottom: "clamp(36px, 5vh, 56px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 150ms",
               }}
@@ -327,73 +312,85 @@ export function StayAloneApp() {
               Stay Alone
             </h1>
 
-            {/* Hero copy - elegant and breathable */}
-            <p
-              className="hero-copy max-w-md font-light leading-[1.6] text-[#77777D]"
+            {/* Hero copy - serif editorial */}
+            <div
+              className={`leading-[1.7] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                letterSpacing: language === "en" ? "0.02em" : "0",
-                marginBottom: "clamp(48px, 7vh, 72px)",
+                fontSize: "clamp(20px, 3vw, 26px)",
+                marginBottom: "clamp(36px, 5vh, 56px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 250ms",
               }}
             >
-              <span className="block">{t.heroLine1}</span>
-              <span className="block">{t.heroLine2}</span>
-            </p>
+              <p>{t.heroLine1}</p>
+              <p>{t.heroLine2}</p>
+            </div>
 
-            {/* CTA - Apple-like pill button */}
-            <button
-              onClick={() => setStep("time")}
-              className="h-[44px] rounded-full border border-[#D8D8D8] bg-[rgba(255,255,255,0.55)] px-[32px] text-[15px] font-normal tracking-[0.02em] text-[#222222] transition-all duration-300 hover:border-[#CFCFCF] hover:bg-[rgba(255,255,255,0.75)] hover:shadow-[0_1px_4px_rgba(0,0,0,0.04)] md:h-[46px] md:px-[36px] md:text-[16px]"
+            {/* Time selection block */}
+            <div
+              style={{
+                marginBottom: "clamp(36px, 6vh, 72px)",
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1100ms ease 350ms",
+              }}
+            >
+              {/* Time intro text */}
+              <p className={`mb-5 text-[14px] font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : ""}`}>
+                {language === "zh" ? "选一段时间" : "Make it yours"}
+              </p>
+              
+              {/* Time buttons - quiet choices */}
+              <div className="flex items-center justify-center gap-3 md:gap-4">
+                {TIME_OPTIONS.map((time) => (
+                  <button
+                    key={time}
+                    onClick={() => {
+                      setSelectedTime(time)
+                      setStep("trigger")
+                    }}
+                    className="rounded-full border border-[#DDD8D2] bg-transparent px-4 py-2 text-[14px] font-light text-[#1A1A1A] transition-all duration-200 hover:border-[#C5C0BA] md:px-5 md:py-2.5 md:text-[15px]"
+                  >
+                    {time === 15 && (language === "zh" ? "15 分钟" : "15 minutes")}
+                    {time === 30 && (language === "zh" ? "30 分钟" : "30 minutes")}
+                    {time === 60 && (language === "zh" ? "60 分钟" : "60 minutes")}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Chinese suffix */}
+              {language === "zh" && (
+                <p className="editorial-zh mt-4 text-[14px] font-light text-[#8A8A8A]">
+                  留给自己
+                </p>
+              )}
+            </div>
+
+            {/* Bottom links */}
+            <div
+              className="flex items-center gap-4 text-[13px] font-light text-[#8A8A8A]"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
-              {t.ctaButton}
-            </button>
-          </div>
-        )}
-
-        {/* Time selection */}
-        {step === "time" && (
-          <div
-            className="flex flex-col items-center text-center"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "all 600ms cubic-bezier(0.22, 1, 0.36, 1)",
-            }}
-          >
-            <h2 className="mb-14 max-w-md font-light leading-relaxed text-[#222222] md:mb-16"
-              style={{ fontSize: "clamp(22px, 3vw, 30px)" }}
-            >
-              {t.timeQuestion}
-            </h2>
-
-            <div className="flex flex-col gap-4 md:flex-row md:gap-5">
-              {TIME_OPTIONS.map((time) => (
-                <button
-                  key={time}
-                  onClick={() => {
-                    setSelectedTime(time)
-                    setStep("trigger")
-                  }}
-                  className="min-w-[140px] rounded-full border border-[#E3E3E3] bg-transparent px-8 py-3 text-sm font-light tracking-wide text-[#222222] transition-all hover:border-[#CFCFCF] hover:bg-[#FAFAF8] md:px-10 md:py-4"
-                >
-                  {time === 15 && t.minutes15}
-                  {time === 30 && t.minutes30}
-                  {time === 60 && t.minutes60}
-                </button>
-              ))}
+              <button className="transition-colors duration-200 hover:text-[#5A5A5A]">
+                {language === "zh" ? "为什么做这个" : "Why we made this"}
+              </button>
+              <span className="text-[#DDD8D2]">·</span>
+              <button
+                onClick={() => setLanguage(language === "en" ? "zh" : "en")}
+                className="transition-colors duration-200 hover:text-[#5A5A5A]"
+              >
+                {language === "en" ? "中文" : "English"}
+              </button>
+              <span className="text-[#DDD8D2]">·</span>
+              <button
+                onClick={handleHeaderClick}
+                className="transition-colors duration-200 hover:text-[#5A5A5A]"
+              >
+                {language === "zh" ? "我的空间" : "My Space"}
+              </button>
             </div>
-
-            <button
-              onClick={() => setStep("landing")}
-              className="mt-12 text-[13px] font-light tracking-wide text-[#9A9AA0] transition-colors hover:text-[#77777D]"
-            >
-              {t.back}
-            </button>
           </div>
         )}
 
@@ -407,8 +404,8 @@ export function StayAloneApp() {
               transition: "all 600ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <h2 className="mb-12 max-w-md font-light leading-relaxed text-[#222222] md:mb-14"
-              style={{ fontSize: "clamp(22px, 3vw, 30px)" }}
+            <h2 className={`mb-12 max-w-md font-light leading-relaxed text-[#1A1A1A] md:mb-14 ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{ fontSize: "clamp(20px, 3vw, 26px)" }}
             >
               {t.triggerQuestion}
             </h2>
@@ -421,7 +418,7 @@ export function StayAloneApp() {
                     setSelectedTrigger(key)
                     startTimer()
                   }}
-                  className="rounded-full border border-[#E3E3E3] bg-transparent px-5 py-2.5 text-sm font-light tracking-wide text-[#222222] transition-all hover:border-[#CFCFCF] hover:bg-[#FAFAF8] md:px-6 md:py-3"
+                  className="rounded-full border border-[#DDD8D2] bg-transparent px-5 py-2.5 text-sm font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA] md:px-6 md:py-3"
                 >
                   {t.triggers[key]}
                 </button>
@@ -429,8 +426,8 @@ export function StayAloneApp() {
             </div>
 
             <button
-              onClick={() => setStep("time")}
-              className="mt-12 text-[13px] font-light tracking-wide text-[#9A9AA0] transition-colors hover:text-[#77777D]"
+              onClick={() => setStep("landing")}
+              className="mt-12 text-[13px] font-light text-[#8A8A8A] transition-colors hover:text-[#5A5A5A]"
             >
               {t.back}
             </button>
@@ -446,14 +443,14 @@ export function StayAloneApp() {
               transition: "all 600ms ease",
             }}
           >
-            <p className="mb-10 font-light tracking-wide text-[#77777D] md:mb-12"
-              style={{ fontSize: "clamp(18px, 2vw, 22px)" }}
+            <p className={`mb-10 font-light text-[#8A8A8A] md:mb-12 ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{ fontSize: "clamp(16px, 2vw, 20px)" }}
             >
               {t.timerTitle}
             </p>
 
             <div
-              className="mb-10 font-extralight tracking-[0.08em] text-[#222222] md:mb-12"
+              className="wordmark mb-10 text-[#1A1A1A] md:mb-12"
               style={{ fontSize: "clamp(4rem, 15vw, 8rem)" }}
             >
               {formatTime(timeRemaining)}
@@ -462,13 +459,13 @@ export function StayAloneApp() {
             <div className="flex gap-4 md:gap-5">
               <button
                 onClick={handlePulledAway}
-                className="rounded-full border border-[#E3E3E3] bg-transparent px-5 py-2.5 text-[13px] font-light tracking-wide text-[#9A9AA0] transition-all hover:border-[#CFCFCF] hover:text-[#77777D]"
+                className="rounded-full border border-[#DDD8D2] bg-transparent px-5 py-2.5 text-[13px] font-light text-[#8A8A8A] transition-all hover:border-[#C5C0BA] hover:text-[#5A5A5A]"
               >
                 {t.pulledAway}
               </button>
               <button
                 onClick={() => completeSession(true, false)}
-                className="rounded-full border border-[#E3E3E3] bg-transparent px-6 py-2.5 text-[13px] font-light tracking-wide text-[#222222] transition-all hover:border-[#CFCFCF] hover:bg-[#FAFAF8]"
+                className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-2.5 text-[13px] font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA]"
               >
                 {t.finish}
               </button>
@@ -487,8 +484,8 @@ export function StayAloneApp() {
             }}
           >
             {/* Duration made yours */}
-            <h2 className="mb-10 font-light leading-relaxed text-[#222222] md:mb-12"
-              style={{ fontSize: "clamp(24px, 4vw, 36px)" }}
+            <h2 className={`mb-10 font-light leading-relaxed text-[#1A1A1A] md:mb-12 ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{ fontSize: "clamp(22px, 4vw, 32px)" }}
             >
               {getCompletionMessage()}
             </h2>
@@ -496,21 +493,21 @@ export function StayAloneApp() {
             {/* Save prompt - only show if not logged in */}
             {!isLoggedIn && (
               <div className="mb-10 md:mb-12">
-                <p className="mb-8 font-light tracking-wide text-[#9A9AA0]"
-                  style={{ fontSize: "clamp(15px, 2vw, 18px)" }}
+                <p className="mb-8 font-light text-[#8A8A8A]"
+                  style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
                 >
                   {t.savePrompt}
                 </p>
                 <div className="flex flex-col gap-3 md:flex-row md:gap-4">
                   <button
                     onClick={() => setAuthMode("create")}
-                    className="rounded-full border border-[#E3E3E3] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#222222] transition-all hover:border-[#CFCFCF] hover:bg-[#FAFAF8]"
+                    className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA]"
                   >
                     {t.createMySpace}
                   </button>
                   <button
                     onClick={resetToLanding}
-                    className="rounded-full border border-[#E3E3E3] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#9A9AA0] transition-all hover:border-[#CFCFCF] hover:text-[#77777D]"
+                    className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#8A8A8A] transition-all hover:border-[#C5C0BA] hover:text-[#5A5A5A]"
                   >
                     {t.later}
                   </button>
@@ -520,7 +517,7 @@ export function StayAloneApp() {
 
             {/* Save message for logged in users */}
             {isLoggedIn && saveMessage && (
-              <p className="mb-6 text-sm font-light tracking-wide text-[#34c759] md:mb-8">
+              <p className="mb-6 text-sm font-light text-[#E8A87C] md:mb-8">
                 {saveMessage}
               </p>
             )}
@@ -530,13 +527,13 @@ export function StayAloneApp() {
               <div className="flex flex-col gap-3 md:flex-row md:gap-4">
                 <button
                   onClick={() => setMyTimeOpen(true)}
-                  className="rounded-full border border-[#E3E3E3] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#222222] transition-all hover:border-[#CFCFCF] hover:bg-[#FAFAF8]"
+                  className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA]"
                 >
                   {t.mySpace}
                 </button>
                 <button
                   onClick={resetToLanding}
-                  className="rounded-full border border-[#E3E3E3] bg-transparent px-6 py-3 text-sm font-light tracking-wide text-[#9A9AA0] transition-all hover:border-[#CFCFCF] hover:text-[#77777D]"
+                  className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#8A8A8A] transition-all hover:border-[#C5C0BA] hover:text-[#5A5A5A]"
                 >
                   {t.back}
                 </button>

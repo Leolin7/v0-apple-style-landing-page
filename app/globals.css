@@ -4,39 +4,39 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #FAFAF8;
-  --foreground: #222222;
-  --card: #FAFAF8;
-  --card-foreground: #222222;
+  --background: #F7F5F2;
+  --foreground: #1A1A1A;
+  --card: #F7F5F2;
+  --card-foreground: #1A1A1A;
   --popover: #ffffff;
-  --popover-foreground: #222222;
-  --primary: #222222;
+  --popover-foreground: #1A1A1A;
+  --primary: #1A1A1A;
   --primary-foreground: #ffffff;
-  --secondary: #f5f5f3;
-  --secondary-foreground: #222222;
-  --muted: #f5f5f3;
-  --muted-foreground: #9A9AA0;
-  --accent: #f5f5f3;
-  --accent-foreground: #222222;
+  --secondary: #F7F5F2;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F7F5F2;
+  --muted-foreground: #8A8A8A;
+  --accent: #E8A87C;
+  --accent-foreground: #1A1A1A;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: #E3E3E3;
-  --input: #E3E3E3;
-  --ring: #9A9AA0;
+  --border: #DDD8D2;
+  --input: #DDD8D2;
+  --ring: #8A8A8A;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: #FAFAF8;
-  --sidebar-foreground: #222222;
-  --sidebar-primary: #222222;
+  --sidebar: #F7F5F2;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #1A1A1A;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5f5f3;
-  --sidebar-accent-foreground: #222222;
-  --sidebar-border: #E3E3E3;
-  --sidebar-ring: #9A9AA0;
+  --sidebar-accent: #F7F5F2;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #DDD8D2;
+  --sidebar-ring: #8A8A8A;
 }
 
 @theme inline {
@@ -91,8 +91,8 @@
 
 /* Custom selection colors */
 ::selection {
-  background-color: rgba(34, 34, 34, 0.1);
-  color: #222222;
+  background-color: rgba(26, 26, 26, 0.1);
+  color: #1A1A1A;
 }
 
 /* Smooth scrolling */
@@ -109,36 +109,48 @@ html {
   scrollbar-width: none;
 }
 
-/* Stay Alone wordmark responsive typography */
+/* Breathing dot animation */
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.breathing-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #E8A87C;
+  box-shadow: 0 0 8px rgba(232, 168, 124, 0.4);
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* Stay Alone wordmark - mono font */
 .wordmark {
-  font-size: clamp(42px, 13vw, 58px);
-  letter-spacing: 0.22em;
+  font-family: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 300;
+  font-size: clamp(36px, 10vw, 48px);
+  letter-spacing: 0.18em;
 }
 
 @media (min-width: 768px) {
   .wordmark {
-    font-size: clamp(76px, 7.5vw, 112px);
-    letter-spacing: 0.30em;
+    font-size: clamp(56px, 6vw, 72px);
+    letter-spacing: 0.22em;
   }
 }
 
-.wordmark-zh {
-  letter-spacing: 0.08em;
+/* Editorial serif for English */
+.editorial {
+  font-family: "Newsreader", "Source Serif Pro", Georgia, serif;
 }
 
-@media (min-width: 768px) {
-  .wordmark-zh {
-    letter-spacing: 0.12em;
-  }
-}
-
-/* Hero copy responsive typography */
-.hero-copy {
-  font-size: clamp(20px, 5vw, 24px);
-}
-
-@media (min-width: 768px) {
-  .hero-copy {
-    font-size: clamp(24px, 2vw, 30px);
-  }
+/* Editorial serif for Chinese */
+.editorial-zh {
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
 }
