@@ -150,7 +150,7 @@ export function MyTimeSheet({
                 {t.noSessions}
               </p>
             </div>
-          )
+          )}
         </div>
       </SheetContent>
     </Sheet>
