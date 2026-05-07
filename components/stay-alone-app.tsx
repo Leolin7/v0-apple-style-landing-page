@@ -267,7 +267,7 @@ export function StayAloneApp() {
       {/* Subtle world presence at bottom - only on landing */}
       {step === "landing" && <WorldPresence />}
       {/* Header */}
-      <header className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-10 md:py-9">
+      <header className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 pt-6 md:px-10 md:pt-9">
         {/* Language toggle */}
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
@@ -290,17 +290,16 @@ export function StayAloneApp() {
         {/* Landing */}
         {step === "landing" && (
           <div
-            className="flex flex-col items-center text-center"
+            className="absolute inset-x-0 flex min-h-svh flex-col items-center text-center md:min-h-screen"
             style={{
-              marginTop: "-5vh",
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(16px)",
+              transform: isVisible ? "translateY(0)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
             {/* Counter line - whisper-like */}
             <p
-              className="mb-[90px] text-[15px] font-light tracking-[0.04em] text-[#a1a1a6] md:mb-[110px] md:text-[16px]"
+              className="mt-[15vh] text-[15px] font-light tracking-[0.04em] text-[#a1a1a6] md:mt-[19vh] md:text-[16px]"
               style={{
                 opacity: isVisible ? 0.85 : 0,
                 transition: "opacity 1400ms ease 300ms",
@@ -316,7 +315,7 @@ export function StayAloneApp() {
 
             {/* Stay Alone wordmark - brand mark feel */}
             <h1
-              className="mb-12 text-[44px] font-extralight tracking-[0.35em] text-[#2d2d2d] md:mb-14 md:text-[76px] lg:text-[88px]"
+              className="mt-[90px] text-[52px] font-extralight tracking-[0.35em] text-[#2d2d2d] md:mt-[100px] md:text-[80px] lg:text-[88px]"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 150ms",
@@ -327,7 +326,7 @@ export function StayAloneApp() {
 
             {/* Hero copy - elegant and breathable */}
             <p
-              className="max-w-md text-[20px] font-extralight leading-[1.7] tracking-[0.02em] text-[#6e6e73] md:text-[26px] md:leading-[1.65]"
+              className="mt-[44px] max-w-md text-[20px] font-extralight leading-[1.7] tracking-[0.02em] text-[#6e6e73] md:mt-[60px] md:text-[26px] md:leading-[1.65]"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 250ms",
@@ -340,7 +339,7 @@ export function StayAloneApp() {
             {/* CTA - Apple-like pill button */}
             <button
               onClick={() => setStep("time")}
-              className="mt-[72px] h-[44px] rounded-full border border-[#d2d2d7] bg-white/90 px-8 text-[15px] font-normal tracking-[0.02em] text-[#1d1d1f] backdrop-blur-sm transition-all duration-300 hover:border-[#a1a1a6] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] md:mt-[84px] md:h-[46px] md:px-9"
+              className="mt-[60px] h-[44px] rounded-full border border-[#d2d2d7] bg-white/90 px-8 text-[15px] font-normal tracking-[0.02em] text-[#1d1d1f] backdrop-blur-sm transition-all duration-300 hover:border-[#a1a1a6] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] md:mt-[76px] md:h-[46px] md:px-9"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
