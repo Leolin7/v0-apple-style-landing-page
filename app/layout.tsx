@@ -11,11 +11,22 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Stay Alone",
-  description:
-    "Turn passive free time into time you actively own. Not loneliness—just clarity.",
+  description: "Let the world move. Stay with yourself.",
   icons: {
     icon: "/icon.svg",
     apple: "/apple-icon.svg",
+  },
+  openGraph: {
+    title: "Stay Alone",
+    description: "Let the world move. Stay with yourself.",
+    images: ["/og-image.svg"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Stay Alone",
+    description: "Let the world move. Stay with yourself.",
+    images: ["/og-image.svg"],
   },
 }
 
@@ -31,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-white">
+    <html lang="en" className="bg-[#fafafa]">
       <body className={`${inter.variable} font-sans antialiased`}>
         <LanguageProvider>{children}</LanguageProvider>
         {process.env.NODE_ENV === "production" && <Analytics />}
