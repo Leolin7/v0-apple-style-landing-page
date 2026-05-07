@@ -214,11 +214,11 @@ export const translations = {
 
 export function getOrdinal(n: number, lang: Language): string {
   if (lang === "zh") {
-    return `第 ${n.toLocaleString()} `
+    return `${n.toLocaleString()}`
   }
   const s = ["th", "st", "nd", "rd"]
   const v = n % 100
-  return `The ${n.toLocaleString()}${s[(v - 20) % 10] || s[v] || s[0]} `
+  return `${n.toLocaleString()}${s[(v - 20) % 10] || s[v] || s[0]} `
 }
 
 export function formatDuration(minutes: number, lang: Language): string {
