@@ -393,7 +393,7 @@ export function StayAloneApp() {
                 className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
                 style={{ left: "clamp(24px, 3.5vw, 48px)" }}
               >
-                {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+                {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
               </button>
 
               {/* Chinese suffix - center aligned */}
