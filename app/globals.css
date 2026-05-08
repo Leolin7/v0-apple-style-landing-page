@@ -184,16 +184,24 @@ html {
   }
 }
 
-/* Why link - viewport positioned, aligned with language switch horizontally */
-.why-link-viewport {
-  left: var(--page-x);
-  bottom: calc(50dvh - 140px);
+/* Lower action row - grid layout for Why link and 留给自己 */
+.lower-action-row {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
 }
 
-@media (min-width: 768px) {
-  .why-link-viewport {
-    bottom: calc(50dvh - 160px);
-  }
+.lower-action-row .why-link {
+  justify-self: start;
+  margin-left: var(--page-x);
+}
+
+.lower-action-row .belong-line {
+  grid-column: 2;
+  justify-self: center;
 }
 
 /* Counter row alignment */

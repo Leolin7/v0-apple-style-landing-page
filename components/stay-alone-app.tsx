@@ -287,19 +287,6 @@ export function StayAloneApp() {
         </button>
       )}
 
-      {/* Why we made this - viewport positioned, same left as language switch */}
-      {step === "landing" && (
-        <button
-          className="why-link-viewport pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transition: "opacity 1100ms ease 450ms",
-          }}
-        >
-          {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
-        </button>
-      )}
-
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         {/* Landing - with time selection directly on first screen */}
@@ -391,25 +378,30 @@ export function StayAloneApp() {
               
               </div>
 
-            {/* Lower action row - 留给自己 center */}
+            {/* Lower action row - Why link left, 留给自己 center */}
             <div
-              className="mt-6 flex w-full items-center justify-center"
+              className="lower-action-row mt-6"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
+              {/* Why link - left aligned with language switch */}
+              <button className="why-link text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]">
+                {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+              </button>
+
               {/* Chinese suffix - center aligned */}
-              {language === "zh" && (
-                <p className="editorial-zh text-[14px] font-light text-[#8A8A8A]">
+              {language === "zh" ? (
+                <p className="belong-line editorial-zh text-[14px] font-light text-[#8A8A8A]">
                   留给自己
                 </p>
+              ) : (
+                <span className="belong-line invisible text-[14px]">&nbsp;</span>
               )}
 
-              {/* Invisible placeholder for English to maintain row height */}
-              {language === "en" && (
-                <span className="invisible text-[14px]">&nbsp;</span>
-              )}
+              {/* Empty right cell for grid balance */}
+              <span />
             </div>
           </div>
         )}
