@@ -49,22 +49,10 @@ export function StayAloneApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [completedElapsedSeconds, setCompletedElapsedSeconds] = useState(0)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
-  const [showExplain, setShowExplain] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimestampRef = useRef<number | null>(null)
   const startDateRef = useRef<Date | null>(null)
   const hasCalledApi = useRef(false)
-
-  // Close explain modal on Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && showExplain) {
-        setShowExplain(false)
-      }
-    }
-    document.addEventListener("keydown", handleEscape)
-    return () => document.removeEventListener("keydown", handleEscape)
-  }, [showExplain])
 
   // Fetch visitor count
   const fetchVisitorCount = useCallback(async () => {
@@ -283,8 +271,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light transition-colors duration-200 hover:opacity-80"
-          style={{ color: "#1A1A1A", opacity: 0.58 }}
+          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
         >
           {language === "en" ? "中文" : "English"}
         </button>
@@ -294,46 +281,39 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={handleHeaderClick}
-          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light transition-colors duration-200 hover:opacity-80"
-          style={{ color: "#1A1A1A", opacity: 0.58 }}
+          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
         >
           {language === "zh" ? "我的空间" : "My Space"}
         </button>
       )}
 
-      {/* Bottom-left: Explain link */}
-      {step === "landing" && (
-        <button
-          type="button"
-          className="sa-explain-link pointer-events-auto text-[13px] font-light"
-          onClick={() => setShowExplain(true)}
-        >
-          {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
-        </button>
-      )}
+      
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         {/* Landing - with time selection directly on first screen */}
         {step === "landing" && (
           <div
-            className="sa-hero-stack"
+            className="hero-stack flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center justify-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(-2vh)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
+              paddingTop: "clamp(60px, 10vh, 80px)",
             }}
           >
             {/* Counter line with breathing dot */}
             <div
-              className="sa-counter-row"
+              className="counter-row"
               style={{
+                marginBottom: "clamp(48px, 7vh, 88px)",
                 opacity: isVisible ? 0.9 : 0,
                 transition: "opacity 1400ms ease 300ms",
               }}
             >
               <span className="breathing-dot" aria-hidden="true" />
-              <span className={`counter-text text-[13px] font-light md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`} style={{ color: "#1A1A1A", opacity: 0.58 }}>
+              <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
@@ -344,8 +324,9 @@ export function StayAloneApp() {
 
             {/* Stay Alone wordmark - mono font */}
             <h1
-              className="sa-wordmark text-[#1A1A1A]"
+              className="wordmark text-[#1A1A1A]"
               style={{
+                marginBottom: "clamp(36px, 5vh, 56px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 150ms",
               }}
@@ -353,66 +334,78 @@ export function StayAloneApp() {
               Stay Alone
             </h1>
 
-            {/* Hero copy - soft editorial serif */}
+            {/* Hero copy - serif editorial */}
             <div
-              className={`sa-hero-copy ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              className={`leading-[1.7] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                opacity: isVisible ? 0.88 : 0,
+                fontSize: "clamp(20px, 3vw, 26px)",
+                marginBottom: "clamp(36px, 5vh, 56px)",
+                opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 250ms",
               }}
             >
-              <div>{t.heroLine1}</div>
-              <div>{t.heroLine2}</div>
+              <p>{t.heroLine1}</p>
+              <p>{t.heroLine2}</p>
             </div>
 
-{/* Action area - time selection and post-buttons row */}
+            {/* Time selection block */}
             <div
-              className="sa-action-area"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
               }}
             >
-              <div className={`sa-action-label text-[14px] font-light ${language === "zh" ? "editorial-zh" : ""}`}>
+              {/* Time intro text */}
+              <p className={`mb-5 text-[14px] font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : ""}`}>
                 {language === "zh" ? "选一段时间" : "Make it yours"}
+              </p>
+              
+              {/* Time buttons - quiet choices */}
+              <div className="flex items-center justify-center gap-3 md:gap-4">
+                {TIME_OPTIONS.map((time) => (
+                  <button
+                    key={time}
+                    onClick={() => {
+                      setSelectedTime(time)
+                      setStep("trigger")
+                    }}
+                    className="rounded-full border border-[#DDD8D2] bg-transparent px-4 py-2 text-[14px] font-light text-[#1A1A1A] transition-all duration-200 hover:border-[#C5C0BA] md:px-5 md:py-2.5 md:text-[15px]"
+                  >
+                    {time === 15 && (language === "zh" ? "15 分钟" : "15 minutes")}
+                    {time === 30 && (language === "zh" ? "30 分钟" : "30 minutes")}
+                    {time === 60 && (language === "zh" ? "60 分钟" : "60 minutes")}
+                  </button>
+                ))}
+              </div>
+              
               </div>
 
-              <div className="sa-time-button-row">
-                <button
-                  className="sa-time-button"
-                  onClick={() => {
-                    setSelectedTime(15)
-                    setStep("trigger")
-                  }}
-                >
-                  {language === "zh" ? "15 分钟" : "15 minutes"}
-                </button>
+            {/* Lower action row - Why link left, 留给自己 center */}
+            <div
+              className="relative mt-6 flex w-full items-center justify-center"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1100ms ease 450ms",
+              }}
+            >
+              {/* Why link - left aligned */}
+              <button
+                className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+                style={{ left: "clamp(24px, 3.5vw, 48px)" }}
+              >
+                {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+              </button>
 
-                <button
-                  className="sa-time-button"
-                  onClick={() => {
-                    setSelectedTime(30)
-                    setStep("trigger")
-                  }}
-                >
-                  {language === "zh" ? "30 分钟" : "30 minutes"}
-                </button>
-
-                <button
-                  className="sa-time-button"
-                  onClick={() => {
-                    setSelectedTime(60)
-                    setStep("trigger")
-                  }}
-                >
-                  {language === "zh" ? "60 分钟" : "60 minutes"}
-                </button>
-              </div>
-
+              {/* Chinese suffix - center aligned */}
               {language === "zh" && (
-                <div className="sa-belong-line editorial-zh text-[14px] font-light">
+                <p className="editorial-zh text-[14px] font-light text-[#8A8A8A]">
                   留给自己
-                </div>
+                </p>
+              )}
+
+              {/* Invisible placeholder for English to maintain row height */}
+              {language === "en" && (
+                <span className="invisible text-[14px]">&nbsp;</span>
               )}
             </div>
           </div>
@@ -584,40 +577,6 @@ export function StayAloneApp() {
         onSuccess={handleAuthSuccess}
         onModeChange={setAuthMode}
       />
-
-      {/* Explain modal */}
-      {showExplain && (
-        <div 
-          className="explain-overlay" 
-          onClick={() => setShowExplain(false)}
-          onKeyDown={(e) => e.key === "Escape" && setShowExplain(false)}
-        >
-          <div 
-            className="explain-modal" 
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="explain-title"
-          >
-            <button 
-              type="button"
-              className="explain-close" 
-              onClick={() => setShowExplain(false)}
-              aria-label={language === "zh" ? "关闭" : "Close"}
-            >
-              ×
-            </button>
-            <h2 id="explain-title" className={language === "zh" ? "editorial-zh" : "editorial"}>
-              {language === "zh" ? "这里会发生什么" : "What happens here"}
-            </h2>
-            <p className={language === "zh" ? "editorial-zh" : ""}>
-              {language === "zh"
-                ? "选 15、30 或 60 分钟。\n页面会安静下来。\n结束后，把这段时间留在我的空间。"
-                : "Choose 15, 30, or 60 minutes.\nThe page goes quiet.\nWhen you finish, save the time to My Space."}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
