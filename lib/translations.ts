@@ -8,8 +8,8 @@ export const translations = {
     counterSuffix: "soul chooses ·",
     
     // Hero
-    heroLine1: "The world keeps going",
-    heroLine2: "You don't have to",
+    heroLine1: "Let the world move",
+    heroLine2: "Stay with yourself",
     
     // CTA
     ctaButton: "Make it yours",
@@ -42,7 +42,7 @@ export const translations = {
       ai: "Leave the question open.",
       anxiety: "You don't need to solve everything in this block.",
       boredom: "Boredom is not failure.",
-      world: "The world keeps going. You don't have to.",
+      world: "Let the world move. Stay with yourself.",
     },
     pulledAway: "I drifted",
     finish: "Finish",

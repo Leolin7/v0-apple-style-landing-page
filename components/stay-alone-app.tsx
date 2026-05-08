@@ -266,19 +266,45 @@ export function StayAloneApp() {
     <div className="relative flex min-h-screen flex-col bg-[#F7F5F2] text-[#1A1A1A]">
       {/* Subtle world presence at bottom - only on landing */}
       {step === "landing" && <WorldPresence />}
-      {/* Header - positioned independently from hero */}
       
+      {/* Top-right navigation - subtle links */}
+      {step === "landing" && (
+        <header 
+          className="pointer-events-none absolute inset-x-0 top-0 z-50 flex justify-end px-5 pt-5 md:px-8 md:pt-8"
+          style={{
+            paddingTop: "max(env(safe-area-inset-top, 20px), 20px)",
+          }}
+        >
+          <nav className="pointer-events-auto flex items-center gap-1 text-[13px] font-light text-[#8A8A8A]">
+            <button
+              onClick={() => setLanguage(language === "en" ? "zh" : "en")}
+              className="transition-colors duration-200 hover:text-[#5A5A5A]"
+            >
+              {language === "en" ? "中文" : "English"}
+            </button>
+            <span className="text-[#C5C0BA]">·</span>
+            <button
+              onClick={handleHeaderClick}
+              className="transition-colors duration-200 hover:text-[#5A5A5A]"
+            >
+              {language === "zh" ? "我的空间" : "My Space"}
+            </button>
+          </nav>
+        </header>
+      )}
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         {/* Landing - with time selection directly on first screen */}
         {step === "landing" && (
           <div
-            className="flex min-h-svh w-full max-w-[600px] flex-col items-center justify-center text-center md:min-h-screen"
+            className="flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center justify-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
+              paddingTop: "clamp(60px, 10vh, 80px)",
             }}
           >
             {/* Counter line with breathing dot */}
@@ -329,7 +355,6 @@ export function StayAloneApp() {
             {/* Time selection block */}
             <div
               style={{
-                marginBottom: "clamp(36px, 6vh, 72px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
               }}
@@ -365,30 +390,17 @@ export function StayAloneApp() {
               )}
             </div>
 
-            {/* Bottom links */}
+            {/* Bottom link - only "Why we made this" */}
             <div
-              className="flex items-center gap-4 text-[13px] font-light text-[#8A8A8A]"
+              className="text-[13px] font-light text-[#8A8A8A]"
               style={{
+                marginTop: "clamp(48px, 8vh, 80px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
               <button className="transition-colors duration-200 hover:text-[#5A5A5A]">
                 {language === "zh" ? "为什么做这个" : "Why we made this"}
-              </button>
-              <span className="text-[#DDD8D2]">·</span>
-              <button
-                onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-                className="transition-colors duration-200 hover:text-[#5A5A5A]"
-              >
-                {language === "en" ? "中文" : "English"}
-              </button>
-              <span className="text-[#DDD8D2]">·</span>
-              <button
-                onClick={handleHeaderClick}
-                className="transition-colors duration-200 hover:text-[#5A5A5A]"
-              >
-                {language === "zh" ? "我的空间" : "My Space"}
               </button>
             </div>
           </div>
