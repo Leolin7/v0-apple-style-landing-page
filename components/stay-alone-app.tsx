@@ -363,47 +363,59 @@ export function StayAloneApp() {
 
 {/* Action area - time selection and post-buttons row */}
             <div
-              className="action-area"
+              className="sa-action-area"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
               }}
             >
-              {/* Time intro text */}
-              <p className={`mb-5 text-[14px] font-light ${language === "zh" ? "editorial-zh" : ""}`} style={{ color: "#1A1A1A", opacity: 0.58 }}>
+              <div className={`sa-action-label text-[14px] font-light ${language === "zh" ? "editorial-zh" : ""}`}>
                 {language === "zh" ? "选一段时间" : "Make it yours"}
-              </p>
-              
-              {/* Time buttons - compact and elegant */}
-              <div className="time-buttons">
-                {TIME_OPTIONS.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => {
-                      setSelectedTime(time)
-                      setStep("trigger")
-                    }}
-                    className="time-btn"
-                  >
-                    {time === 15 && (language === "zh" ? "15 分钟" : "15 minutes")}
-                    {time === 30 && (language === "zh" ? "30 分钟" : "30 minutes")}
-                    {time === 60 && (language === "zh" ? "60 分钟" : "60 minutes")}
-                  </button>
-                ))}
               </div>
 
-              {/* Post-buttons row - explain link left, belong line center */}
-              <div className="post-buttons-row">
-                <button 
+              <div className="sa-time-button-row">
+                <button
+                  className="sa-time-button"
+                  onClick={() => {
+                    setSelectedTime(15)
+                    setStep("trigger")
+                  }}
+                >
+                  {language === "zh" ? "15 分钟" : "15 minutes"}
+                </button>
+
+                <button
+                  className="sa-time-button"
+                  onClick={() => {
+                    setSelectedTime(30)
+                    setStep("trigger")
+                  }}
+                >
+                  {language === "zh" ? "30 分钟" : "30 minutes"}
+                </button>
+
+                <button
+                  className="sa-time-button"
+                  onClick={() => {
+                    setSelectedTime(60)
+                    setStep("trigger")
+                  }}
+                >
+                  {language === "zh" ? "60 分钟" : "60 minutes"}
+                </button>
+              </div>
+
+              <div className="sa-post-button-row">
+                <button
                   type="button"
-                  className="explain-link text-[13px] font-light"
+                  className={`sa-explain-link text-[13px] font-light ${language === "zh" ? "" : ""}`}
                   onClick={() => setShowExplain(true)}
                 >
                   {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
                 </button>
 
                 {language === "zh" && (
-                  <div className="belong-line editorial-zh text-[14px] font-light">
+                  <div className="sa-belong-line editorial-zh text-[14px] font-light">
                     留给自己
                   </div>
                 )}
