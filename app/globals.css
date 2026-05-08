@@ -186,37 +186,24 @@ html {
   }
 }
 
-/* Post-buttons row - full viewport width for proper alignment */
-.post-buttons-row {
-  position: relative;
-  width: 100vw;
-  left: 50%;
-  transform: translateX(-50%);
+/* Belong line - simple centered text under time buttons */
+.belong-line {
   margin-top: 28px;
-  height: 28px;
-  overflow: visible;
-}
-
-.post-buttons-row .belong-line {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
   text-align: center;
-  margin: 0;
+  width: 100%;
 }
 
-.post-buttons-row .explain-link {
-  position: absolute;
+/* Explain link - absolutely positioned, aligned with language switch */
+.explain-link {
   left: var(--page-x);
-  top: 50%;
+  top: calc(50% + 258px);
   transform: translateY(-50%);
   white-space: nowrap;
   margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
+  font: inherit;
   cursor: pointer;
   text-align: left;
 }

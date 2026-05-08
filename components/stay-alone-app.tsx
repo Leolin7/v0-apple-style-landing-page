@@ -301,6 +301,18 @@ export function StayAloneApp() {
         </button>
       )}
 
+      {/* Explain link - left aligned with language switch, same level as 留给自己 */}
+      {step === "landing" && (
+        <button
+          type="button"
+          className="explain-link pointer-events-auto absolute z-20 text-[13px] font-light"
+          style={{ color: "#1A1A1A", opacity: 0.62 }}
+          onClick={() => setShowExplain(true)}
+        >
+          {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
+        </button>
+      )}
+
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         {/* Landing - with time selection directly on first screen */}
@@ -391,30 +403,17 @@ export function StayAloneApp() {
                   </button>
                 ))}
               </div>
-              
-              </div>
 
-            {/* Post-buttons row - explain link left, 留给自己 center */}
-            <div
-              className="post-buttons-row"
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transition: "opacity 1100ms ease 450ms",
-              }}
-            >
-              {/* Explain link - left aligned with language switch */}
-              <button 
-                type="button"
-                className="explain-link text-[13px] font-light"
-                style={{ color: "#1A1A1A", opacity: 0.62 }}
-                onClick={() => setShowExplain(true)}
-              >
-                {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
-              </button>
-
-              {/* Chinese suffix - center aligned */}
+              {/* Chinese suffix - centered under time buttons */}
               {language === "zh" && (
-                <p className="belong-line editorial-zh text-[14px] font-light" style={{ color: "#1A1A1A", opacity: 0.62 }}>
+                <p 
+                  className="belong-line editorial-zh text-[14px] font-light" 
+                  style={{ 
+                    color: "#1A1A1A", 
+                    opacity: isVisible ? 0.62 : 0,
+                    transition: "opacity 1100ms ease 450ms",
+                  }}
+                >
                   留给自己
                 </p>
               )}
