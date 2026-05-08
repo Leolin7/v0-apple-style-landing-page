@@ -380,19 +380,17 @@ export function StayAloneApp() {
               
               </div>
 
-            {/* Lower action row - explain link left, 留给自己 center */}
+            {/* Lower action row - Why link left, 留给自己 center */}
             <div
-              className="relative mt-6 flex items-center justify-center"
+              className="relative mt-6 flex w-full items-center justify-center"
               style={{
-                width: "100vw",
-                marginLeft: "calc(-50vw + 50%)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
-              {/* Explain link - left aligned with language switch */}
+              {/* Why link - left aligned */}
               <button
-                className="absolute text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+                className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
                 style={{ left: "clamp(24px, 3.5vw, 48px)" }}
               >
                 {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
