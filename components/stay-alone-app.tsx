@@ -409,21 +409,6 @@ export function StayAloneApp() {
                 )}
               </div>
             </div>
-
-              {/* Chinese suffix - centered under time buttons */}
-              {language === "zh" && (
-                <p 
-                  className="belong-line editorial-zh text-[14px] font-light" 
-                  style={{ 
-                    color: "#1A1A1A", 
-                    opacity: isVisible ? 0.62 : 0,
-                    transition: "opacity 1100ms ease 450ms",
-                  }}
-                >
-                  留给自己
-                </p>
-              )}
-            </div>
           </div>
         )}
 
