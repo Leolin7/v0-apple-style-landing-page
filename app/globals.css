@@ -164,28 +164,55 @@ html {
 
 /* Top navigation links positioning */
 .top-nav-link {
-  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  top: clamp(24px, 4vh, 40px);
   left: var(--sa-page-x);
 }
 
 .top-nav-link-right {
-  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  top: clamp(24px, 4vh, 40px);
   right: var(--sa-page-x);
   left: auto;
 }
 
-@media (min-width: 768px) {
-  .top-nav-link {
-    top: 32px;
-  }
-  .top-nav-link-right {
-    top: 32px;
-  }
-}
-
-/* Stay Alone action area - scoped styles */
+/* Stay Alone landing - scoped styles */
 :root {
   --sa-page-x: clamp(24px, 3.5vw, 48px);
+}
+
+.sa-hero-stack {
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.sa-counter-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  line-height: 1;
+  margin-bottom: clamp(72px, 9vh, 108px);
+}
+
+.sa-wordmark {
+  margin: 0;
+  margin-bottom: clamp(64px, 8vh, 92px);
+  text-align: center;
+}
+
+.sa-hero-copy {
+  text-align: center;
+  line-height: 1.55;
+  font-size: clamp(20px, 3vw, 26px);
+  color: #1A1A1A;
+  margin-bottom: clamp(56px, 7vh, 76px);
 }
 
 .sa-action-area {
@@ -245,7 +272,8 @@ html {
 .sa-explain-link {
   position: absolute;
   left: var(--sa-page-x);
-  bottom: clamp(48px, 7vh, 80px);
+  top: 50%;
+  transform: translateY(-50%);
   white-space: nowrap;
   margin: 0;
   padding: 0;
@@ -265,6 +293,25 @@ html {
 }
 
 @media (max-width: 640px) {
+  .sa-hero-stack {
+    justify-content: center;
+    transform: translateY(-1vh);
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .sa-counter-row {
+    margin-bottom: 56px;
+  }
+
+  .sa-wordmark {
+    margin-bottom: 56px;
+  }
+
+  .sa-hero-copy {
+    margin-bottom: 48px;
+  }
+
   .sa-time-button-row {
     gap: 12px;
   }
@@ -281,6 +328,7 @@ html {
   }
 
   .sa-explain-link {
+    top: auto;
     bottom: calc(env(safe-area-inset-bottom) + 72px);
   }
 }

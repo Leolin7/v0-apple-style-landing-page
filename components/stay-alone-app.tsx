@@ -317,20 +317,17 @@ export function StayAloneApp() {
         {/* Landing - with time selection directly on first screen */}
         {step === "landing" && (
           <div
-            className="hero-stack flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center justify-center text-center"
+            className="sa-hero-stack"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(-2vh)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
-              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
-              paddingTop: "clamp(60px, 10vh, 80px)",
             }}
           >
             {/* Counter line with breathing dot */}
             <div
-              className="counter-row"
+              className="sa-counter-row"
               style={{
-                marginBottom: "clamp(48px, 7vh, 88px)",
                 opacity: isVisible ? 0.9 : 0,
                 transition: "opacity 1400ms ease 300ms",
               }}
@@ -347,9 +344,8 @@ export function StayAloneApp() {
 
             {/* Stay Alone wordmark - mono font */}
             <h1
-              className="wordmark text-[#1A1A1A]"
+              className="sa-wordmark text-[#1A1A1A]"
               style={{
-                marginBottom: "clamp(36px, 5vh, 56px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 150ms",
               }}
@@ -359,17 +355,14 @@ export function StayAloneApp() {
 
             {/* Hero copy - soft editorial serif */}
             <div
-              className={`leading-[1.55] ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              className={`sa-hero-copy ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                fontSize: "clamp(20px, 3vw, 26px)",
-                marginBottom: "clamp(36px, 5vh, 56px)",
                 opacity: isVisible ? 0.88 : 0,
-                color: "#1A1A1A",
                 transition: "opacity 1100ms ease 250ms",
               }}
             >
-              <p>{t.heroLine1}</p>
-              <p>{t.heroLine2}</p>
+              <div>{t.heroLine1}</div>
+              <div>{t.heroLine2}</div>
             </div>
 
 {/* Action area - time selection and post-buttons row */}
