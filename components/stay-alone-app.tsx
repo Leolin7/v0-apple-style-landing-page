@@ -267,30 +267,44 @@ export function StayAloneApp() {
       {/* Subtle world presence at bottom - only on landing */}
       {step === "landing" && <WorldPresence />}
       
-      {/* Top-right navigation - subtle links */}
+      {/* Top-left: Language switch */}
       {step === "landing" && (
-        <header 
-          className="pointer-events-none absolute inset-x-0 top-0 z-50 flex justify-end px-5 pt-5 md:px-8 md:pt-8"
+        <button
+          onClick={() => setLanguage(language === "en" ? "zh" : "en")}
+          className="pointer-events-auto absolute left-6 top-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:left-12 md:top-10"
           style={{
-            paddingTop: "max(env(safe-area-inset-top, 20px), 20px)",
+            top: "max(env(safe-area-inset-top, 24px), 24px)",
           }}
         >
-          <nav className="pointer-events-auto flex items-center gap-1 text-[13px] font-light text-[#8A8A8A]">
-            <button
-              onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-              className="transition-colors duration-200 hover:text-[#5A5A5A]"
-            >
-              {language === "en" ? "中文" : "English"}
-            </button>
-            <span className="text-[#C5C0BA]">·</span>
-            <button
-              onClick={handleHeaderClick}
-              className="transition-colors duration-200 hover:text-[#5A5A5A]"
-            >
-              {language === "zh" ? "我的空间" : "My Space"}
-            </button>
-          </nav>
-        </header>
+          {language === "en" ? "中文" : "English"}
+        </button>
+      )}
+
+      {/* Top-right: My Space */}
+      {step === "landing" && (
+        <button
+          onClick={handleHeaderClick}
+          className="pointer-events-auto absolute right-6 top-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:right-12 md:top-10"
+          style={{
+            top: "max(env(safe-area-inset-top, 24px), 24px)",
+          }}
+        >
+          {language === "zh" ? "我的空间" : "My Space"}
+        </button>
+      )}
+
+      {/* Lower-left: Why we made this - editorial note */}
+      {step === "landing" && (
+        <button
+          className="pointer-events-auto absolute left-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:bottom-12 md:left-12"
+          style={{
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + 72px)",
+            opacity: isVisible ? 1 : 0,
+            transition: "opacity 1100ms ease 450ms",
+          }}
+        >
+          {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+        </button>
       )}
 
       {/* Main content */}
@@ -388,20 +402,6 @@ export function StayAloneApp() {
                   留给自己
                 </p>
               )}
-            </div>
-
-            {/* Bottom link - only "Why we made this" */}
-            <div
-              className="text-[13px] font-light text-[#8A8A8A]"
-              style={{
-                marginTop: "clamp(48px, 8vh, 80px)",
-                opacity: isVisible ? 1 : 0,
-                transition: "opacity 1100ms ease 450ms",
-              }}
-            >
-              <button className="transition-colors duration-200 hover:text-[#5A5A5A]">
-                {language === "zh" ? "为什么做这个" : "Why we made this"}
-              </button>
             </div>
           </div>
         )}
