@@ -234,21 +234,18 @@ html {
   border-color: rgba(26, 26, 26, 0.24);
 }
 
-.sa-post-button-row {
-  position: relative;
-  width: 100vw;
-  height: 28px;
+.sa-belong-line {
   margin-top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  overflow: visible;
+  text-align: center;
+  width: 100%;
+  opacity: 0.62;
+  line-height: 1;
 }
 
 .sa-explain-link {
   position: absolute;
   left: var(--sa-page-x);
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: clamp(48px, 7vh, 80px);
   white-space: nowrap;
   margin: 0;
   padding: 0;
@@ -260,22 +257,11 @@ html {
   opacity: 0.62;
   cursor: pointer;
   text-align: left;
+  z-index: 20;
 }
 
 .sa-explain-link:hover {
   opacity: 0.8;
-}
-
-.sa-belong-line {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-  text-align: center;
-  line-height: 1;
-  opacity: 0.62;
-  color: #1A1A1A;
 }
 
 @media (max-width: 640px) {
@@ -290,8 +276,12 @@ html {
     font-size: 16px;
   }
 
-  .sa-post-button-row {
+  .sa-belong-line {
     margin-top: 28px;
+  }
+
+  .sa-explain-link {
+    bottom: calc(env(safe-area-inset-bottom) + 72px);
   }
 }
 

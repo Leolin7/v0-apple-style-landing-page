@@ -301,6 +301,17 @@ export function StayAloneApp() {
         </button>
       )}
 
+      {/* Bottom-left: Explain link */}
+      {step === "landing" && (
+        <button
+          type="button"
+          className="sa-explain-link pointer-events-auto text-[13px] font-light"
+          onClick={() => setShowExplain(true)}
+        >
+          {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
+        </button>
+      )}
+
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         {/* Landing - with time selection directly on first screen */}
@@ -405,21 +416,11 @@ export function StayAloneApp() {
                 </button>
               </div>
 
-              <div className="sa-post-button-row">
-                <button
-                  type="button"
-                  className={`sa-explain-link text-[13px] font-light ${language === "zh" ? "" : ""}`}
-                  onClick={() => setShowExplain(true)}
-                >
-                  {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
-                </button>
-
-                {language === "zh" && (
-                  <div className="sa-belong-line editorial-zh text-[14px] font-light">
-                    留给自己
-                  </div>
-                )}
-              </div>
+              {language === "zh" && (
+                <div className="sa-belong-line editorial-zh text-[14px] font-light">
+                  留给自己
+                </div>
+              )}
             </div>
           </div>
         )}
