@@ -49,10 +49,22 @@ export function StayAloneApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [completedElapsedSeconds, setCompletedElapsedSeconds] = useState(0)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
+  const [showExplain, setShowExplain] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimestampRef = useRef<number | null>(null)
   const startDateRef = useRef<Date | null>(null)
   const hasCalledApi = useRef(false)
+
+  // Close explain modal on Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showExplain) {
+        setShowExplain(false)
+      }
+    }
+    document.addEventListener("keydown", handleEscape)
+    return () => document.removeEventListener("keydown", handleEscape)
+  }, [showExplain])
 
   // Fetch visitor count
   const fetchVisitorCount = useCallback(async () => {
@@ -388,12 +400,13 @@ export function StayAloneApp() {
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
-              {/* Why link - left aligned */}
+              {/* Explain link - left aligned with language switch */}
               <button
-                className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
-                style={{ left: "clamp(24px, 3.5vw, 48px)" }}
+                type="button"
+                className="sa-explain-link absolute text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+                onClick={() => setShowExplain(true)}
               >
-                {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+                {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
               </button>
 
               {/* Chinese suffix - center aligned */}
@@ -577,6 +590,40 @@ export function StayAloneApp() {
         onSuccess={handleAuthSuccess}
         onModeChange={setAuthMode}
       />
+
+      {/* Explain modal */}
+      {showExplain && (
+        <div 
+          className="sa-explain-overlay"
+          onClick={() => setShowExplain(false)}
+          onKeyDown={(e) => e.key === "Escape" && setShowExplain(false)}
+        >
+          <div 
+            className="sa-explain-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="explain-title"
+          >
+            <button 
+              type="button"
+              className="sa-explain-close"
+              onClick={() => setShowExplain(false)}
+              aria-label={language === "zh" ? "关闭" : "Close"}
+            >
+              ×
+            </button>
+            <h2 id="explain-title" className={language === "zh" ? "editorial-zh" : "editorial"}>
+              {language === "zh" ? "这里会发生什么" : "What happens here"}
+            </h2>
+            <p className={language === "zh" ? "editorial-zh" : ""}>
+              {language === "zh"
+                ? "选 15、30 或 60 分钟。\n页面会安静下来。\n结束后，把这段时间留在我的空间。"
+                : "Choose 15, 30, or 60 minutes.\nThe page goes quiet.\nWhen you finish, save the time to My Space."}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
