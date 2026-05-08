@@ -277,7 +277,7 @@ export function StayAloneApp() {
         </button>
       )}
 
-      {/* Top-right: My Space */}
+{/* Top-right: My Space */}
       {step === "landing" && (
         <button
           onClick={handleHeaderClick}
@@ -287,7 +287,18 @@ export function StayAloneApp() {
         </button>
       )}
 
-      
+      {/* Why we made this - viewport positioned, same left as language switch */}
+      {step === "landing" && (
+        <button
+          className="why-link-viewport pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transition: "opacity 1100ms ease 450ms",
+          }}
+        >
+          {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+        </button>
+      )}
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
@@ -380,22 +391,14 @@ export function StayAloneApp() {
               
               </div>
 
-            {/* Lower action row - Why link left, 留给自己 center */}
+            {/* Lower action row - 留给自己 center */}
             <div
-              className="relative mt-6 flex w-full items-center justify-center"
+              className="mt-6 flex w-full items-center justify-center"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
-              {/* Why link - left aligned */}
-              <button
-                className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
-                style={{ left: "clamp(24px, 3.5vw, 48px)" }}
-              >
-                {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
-              </button>
-
               {/* Chinese suffix - center aligned */}
               {language === "zh" && (
                 <p className="editorial-zh text-[14px] font-light text-[#8A8A8A]">
