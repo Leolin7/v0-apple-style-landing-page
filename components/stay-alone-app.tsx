@@ -287,18 +287,7 @@ export function StayAloneApp() {
         </button>
       )}
 
-      {/* Lower-left: Why we made this - editorial note */}
-      {step === "landing" && (
-        <button
-          className="why-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transition: "opacity 1100ms ease 450ms",
-          }}
-        >
-          {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
-        </button>
-      )}
+      
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
@@ -389,11 +378,34 @@ export function StayAloneApp() {
                 ))}
               </div>
               
-              {/* Chinese suffix */}
+              </div>
+
+            {/* Lower action row - Why link left, 留给自己 center */}
+            <div
+              className="relative mt-6 flex w-full items-center justify-center"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1100ms ease 450ms",
+              }}
+            >
+              {/* Why link - left aligned */}
+              <button
+                className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+                style={{ left: "clamp(24px, 3.5vw, 48px)" }}
+              >
+                {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+              </button>
+
+              {/* Chinese suffix - center aligned */}
               {language === "zh" && (
-                <p className="editorial-zh mt-4 text-[14px] font-light text-[#8A8A8A]">
+                <p className="editorial-zh text-[14px] font-light text-[#8A8A8A]">
                   留给自己
                 </p>
+              )}
+
+              {/* Invisible placeholder for English to maintain row height */}
+              {language === "en" && (
+                <span className="invisible text-[14px]">&nbsp;</span>
               )}
             </div>
           </div>
