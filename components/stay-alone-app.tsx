@@ -266,7 +266,27 @@ export function StayAloneApp() {
     <div className="relative flex min-h-screen flex-col bg-[#F7F5F2] text-[#1A1A1A]">
       {/* Subtle world presence at bottom - only on landing */}
       {step === "landing" && <WorldPresence />}
-      {/* Header - positioned independently from hero */}
+      
+      {/* Top-left: Language switch */}
+      {step === "landing" && (
+        <button
+          onClick={() => setLanguage(language === "en" ? "zh" : "en")}
+          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+        >
+          {language === "en" ? "中文" : "English"}
+        </button>
+      )}
+
+      {/* Top-right: My Space */}
+      {step === "landing" && (
+        <button
+          onClick={handleHeaderClick}
+          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+        >
+          {language === "zh" ? "我的空间" : "My Space"}
+        </button>
+      )}
+
       
 
       {/* Main content */}
@@ -274,30 +294,32 @@ export function StayAloneApp() {
         {/* Landing - with time selection directly on first screen */}
         {step === "landing" && (
           <div
-            className="flex min-h-svh w-full max-w-[600px] flex-col items-center justify-center text-center md:min-h-screen"
+            className="hero-stack flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center justify-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(12px)",
+              transform: isVisible ? "translateY(-2vh)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
+              paddingTop: "clamp(60px, 10vh, 80px)",
             }}
           >
             {/* Counter line with breathing dot */}
             <div
-              className="flex items-center gap-2"
+              className="counter-row"
               style={{
                 marginBottom: "clamp(48px, 7vh, 88px)",
                 opacity: isVisible ? 0.9 : 0,
                 transition: "opacity 1400ms ease 300ms",
               }}
             >
-              <span className="breathing-dot" />
-              <p className={`text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+              <span className="breathing-dot" aria-hidden="true" />
+              <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
                   <>For the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}time, someone chose</>
                 )}
-              </p>
+              </span>
             </div>
 
             {/* Stay Alone wordmark - mono font */}
@@ -329,7 +351,6 @@ export function StayAloneApp() {
             {/* Time selection block */}
             <div
               style={{
-                marginBottom: "clamp(36px, 6vh, 72px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
               }}
@@ -357,39 +378,35 @@ export function StayAloneApp() {
                 ))}
               </div>
               
-              {/* Chinese suffix */}
-              {language === "zh" && (
-                <p className="editorial-zh mt-4 text-[14px] font-light text-[#8A8A8A]">
-                  留给自己
-                </p>
-              )}
-            </div>
+              </div>
 
-            {/* Bottom links */}
+            {/* Lower action row - Why link left, 留给自己 center */}
             <div
-              className="flex items-center gap-4 text-[13px] font-light text-[#8A8A8A]"
+              className="relative mt-6 flex w-full items-center justify-center"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
-              <button className="transition-colors duration-200 hover:text-[#5A5A5A]">
-                {language === "zh" ? "为什么做这个" : "Why we made this"}
-              </button>
-              <span className="text-[#DDD8D2]">·</span>
+              {/* Why link - left aligned */}
               <button
-                onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-                className="transition-colors duration-200 hover:text-[#5A5A5A]"
+                className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+                style={{ left: "clamp(24px, 3.5vw, 48px)" }}
               >
-                {language === "en" ? "中文" : "English"}
+                {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
               </button>
-              <span className="text-[#DDD8D2]">·</span>
-              <button
-                onClick={handleHeaderClick}
-                className="transition-colors duration-200 hover:text-[#5A5A5A]"
-              >
-                {language === "zh" ? "我的空间" : "My Space"}
-              </button>
+
+              {/* Chinese suffix - center aligned */}
+              {language === "zh" && (
+                <p className="editorial-zh text-[14px] font-light text-[#8A8A8A]">
+                  留给自己
+                </p>
+              )}
+
+              {/* Invisible placeholder for English to maintain row height */}
+              {language === "en" && (
+                <span className="invisible text-[14px]">&nbsp;</span>
+              )}
             </div>
           </div>
         )}
