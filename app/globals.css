@@ -179,10 +179,18 @@ html {
   }
 }
 
-/* Why we made this link positioning */
-.why-link {
+/* Bottom row - spans viewport for proper alignment */
+.sa-bottom-row {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  min-height: 24px;
+}
+
+/* Explain link - aligned with language switch */
+.sa-explain-link {
   left: clamp(24px, 3.5vw, 48px);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(56px, 7vh, 88px));
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* Counter row alignment */
