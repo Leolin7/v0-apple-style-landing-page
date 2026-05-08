@@ -382,16 +382,16 @@ export function StayAloneApp() {
               
               </div>
 
-            {/* Lower action row - Why link left, ���给自己 center */}
+            {/* Post-buttons row - explain link left, 留给自己 center */}
             <div
-              className="lower-action-row mt-6"
+              className="post-buttons-row"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
               {/* Explain link - left aligned with language switch */}
-              <button className="why-link text-[13px] font-light transition-colors duration-200 hover:opacity-80" style={{ color: "#1A1A1A", opacity: 0.58 }}>
+              <button className="explain-link text-[13px] font-light transition-colors duration-200 hover:opacity-80" style={{ color: "#1A1A1A", opacity: 0.58 }}>
                 {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
               </button>
 
@@ -403,9 +403,6 @@ export function StayAloneApp() {
               ) : (
                 <span className="belong-line invisible text-[14px]">&nbsp;</span>
               )}
-
-              {/* Empty right cell for grid balance */}
-              <span />
             </div>
           </div>
         )}

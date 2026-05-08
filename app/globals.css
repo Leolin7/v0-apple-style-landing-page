@@ -186,24 +186,38 @@ html {
   }
 }
 
-/* Lower action row - grid layout for Why link and 留给自己 */
-.lower-action-row {
+/* Post-buttons row - full viewport width for proper alignment */
+.post-buttons-row {
   position: relative;
   width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 28px;
+  min-height: 24px;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  overflow: visible;
 }
 
-.lower-action-row .why-link {
-  justify-self: start;
-  margin-left: var(--page-x);
+.post-buttons-row .belong-line {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  width: auto;
+  margin: 0;
+  transform: none;
 }
 
-.lower-action-row .belong-line {
-  grid-column: 2;
-  justify-self: center;
+.post-buttons-row .explain-link {
+  position: absolute;
+  left: var(--page-x);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
 }
 
 /* Counter row alignment */
