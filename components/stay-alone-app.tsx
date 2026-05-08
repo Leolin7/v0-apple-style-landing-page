@@ -301,18 +301,6 @@ export function StayAloneApp() {
         </button>
       )}
 
-      {/* Explain link - left aligned with language switch, same level as 留给自己 */}
-      {step === "landing" && (
-        <button
-          type="button"
-          className="explain-link pointer-events-auto absolute z-20 text-[13px] font-light"
-          style={{ color: "#1A1A1A", opacity: 0.62 }}
-          onClick={() => setShowExplain(true)}
-        >
-          {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
-        </button>
-      )}
-
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         {/* Landing - with time selection directly on first screen */}
@@ -373,8 +361,9 @@ export function StayAloneApp() {
               <p>{t.heroLine2}</p>
             </div>
 
-            {/* Time selection block */}
+{/* Action area - time selection and post-buttons row */}
             <div
+              className="action-area"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
@@ -385,8 +374,8 @@ export function StayAloneApp() {
                 {language === "zh" ? "选一段时间" : "Make it yours"}
               </p>
               
-              {/* Time buttons - quiet choices */}
-              <div className="flex items-center justify-center gap-3 md:gap-4">
+              {/* Time buttons - compact and elegant */}
+              <div className="time-buttons">
                 {TIME_OPTIONS.map((time) => (
                   <button
                     key={time}
@@ -394,8 +383,7 @@ export function StayAloneApp() {
                       setSelectedTime(time)
                       setStep("trigger")
                     }}
-                    className="rounded-full border border-[#DDD8D2] bg-transparent px-4 py-2 text-[14px] font-light transition-all duration-200 hover:border-[#C5C0BA] md:px-5 md:py-2.5 md:text-[15px]"
-                    style={{ color: "#1A1A1A", opacity: 0.72 }}
+                    className="time-btn"
                   >
                     {time === 15 && (language === "zh" ? "15 分钟" : "15 minutes")}
                     {time === 30 && (language === "zh" ? "30 分钟" : "30 minutes")}
@@ -403,6 +391,24 @@ export function StayAloneApp() {
                   </button>
                 ))}
               </div>
+
+              {/* Post-buttons row - explain link left, belong line center */}
+              <div className="post-buttons-row">
+                <button 
+                  type="button"
+                  className="explain-link text-[13px] font-light"
+                  onClick={() => setShowExplain(true)}
+                >
+                  {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
+                </button>
+
+                {language === "zh" && (
+                  <div className="belong-line editorial-zh text-[14px] font-light">
+                    留给自己
+                  </div>
+                )}
+              </div>
+            </div>
 
               {/* Chinese suffix - centered under time buttons */}
               {language === "zh" && (

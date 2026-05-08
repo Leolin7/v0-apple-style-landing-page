@@ -186,17 +186,77 @@ html {
   }
 }
 
-/* Belong line - simple centered text under time buttons */
-.belong-line {
-  margin-top: 28px;
-  text-align: center;
-  width: 100%;
+/* Action area - centered column for time selection */
+.action-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Explain link - absolutely positioned, aligned with language switch */
+/* Time buttons row */
+.time-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .time-buttons {
+    gap: 24px;
+  }
+}
+
+/* Individual time button - compact and elegant */
+.time-btn {
+  height: 44px;
+  min-width: auto;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid #DDD8D2;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1;
+  color: #1A1A1A;
+  opacity: 0.72;
+  cursor: pointer;
+  transition: border-color 200ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.time-btn:hover {
+  border-color: #C5C0BA;
+}
+
+@media (min-width: 768px) {
+  .time-btn {
+    height: 48px;
+    min-width: 128px;
+    padding: 0 28px;
+    font-size: 15px;
+  }
+}
+
+/* Post-buttons row - full viewport width for proper alignment */
+.post-buttons-row {
+  position: relative;
+  width: 100vw;
+  height: 32px;
+  margin-top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: visible;
+}
+
+/* Explain link - left aligned with language switch */
 .explain-link {
+  position: absolute;
   left: var(--page-x);
-  top: calc(50% + 258px);
+  top: 50%;
   transform: translateY(-50%);
   white-space: nowrap;
   margin: 0;
@@ -204,8 +264,29 @@ html {
   border: 0;
   background: transparent;
   font: inherit;
+  color: #1A1A1A;
+  opacity: 0.62;
   cursor: pointer;
   text-align: left;
+  line-height: 1;
+}
+
+.explain-link:hover {
+  opacity: 0.8;
+}
+
+/* Belong line - center aligned */
+.belong-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  text-align: center;
+  color: #1A1A1A;
+  opacity: 0.62;
+  line-height: 1;
+  margin: 0;
 }
 
 /* Explain modal overlay */
