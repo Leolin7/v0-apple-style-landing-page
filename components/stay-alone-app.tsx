@@ -296,9 +296,8 @@ export function StayAloneApp() {
       {/* Lower-left: Why we made this - editorial note */}
       {step === "landing" && (
         <button
-          className="pointer-events-auto absolute left-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:bottom-12 md:left-12"
+          className="why-link pointer-events-auto absolute left-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:left-12"
           style={{
-            bottom: "calc(env(safe-area-inset-bottom, 0px) + 72px)",
             opacity: isVisible ? 1 : 0,
             transition: "opacity 1100ms ease 450ms",
           }}

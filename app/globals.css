@@ -154,3 +154,14 @@ html {
 .editorial-zh {
   font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
 }
+
+/* Why we made this link positioning */
+.why-link {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+}
+
+@media (min-width: 768px) {
+  .why-link {
+    bottom: 56px;
+  }
+}
