@@ -271,17 +271,19 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light transition-colors duration-200 hover:opacity-80"
+          style={{ color: "#1A1A1A", opacity: 0.58 }}
         >
           {language === "en" ? "中文" : "English"}
         </button>
       )}
 
-{/* Top-right: My Space */}
+      {/* Top-right: My Space */}
       {step === "landing" && (
         <button
           onClick={handleHeaderClick}
-          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light transition-colors duration-200 hover:opacity-80"
+          style={{ color: "#1A1A1A", opacity: 0.58 }}
         >
           {language === "zh" ? "我的空间" : "My Space"}
         </button>
@@ -311,7 +313,7 @@ export function StayAloneApp() {
               }}
             >
               <span className="breathing-dot" aria-hidden="true" />
-              <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+              <span className={`counter-text text-[13px] font-light md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`} style={{ color: "#1A1A1A", opacity: 0.58 }}>
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
@@ -332,13 +334,14 @@ export function StayAloneApp() {
               Stay Alone
             </h1>
 
-            {/* Hero copy - serif editorial */}
+            {/* Hero copy - soft editorial serif */}
             <div
-              className={`leading-[1.7] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              className={`leading-[1.55] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
                 fontSize: "clamp(20px, 3vw, 26px)",
                 marginBottom: "clamp(36px, 5vh, 56px)",
-                opacity: isVisible ? 1 : 0,
+                opacity: isVisible ? 0.88 : 0,
+                color: "#1A1A1A",
                 transition: "opacity 1100ms ease 250ms",
               }}
             >
@@ -354,7 +357,7 @@ export function StayAloneApp() {
               }}
             >
               {/* Time intro text */}
-              <p className={`mb-5 text-[14px] font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : ""}`}>
+              <p className={`mb-5 text-[14px] font-light ${language === "zh" ? "editorial-zh" : ""}`} style={{ color: "#1A1A1A", opacity: 0.58 }}>
                 {language === "zh" ? "选一段时间" : "Make it yours"}
               </p>
               
@@ -367,7 +370,8 @@ export function StayAloneApp() {
                       setSelectedTime(time)
                       setStep("trigger")
                     }}
-                    className="rounded-full border border-[#DDD8D2] bg-transparent px-4 py-2 text-[14px] font-light text-[#1A1A1A] transition-all duration-200 hover:border-[#C5C0BA] md:px-5 md:py-2.5 md:text-[15px]"
+                    className="rounded-full border border-[#DDD8D2] bg-transparent px-4 py-2 text-[14px] font-light transition-all duration-200 hover:border-[#C5C0BA] md:px-5 md:py-2.5 md:text-[15px]"
+                    style={{ color: "#1A1A1A", opacity: 0.72 }}
                   >
                     {time === 15 && (language === "zh" ? "15 分钟" : "15 minutes")}
                     {time === 30 && (language === "zh" ? "30 分钟" : "30 minutes")}
@@ -378,7 +382,7 @@ export function StayAloneApp() {
               
               </div>
 
-            {/* Lower action row - Why link left, 留给自己 center */}
+            {/* Lower action row - Why link left, ���给自己 center */}
             <div
               className="lower-action-row mt-6"
               style={{
@@ -386,14 +390,14 @@ export function StayAloneApp() {
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
-              {/* Why link - left aligned with language switch */}
-              <button className="why-link text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]">
-                {language === "zh" ? "为什么做这个 →" : "Why we made this →"}
+              {/* Explain link - left aligned with language switch */}
+              <button className="why-link text-[13px] font-light transition-colors duration-200 hover:opacity-80" style={{ color: "#1A1A1A", opacity: 0.58 }}>
+                {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
               </button>
 
               {/* Chinese suffix - center aligned */}
               {language === "zh" ? (
-                <p className="belong-line editorial-zh text-[14px] font-light text-[#8A8A8A]">
+                <p className="belong-line editorial-zh text-[14px] font-light" style={{ color: "#1A1A1A", opacity: 0.58 }}>
                   留给自己
                 </p>
               ) : (

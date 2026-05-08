@@ -148,14 +148,16 @@ html {
   }
 }
 
-/* Editorial serif for English */
+/* Editorial serif for English - soft and quiet */
 .editorial {
-  font-family: "Newsreader", "Source Serif Pro", Georgia, serif;
+  font-family: var(--font-serif), "Instrument Serif", "Newsreader", Georgia, serif;
+  font-weight: 400;
 }
 
-/* Editorial serif for Chinese */
+/* Editorial serif for Chinese - calm and premium */
 .editorial-zh {
-  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+  font-family: var(--font-serif-zh), "Songti SC", "Noto Serif SC", "Source Han Serif SC", serif;
+  font-weight: 300;
 }
 
 /* Shared page margin token */
