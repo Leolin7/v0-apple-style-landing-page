@@ -271,10 +271,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="pointer-events-auto absolute left-6 top-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:left-12 md:top-10"
-          style={{
-            top: "max(env(safe-area-inset-top, 24px), 24px)",
-          }}
+          className="top-nav-link pointer-events-auto absolute left-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:left-10"
         >
           {language === "en" ? "中文" : "English"}
         </button>
@@ -284,10 +281,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={handleHeaderClick}
-          className="pointer-events-auto absolute right-6 top-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:right-12 md:top-10"
-          style={{
-            top: "max(env(safe-area-inset-top, 24px), 24px)",
-          }}
+          className="top-nav-link pointer-events-auto absolute right-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:right-10"
         >
           {language === "zh" ? "我的空间" : "My Space"}
         </button>
@@ -296,7 +290,7 @@ export function StayAloneApp() {
       {/* Lower-left: Why we made this - editorial note */}
       {step === "landing" && (
         <button
-          className="why-link pointer-events-auto absolute left-6 z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] md:left-12"
+          className="why-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
           style={{
             opacity: isVisible ? 1 : 0,
             transition: "opacity 1100ms ease 450ms",
@@ -311,10 +305,10 @@ export function StayAloneApp() {
         {/* Landing - with time selection directly on first screen */}
         {step === "landing" && (
           <div
-            className="flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center justify-center text-center"
+            className="hero-stack flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center justify-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(12px)",
+              transform: isVisible ? "translateY(-2vh)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
               paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
               paddingTop: "clamp(60px, 10vh, 80px)",
@@ -322,7 +316,7 @@ export function StayAloneApp() {
           >
             {/* Counter line with breathing dot */}
             <div
-              className="flex items-center gap-2"
+              className="counter-row"
               style={{
                 marginBottom: "clamp(48px, 7vh, 88px)",
                 opacity: isVisible ? 0.9 : 0,
@@ -330,13 +324,13 @@ export function StayAloneApp() {
               }}
             >
               <span className="breathing-dot" />
-              <p className={`text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+              <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
                   <>For the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}time, someone chose</>
                 )}
-              </p>
+              </span>
             </div>
 
             {/* Stay Alone wordmark - mono font */}
