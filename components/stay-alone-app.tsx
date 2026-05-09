@@ -278,7 +278,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          className="top-nav-link top-bar-text pointer-events-auto absolute z-50 text-[#1A1A1A] transition-opacity duration-200 hover:opacity-80"
         >
           {language === "en" ? "中文" : "English"}
         </button>
@@ -288,7 +288,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={handleHeaderClick}
-          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          className="top-nav-link-right top-bar-text pointer-events-auto absolute z-50 text-[#1A1A1A] transition-opacity duration-200 hover:opacity-80"
         >
           {language === "zh" ? "我的空间" : "My Space"}
         </button>
@@ -320,7 +320,7 @@ export function StayAloneApp() {
               }}
             >
               <span className="breathing-dot" aria-hidden="true" />
-              <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+              <span className="counter-text top-bar-text text-[#1A1A1A]">
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
