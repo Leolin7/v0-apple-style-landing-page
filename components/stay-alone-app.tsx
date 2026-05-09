@@ -19,6 +19,12 @@ import {
 import { MyTimeSheet } from "./my-time-sheet"
 import { AuthModals } from "./auth-modals"
 import { WorldPresence } from "./world-presence"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 type AppStep = "landing" | "trigger" | "timer" | "complete"
 
@@ -49,6 +55,7 @@ export function StayAloneApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [completedElapsedSeconds, setCompletedElapsedSeconds] = useState(0)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
+  const [whatHappensOpen, setWhatHappensOpen] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimestampRef = useRef<number | null>(null)
   const startDateRef = useRef<Date | null>(null)
@@ -271,7 +278,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          className="top-nav-link top-bar-text pointer-events-auto absolute z-50 text-[#1A1A1A] transition-opacity duration-200 hover:opacity-80"
         >
           {language === "en" ? "中文" : "English"}
         </button>
@@ -281,7 +288,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={handleHeaderClick}
-          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          className="top-nav-link-right top-bar-text pointer-events-auto absolute z-50 text-[#1A1A1A] transition-opacity duration-200 hover:opacity-80"
         >
           {language === "zh" ? "我的空间" : "My Space"}
         </button>
@@ -313,7 +320,7 @@ export function StayAloneApp() {
               }}
             >
               <span className="breathing-dot" aria-hidden="true" />
-              <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+              <span className="counter-text top-bar-text text-[#1A1A1A]">
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
@@ -382,7 +389,7 @@ export function StayAloneApp() {
 
             {/* Lower action row - Why link left, 留给自己 center */}
             <div
-              className="relative mt-6 flex w-full items-center justify-center"
+              className="relative mt-10 flex w-full items-center justify-center md:mt-6"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
@@ -390,6 +397,7 @@ export function StayAloneApp() {
             >
               {/* Why link - left aligned */}
               <button
+                onClick={() => setWhatHappensOpen(true)}
                 className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
                 style={{ left: "clamp(24px, 3.5vw, 48px)" }}
               >
@@ -577,6 +585,35 @@ export function StayAloneApp() {
         onSuccess={handleAuthSuccess}
         onModeChange={setAuthMode}
       />
+
+      {/* What Happens Here Modal */}
+      <Dialog open={whatHappensOpen} onOpenChange={setWhatHappensOpen}>
+        <DialogContent 
+          className="border-[#DDD8D2] bg-[#F7F5F2] sm:max-w-md"
+          showCloseButton={true}
+        >
+          <DialogHeader>
+            <DialogTitle className={`text-[18px] font-light text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+              {language === "zh" ? "这里会发生什么" : "What happens here"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className={`space-y-3 text-[14px] font-light leading-relaxed text-[#5A5A5A] ${language === "zh" ? "editorial-zh" : ""}`}>
+            {language === "zh" ? (
+              <>
+                <p>选 15、30 或 60 分钟。</p>
+                <p>页面会安静下来。</p>
+                <p>结束后，把这段时间留在我的空间。</p>
+              </>
+            ) : (
+              <>
+                <p>Choose 15, 30, or 60 minutes.</p>
+                <p>The page goes quiet.</p>
+                <p>When you finish, save the time to My Space.</p>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
