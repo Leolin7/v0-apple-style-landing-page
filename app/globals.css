@@ -158,15 +158,6 @@ html {
   font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
 }
 
-/* Top bar unified typography */
-.top-bar-text {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
-  font-size: 15px;
-  line-height: 1;
-  font-weight: 300;
-  opacity: 0.62;
-}
-
 /* Top navigation links positioning */
 .top-nav-link {
   top: calc(env(safe-area-inset-top, 0px) + 24px);
