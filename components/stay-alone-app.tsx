@@ -278,7 +278,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="top-nav-link top-bar-text pointer-events-auto absolute z-50 text-[#1A1A1A] transition-opacity duration-200 hover:opacity-80"
+          className={`top-nav-link pointer-events-auto absolute z-50 text-[14px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] ${language === "zh" ? "editorial-zh" : ""}`}
         >
           {language === "en" ? "中文" : "English"}
         </button>
@@ -288,7 +288,7 @@ export function StayAloneApp() {
       {step === "landing" && (
         <button
           onClick={handleHeaderClick}
-          className="top-nav-link-right top-bar-text pointer-events-auto absolute z-50 text-[#1A1A1A] transition-opacity duration-200 hover:opacity-80"
+          className={`top-nav-link-right pointer-events-auto absolute z-50 text-[14px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] ${language === "zh" ? "editorial-zh" : ""}`}
         >
           {language === "zh" ? "我的空间" : "My Space"}
         </button>
@@ -320,7 +320,7 @@ export function StayAloneApp() {
               }}
             >
               <span className="breathing-dot" aria-hidden="true" />
-              <span className="counter-text top-bar-text text-[#1A1A1A]">
+              <span className={`counter-text text-[14px] font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : ""}`}>
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
                 ) : (
@@ -398,7 +398,7 @@ export function StayAloneApp() {
               {/* Why link - left aligned */}
               <button
                 onClick={() => setWhatHappensOpen(true)}
-                className="absolute left-0 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+                className={`absolute left-0 text-[14px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] ${language === "zh" ? "editorial-zh" : ""}`}
                 style={{ left: "clamp(24px, 3.5vw, 48px)" }}
               >
                 {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
