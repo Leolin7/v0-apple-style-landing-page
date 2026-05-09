@@ -274,24 +274,43 @@ export function StayAloneApp() {
       {/* Subtle world presence at bottom - only on landing */}
       {step === "landing" && <WorldPresence />}
       
-      {/* Top-left: Language switch */}
+      {/* Unified top bar with language switch, counter, and My Space */}
       {step === "landing" && (
-        <button
-          onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-          className="top-nav-link pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+        <div 
+          className="top-bar pointer-events-auto absolute z-50"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transition: "opacity 1400ms ease 300ms",
+          }}
         >
-          {language === "en" ? "中文" : "English"}
-        </button>
-      )}
+          {/* Left: Language switch */}
+          <button
+            onClick={() => setLanguage(language === "en" ? "zh" : "en")}
+            className="language-switch text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          >
+            {language === "en" ? "中文" : "English"}
+          </button>
 
-      {/* Top-right: My Space */}
-      {step === "landing" && (
-        <button
-          onClick={handleHeaderClick}
-          className="top-nav-link-right pointer-events-auto absolute z-50 text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
-        >
-          {language === "zh" ? "我的空间" : "My Space"}
-        </button>
+          {/* Center: Counter row with breathing dot */}
+          <div className="counter-row">
+            <span className={`breathing-dot ${language === "en" ? "breathing-dot-en" : ""}`} aria-hidden="true" />
+            <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
+              {language === "zh" ? (
+                <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
+              ) : (
+                <>For the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}time, someone chose</>
+              )}
+            </span>
+          </div>
+
+          {/* Right: My Space */}
+          <button
+            onClick={handleHeaderClick}
+            className="my-space text-[13px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A]"
+          >
+            {language === "zh" ? "我的空间" : "My Space"}
+          </button>
+        </div>
       )}
 
       
@@ -310,25 +329,6 @@ export function StayAloneApp() {
               paddingTop: "clamp(60px, 10vh, 80px)",
             }}
           >
-            {/* Counter line with breathing dot */}
-            <div
-              className="counter-row"
-              style={{
-                marginBottom: "clamp(48px, 7vh, 88px)",
-                opacity: isVisible ? 0.9 : 0,
-                transition: "opacity 1400ms ease 300ms",
-              }}
-            >
-              <span className={`breathing-dot ${language === "en" ? "breathing-dot-en" : ""}`} aria-hidden="true" />
-              <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
-                {language === "zh" ? (
-                  <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
-                ) : (
-                  <>For the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}time, someone chose</>
-                )}
-              </span>
-            </div>
-
             {/* Stay Alone wordmark - mono font */}
             <h1
               className="wordmark text-[#1A1A1A]"
