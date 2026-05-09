@@ -158,28 +158,25 @@ html {
   font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
 }
 
-/* Unified top bar layout */
-.top-bar {
+/* Top navigation links positioning */
+.top-nav-link {
   top: calc(env(safe-area-inset-top, 0px) + 24px);
   left: clamp(24px, 3.5vw, 48px);
+}
+
+.top-nav-link-right {
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
   right: clamp(24px, 3.5vw, 48px);
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
+  left: auto;
 }
 
 @media (min-width: 768px) {
-  .top-bar {
-    top: calc(env(safe-area-inset-top, 0px) + 32px);
+  .top-nav-link {
+    top: 32px;
   }
-}
-
-.language-switch {
-  justify-self: start;
-}
-
-.my-space {
-  justify-self: end;
+  .top-nav-link-right {
+    top: 32px;
+  }
 }
 
 /* Why we made this link positioning */
@@ -190,18 +187,15 @@ html {
 
 /* Counter row alignment */
 .counter-row {
-  justify-self: center;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   line-height: 1;
 }
 
 .counter-row .breathing-dot {
   flex: 0 0 auto;
-}
-
-.counter-row .breathing-dot-en {
   transform: translateY(-2px);
 }
 
