@@ -196,6 +196,9 @@ html {
 
 .counter-row .breathing-dot {
   flex: 0 0 auto;
+}
+
+.counter-row .breathing-dot-en {
   transform: translateY(-2px);
 }
 

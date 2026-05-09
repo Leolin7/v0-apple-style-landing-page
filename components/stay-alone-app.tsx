@@ -319,7 +319,7 @@ export function StayAloneApp() {
                 transition: "opacity 1400ms ease 300ms",
               }}
             >
-              <span className="breathing-dot" aria-hidden="true" />
+              <span className={`breathing-dot ${language === "en" ? "breathing-dot-en" : ""}`} aria-hidden="true" />
               <span className={`counter-text text-[13px] font-light text-[#8A8A8A] md:text-[14px] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
                 {language === "zh" ? (
                   <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
