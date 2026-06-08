@@ -201,3 +201,19 @@ html {
 .counter-row .counter-text {
   line-height: 1;
 }
+
+/* Extremely subtle ambient breathing — barely perceptible luminance shift */
+@keyframes quietBreathe {
+  0%, 100% {
+    opacity: 0.92;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .quiet-breathe {
+    animation: quietBreathe 9s ease-in-out infinite;
+  }
+}
