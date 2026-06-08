@@ -8,8 +8,8 @@ export const translations = {
     counterSuffix: "soul chooses ·",
     
     // Hero
-    heroLine1: "Let the world move",
-    heroLine2: "Stay with yourself",
+    heroLine1: "Let the world move.",
+    heroLine2: "Stay with yourself.",
     
     // CTA
     ctaButton: "Make it yours",
@@ -20,6 +20,17 @@ export const translations = {
     minutes15: "15 minutes",
     minutes30: "30 minutes", 
     minutes60: "60 minutes",
+
+    // Quiet time choices
+    choiceMoment: "a moment",
+    choiceWhile: "for a while",
+    choiceLonger: "stay longer",
+    durationShort: "15 min",
+    durationMid: "30 min",
+    durationLong: "60 min",
+
+    // Closing line
+    closingLine: "You can come back when you're ready.",
     
     // Trigger selection
     triggerQuestion: "What are you stepping away from?",
@@ -112,8 +123,8 @@ export const translations = {
     counterSuffix: "个灵魂选择 ·",
     
     // Hero
-    heroLine1: "让世界继续",
-    heroLine2: "你回到自己",
+    heroLine1: "让世界继续。",
+    heroLine2: "你回到自己。",
     
     // CTA
     ctaButton: "开始",
@@ -124,6 +135,17 @@ export const translations = {
     minutes15: "15 分钟",
     minutes30: "30 分钟",
     minutes60: "60 分钟",
+
+    // Quiet time choices
+    choiceMoment: "片刻",
+    choiceWhile: "待一会儿",
+    choiceLonger: "久一点",
+    durationShort: "15 分钟",
+    durationMid: "30 分钟",
+    durationLong: "60 分钟",
+
+    // Closing line
+    closingLine: "准备好了，再回来。",
     
     // Trigger selection
     triggerQuestion: "你想暂时离开什么？",

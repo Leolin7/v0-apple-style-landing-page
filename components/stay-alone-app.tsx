@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useLanguage } from "@/lib/language-context"
-import { getOrdinal, formatElapsedDuration } from "@/lib/translations"
+import { formatElapsedDuration } from "@/lib/translations"
 import {
   type TriggerType,
   type SessionStatus,
@@ -18,17 +18,8 @@ import {
 } from "@/lib/storage"
 import { MyTimeSheet } from "./my-time-sheet"
 import { AuthModals } from "./auth-modals"
-import { WorldPresence } from "./world-presence"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 
 type AppStep = "landing" | "trigger" | "timer" | "complete"
-
-const TIME_OPTIONS = [15, 30, 60] as const
 
 const TRIGGER_KEYS: TriggerType[] = [
   "shortVideos",
@@ -55,7 +46,6 @@ export function StayAloneApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [completedElapsedSeconds, setCompletedElapsedSeconds] = useState(0)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
-  const [whatHappensOpen, setWhatHappensOpen] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimestampRef = useRef<number | null>(null)
   const startDateRef = useRef<Date | null>(null)
@@ -271,9 +261,6 @@ export function StayAloneApp() {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-[#F7F5F2] text-[#1A1A1A]">
-      {/* Subtle world presence at bottom - only on landing */}
-      {step === "landing" && <WorldPresence />}
-      
       {/* Top-left: Language switch */}
       {step === "landing" && (
         <button
@@ -298,55 +285,38 @@ export function StayAloneApp() {
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6">
-        {/* Landing - with time selection directly on first screen */}
+        {/* Landing - a quiet room */}
         {step === "landing" && (
           <div
-            className="hero-stack flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center justify-center text-center"
+            className="flex min-h-[100dvh] w-full max-w-[560px] flex-col items-center justify-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(-2vh)" : "translateY(12px)",
+              transform: isVisible ? "translateY(0)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
-              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
-              paddingTop: "clamp(60px, 10vh, 80px)",
+              paddingTop: "clamp(96px, 16vh, 160px)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + clamp(64px, 10vh, 120px))",
             }}
           >
-            {/* Counter line with breathing dot */}
+            {/* Standalone counter number */}
             <div
-              className="counter-row"
+              className="quiet-breathe"
               style={{
-                marginBottom: "clamp(48px, 7vh, 88px)",
-                opacity: isVisible ? 0.9 : 0,
-                transition: "opacity 1400ms ease 300ms",
+                marginBottom: "clamp(72px, 12vh, 140px)",
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1600ms ease 400ms",
               }}
             >
-              <span className="breathing-dot" aria-hidden="true" />
-              <span className={`counter-text text-[14px] font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : ""}`}>
-                {language === "zh" ? (
-                  <>这是第 {visitorCount !== null ? visitorCount.toLocaleString() : "..."} 次，有人选择了</>
-                ) : (
-                  <>For the {visitorCount !== null ? getOrdinal(visitorCount, language) : "..."}time, someone chose</>
-                )}
+              <span className="wordmark text-[18px] text-[#8A8A8A] md:text-[20px]">
+                {visitorCount !== null ? visitorCount.toLocaleString() : "1,337"}
               </span>
             </div>
 
-            {/* Stay Alone wordmark - mono font */}
-            <h1
-              className="wordmark text-[#1A1A1A]"
-              style={{
-                marginBottom: "clamp(36px, 5vh, 56px)",
-                opacity: isVisible ? 1 : 0,
-                transition: "opacity 1100ms ease 150ms",
-              }}
-            >
-              Stay Alone
-            </h1>
-
-            {/* Hero copy - serif editorial */}
+            {/* Hero copy - the emotional centre */}
             <div
               className={`leading-[1.7] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                fontSize: "clamp(20px, 3vw, 26px)",
-                marginBottom: "clamp(36px, 5vh, 56px)",
+                fontSize: "clamp(24px, 4vw, 34px)",
+                marginBottom: "clamp(80px, 13vh, 160px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 250ms",
               }}
@@ -355,67 +325,66 @@ export function StayAloneApp() {
               <p>{t.heroLine2}</p>
             </div>
 
-            {/* Time selection block */}
+            {/* Quiet time choices */}
             <div
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transition: "opacity 1100ms ease 350ms",
-              }}
-            >
-              {/* Time intro text */}
-              <p className={`mb-5 text-[14px] font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : ""}`}>
-                {language === "zh" ? "选一段时间" : "Make it yours"}
-              </p>
-              
-              {/* Time buttons - quiet choices */}
-              <div className="flex items-center justify-center gap-3 md:gap-4">
-                {TIME_OPTIONS.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => {
-                      setSelectedTime(time)
-                      setStep("trigger")
-                    }}
-                    className="rounded-full border border-[#DDD8D2] bg-transparent px-4 py-2 text-[14px] font-light text-[#1A1A1A] transition-all duration-200 hover:border-[#C5C0BA] md:px-5 md:py-2.5 md:text-[15px]"
-                  >
-                    {time === 15 && (language === "zh" ? "15 分钟" : "15 minutes")}
-                    {time === 30 && (language === "zh" ? "30 分钟" : "30 minutes")}
-                    {time === 60 && (language === "zh" ? "60 分钟" : "60 minutes")}
-                  </button>
-                ))}
-              </div>
-              
-              </div>
-
-            {/* Lower action row - Why link left, 留给自己 center */}
-            <div
-              className="relative mt-10 flex w-full items-center justify-center md:mt-6"
+              className="flex flex-col items-center gap-7 md:gap-8"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
               }}
             >
-              {/* Why link - left aligned */}
-              <button
-                onClick={() => setWhatHappensOpen(true)}
-                className={`absolute left-0 text-[14px] font-light text-[#8A8A8A] transition-colors duration-200 hover:text-[#5A5A5A] ${language === "zh" ? "editorial-zh" : ""}`}
-                style={{ left: "clamp(24px, 3.5vw, 48px)" }}
-              >
-                {language === "zh" ? "这里会发生什么 →" : "What happens here →"}
-              </button>
-
-              {/* Chinese suffix - center aligned */}
-              {language === "zh" && (
-                <p className="editorial-zh text-[14px] font-light text-[#8A8A8A]">
-                  留给自己
-                </p>
-              )}
-
-              {/* Invisible placeholder for English to maintain row height */}
-              {language === "en" && (
-                <span className="invisible text-[14px]">&nbsp;</span>
-              )}
+              {([
+                { time: 15, label: t.choiceMoment, duration: t.durationShort },
+                { time: 30, label: t.choiceWhile, duration: t.durationMid },
+                { time: 60, label: t.choiceLonger, duration: t.durationLong },
+              ] as const).map(({ time, label, duration }) => (
+                <button
+                  key={time}
+                  onClick={() => {
+                    setSelectedTime(time)
+                    setStep("trigger")
+                  }}
+                  className="group flex flex-col items-center bg-transparent transition-opacity duration-300"
+                >
+                  <span
+                    className={`text-[#1A1A1A] opacity-80 transition-opacity duration-300 group-hover:opacity-100 ${language === "zh" ? "editorial-zh" : "editorial"}`}
+                    style={{ fontSize: "clamp(18px, 2.6vw, 22px)" }}
+                  >
+                    {label}
+                  </span>
+                  <span className={`mt-1.5 text-[12px] font-light text-[#A8A8A8] ${language === "zh" ? "editorial-zh" : ""}`}>
+                    {duration}
+                  </span>
+                </button>
+              ))}
             </div>
+
+            {/* Closing line - the final line of a poem */}
+            <p
+              className={`font-light leading-relaxed text-[#A8A8A8] ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{
+                marginTop: "clamp(96px, 16vh, 180px)",
+                fontSize: "clamp(15px, 2vw, 17px)",
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1400ms ease 700ms",
+              }}
+            >
+              {t.closingLine}
+            </p>
+
+            {/* Stay Alone - a quiet signature */}
+            <p
+              className="wordmark text-[#B8B3AD]"
+              style={{
+                marginTop: "clamp(48px, 8vh, 96px)",
+                fontSize: "11px",
+                letterSpacing: "0.32em",
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1400ms ease 900ms",
+              }}
+            >
+              Stay Alone
+            </p>
           </div>
         )}
 
@@ -585,35 +554,6 @@ export function StayAloneApp() {
         onSuccess={handleAuthSuccess}
         onModeChange={setAuthMode}
       />
-
-      {/* What Happens Here Modal */}
-      <Dialog open={whatHappensOpen} onOpenChange={setWhatHappensOpen}>
-        <DialogContent 
-          className="border-[#DDD8D2] bg-[#F7F5F2] sm:max-w-md"
-          showCloseButton={true}
-        >
-          <DialogHeader>
-            <DialogTitle className={`text-[18px] font-light text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}>
-              {language === "zh" ? "这里会发生什么" : "What happens here"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className={`space-y-3 text-[14px] font-light leading-relaxed text-[#5A5A5A] ${language === "zh" ? "editorial-zh" : ""}`}>
-            {language === "zh" ? (
-              <>
-                <p>选 15、30 或 60 分钟。</p>
-                <p>页面会安静下来。</p>
-                <p>结束后，把这段时间留在我的空间。</p>
-              </>
-            ) : (
-              <>
-                <p>Choose 15, 30, or 60 minutes.</p>
-                <p>The page goes quiet.</p>
-                <p>When you finish, save the time to My Space.</p>
-              </>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
