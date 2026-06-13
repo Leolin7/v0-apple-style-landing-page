@@ -20,7 +20,7 @@ export const translations = {
     signIn: "Sign in",
     
     // Time selection
-    timeQuestion: "How much time do you want to make yours?",
+    timeQuestion: "How long will you stay?",
     minutes15: "15 minutes",
     minutes30: "30 minutes", 
     minutes60: "60 minutes",
@@ -139,7 +139,7 @@ export const translations = {
     signIn: "登录",
     
     // Time selection
-    timeQuestion: "你想把多久留给自己？",
+    timeQuestion: "这一次，想留多久？",
     minutes15: "15 分钟",
     minutes30: "30 分钟",
     minutes60: "60 分钟",
