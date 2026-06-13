@@ -62,7 +62,7 @@ export function StayAloneApp() {
       const data = await response.json()
       setVisitorCount(data.count)
     } catch {
-      setVisitorCount(1337) // Fallback
+      setVisitorCount(null) // On failure, show no number (dot stays)
     }
   }, [])
 
@@ -308,8 +308,14 @@ export function StayAloneApp() {
             >
               <span className="counter-row">
                 <span className="breathing-dot" aria-hidden="true" />
-                <span className="wordmark counter-text text-[18px] text-[#8A8A8A] md:text-[20px]">
-                  {visitorCount !== null ? visitorCount.toLocaleString() : "1,337"}
+                <span
+                  className="wordmark counter-text text-[18px] text-[#8A8A8A] md:text-[20px]"
+                  style={{
+                    opacity: visitorCount !== null ? 1 : 0,
+                    transition: "opacity 800ms ease",
+                  }}
+                >
+                  {visitorCount !== null ? visitorCount.toLocaleString() : "\u00A0"}
                 </span>
               </span>
             </div>
