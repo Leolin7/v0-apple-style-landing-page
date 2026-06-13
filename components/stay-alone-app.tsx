@@ -339,7 +339,7 @@ export function StayAloneApp() {
               className={`mx-auto font-light italic leading-[1.6] text-[#A8A8A8] ${language === "zh" ? "editorial-zh not-italic" : "editorial"}`}
               style={{
                 fontSize: "clamp(14px, 2vw, 16px)",
-                marginBottom: "clamp(80px, 13vh, 160px)",
+                marginBottom: "clamp(56px, 9vh, 110px)",
                 maxWidth: "300px",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
@@ -348,6 +348,19 @@ export function StayAloneApp() {
               <p>{t.heroSubline1}</p>
               <p>{t.heroSubline2}</p>
             </div>
+
+            {/* Transition question - bridges the sub-line into the choices */}
+            <p
+              className={`font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{
+                fontSize: "clamp(15px, 2vw, 17px)",
+                marginBottom: "clamp(28px, 4.5vh, 44px)",
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1100ms ease 400ms",
+              }}
+            >
+              {t.timeQuestion}
+            </p>
 
             {/* Quiet time choices */}
             <div
