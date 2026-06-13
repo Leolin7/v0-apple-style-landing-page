@@ -10,6 +10,10 @@ export const translations = {
     // Hero
     heroLine1: "Let the world move.",
     heroLine2: "Stay with yourself.",
+
+    // Hero sub-line
+    heroSubline1: "A quiet exit from the noise.",
+    heroSubline2: "A while that belongs to you.",
     
     // CTA
     ctaButton: "Make it yours",
@@ -125,6 +129,10 @@ export const translations = {
     // Hero
     heroLine1: "让世界继续。",
     heroLine2: "你回到自己。",
+
+    // Hero sub-line
+    heroSubline1: "离开所有喧嚣。",
+    heroSubline2: "一段只属于你的时光。",
     
     // CTA
     ctaButton: "开始",
