@@ -383,24 +383,11 @@ export function StayAloneApp() {
               ))}
             </div>
 
-            {/* Closing line - the final line of a poem */}
-            <p
-              className={`font-light leading-relaxed text-[#A8A8A8] ${language === "zh" ? "editorial-zh" : "editorial"}`}
-              style={{
-                marginTop: "clamp(96px, 16vh, 180px)",
-                fontSize: "clamp(15px, 2vw, 17px)",
-                opacity: isVisible ? 1 : 0,
-                transition: "opacity 1400ms ease 700ms",
-              }}
-            >
-              {t.closingLine}
-            </p>
-
             {/* Stay Alone - a quiet signature */}
             <p
               className="wordmark text-[#B8B3AD]"
               style={{
-                marginTop: "clamp(48px, 8vh, 96px)",
+                marginTop: "clamp(96px, 16vh, 180px)",
                 fontSize: "11px",
                 letterSpacing: "0.32em",
                 opacity: isVisible ? 1 : 0,
