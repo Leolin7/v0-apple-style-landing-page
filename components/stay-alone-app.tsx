@@ -306,8 +306,11 @@ export function StayAloneApp() {
                 transition: "opacity 1600ms ease 400ms",
               }}
             >
-              <span className="wordmark text-[18px] text-[#8A8A8A] md:text-[20px]">
-                {visitorCount !== null ? visitorCount.toLocaleString() : "1,337"}
+              <span className="counter-row">
+                <span className="breathing-dot" aria-hidden="true" />
+                <span className="wordmark counter-text text-[18px] text-[#8A8A8A] md:text-[20px]">
+                  {visitorCount !== null ? visitorCount.toLocaleString() : "1,337"}
+                </span>
               </span>
             </div>
 
@@ -316,13 +319,28 @@ export function StayAloneApp() {
               className={`leading-[1.7] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
                 fontSize: "clamp(24px, 4vw, 34px)",
-                marginBottom: "clamp(80px, 13vh, 160px)",
+                marginBottom: "clamp(20px, 3vh, 32px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 250ms",
               }}
             >
               <p>{t.heroLine1}</p>
               <p>{t.heroLine2}</p>
+            </div>
+
+            {/* Hero sub-line - quietly names what this is, without breaking the calm */}
+            <div
+              className={`mx-auto font-light italic leading-[1.6] text-[#A8A8A8] ${language === "zh" ? "editorial-zh not-italic" : "editorial"}`}
+              style={{
+                fontSize: "clamp(14px, 2vw, 16px)",
+                marginBottom: "clamp(80px, 13vh, 160px)",
+                maxWidth: "300px",
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 1100ms ease 350ms",
+              }}
+            >
+              <p>{t.heroSubline1}</p>
+              <p>{t.heroSubline2}</p>
             </div>
 
             {/* Quiet time choices */}
