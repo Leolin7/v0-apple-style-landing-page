@@ -3,9 +3,6 @@ export type Language = "en" | "zh"
 export const translations = {
   en: {
     // Counter line
-    counterLine: "soul chooses ·",
-    counterPrefix: "The",
-    counterSuffix: "soul chooses ·",
     
     // Hero
     heroLine1: "Let the world move.",
@@ -16,28 +13,27 @@ export const translations = {
     heroSubline2: "A while that belongs to you.",
 
     // Counter label - companionship under the number (no number, it annotates the count above)
-    counterLabel: "others chose to stay, just like you",
+    counterLabel: "chose to stay",
     
     // CTA
     ctaButton: "Make it yours",
     signIn: "Sign in",
     
     // Time selection
-    timeQuestion: "How long will you stay?",
+    timeQuestion: "There’s no rush. Stay for —",
     minutes15: "15 minutes",
     minutes30: "30 minutes", 
     minutes60: "60 minutes",
 
     // Quiet time choices
     choiceMoment: "a moment",
-    choiceWhile: "for a while",
-    choiceLonger: "stay longer",
+    choiceWhile: "a while",
+    choiceLonger: "longer",
     durationShort: "15 min",
     durationMid: "30 min",
     durationLong: "60 min",
 
     // Closing line
-    closingLine: "You can come back when you're ready.",
     
     // Trigger selection
     triggerQuestion: "What are you stepping away from?",
@@ -125,41 +121,37 @@ export const translations = {
   },
   zh: {
     // Counter line
-    counterLine: "个灵魂选择 ·",
-    counterPrefix: "第",
-    counterSuffix: "个灵魂选择 ·",
     
     // Hero
     heroLine1: "让世界继续向前",
     heroLine2: "你回到自己",
 
     // Hero sub-line
-    heroSubline1: "离开所有喧嚣",
-    heroSubline2: "一段只属于你的时光",
+    heroSubline1: "留一段时间只属于你自己",
+    heroSubline2: "",
 
     // Counter label - companionship under the number (no number, it annotates the count above)
-    counterLabel: "和你一样，把时间留给了自己",
+    counterLabel: "选择了把时间留给自己",
     
     // CTA
     ctaButton: "开始",
     signIn: "登录",
     
     // Time selection
-    timeQuestion: "这一次，想留多久？",
+    timeQuestion: "这一次，你选择留下多久？",
     minutes15: "15 分钟",
     minutes30: "30 分钟",
     minutes60: "60 分钟",
 
     // Quiet time choices
     choiceMoment: "片刻",
-    choiceWhile: "待一会儿",
-    choiceLonger: "久一点",
+    choiceWhile: "一会儿",
+    choiceLonger: "再久一点",
     durationShort: "15 分钟",
     durationMid: "30 分钟",
     durationLong: "60 分钟",
 
     // Closing line
-    closingLine: "准备好了，再回来。",
     
     // Trigger selection
     triggerQuestion: "你想暂时离开什么？",
