@@ -293,15 +293,15 @@ export function StayAloneApp() {
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
-              paddingTop: "clamp(96px, 16vh, 220px)",
-              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + clamp(96px, 16vh, 220px))",
+              paddingTop: "clamp(32px, 5vh, 56px)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + clamp(32px, 5vh, 56px))",
             }}
           >
             {/* Standalone counter number */}
             <div
               className="quiet-breathe"
               style={{
-                marginBottom: "clamp(80px, 14vh, 160px)",
+                marginBottom: "clamp(48px, 7vh, 80px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1600ms ease 400ms",
               }}
@@ -342,10 +342,11 @@ export function StayAloneApp() {
 
             {/* Hero copy - the emotional centre */}
             <div
-              className={`leading-[1.7] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              className={`leading-[1.5] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                fontSize: "clamp(26px, 4vw, 40px)",
-                marginBottom: "clamp(24px, 4vh, 40px)",
+                fontSize: "clamp(30px, 4.6vw, 44px)",
+                fontWeight: 500,
+                marginBottom: "clamp(22px, 3.5vh, 34px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 250ms",
               }}
@@ -358,23 +359,23 @@ export function StayAloneApp() {
             <div
               className={`mx-auto font-light italic leading-[1.6] text-[#A8A8A8] ${language === "zh" ? "editorial-zh not-italic" : "editorial"}`}
               style={{
-                fontSize: "clamp(14px, 2vw, 17px)",
-                marginBottom: "clamp(56px, 9vh, 110px)",
+                fontSize: "clamp(13px, 1.7vw, 15px)",
+                marginBottom: "clamp(44px, 6.5vh, 76px)",
                 maxWidth: "340px",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
               }}
             >
-              <p>{t.heroSubline1}</p>
-              <p>{t.heroSubline2}</p>
+              {t.heroSubline1 ? <p>{t.heroSubline1}</p> : null}
+              {t.heroSubline2 ? <p>{t.heroSubline2}</p> : null}
             </div>
 
             {/* Transition question - bridges the sub-line into the choices */}
             <p
               className={`font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                fontSize: "clamp(15px, 2vw, 18px)",
-                marginBottom: "clamp(28px, 4.5vh, 44px)",
+                fontSize: "clamp(13px, 1.7vw, 15px)",
+                marginBottom: "clamp(24px, 3.5vh, 36px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 400ms",
               }}
@@ -384,7 +385,7 @@ export function StayAloneApp() {
 
             {/* Quiet time choices */}
             <div
-              className="flex flex-col items-center gap-7 md:gap-8"
+              className="flex flex-col items-center gap-6 md:gap-7"
               style={{
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 450ms",
@@ -420,9 +421,9 @@ export function StayAloneApp() {
             <p
               className="wordmark text-[#B8B3AD]"
               style={{
-                marginTop: "clamp(64px, 10vh, 110px)",
-                fontSize: "18px",
-                letterSpacing: "0.4em",
+                marginTop: "clamp(52px, 8vh, 88px)",
+                fontSize: "16px",
+                letterSpacing: "0.38em",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1400ms ease 900ms",
               }}
