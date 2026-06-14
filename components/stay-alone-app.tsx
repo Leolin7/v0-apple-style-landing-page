@@ -324,6 +324,22 @@ export function StayAloneApp() {
                   {visitorCount !== null ? visitorCount.toLocaleString() : "\u00A0"}
                 </span>
               </span>
+
+              {/* Companionship label - gives the number meaning */}
+              <p
+                className={`font-light text-[#B8B3AD] ${language === "zh" ? "editorial-zh" : "editorial"}`}
+                style={{
+                  marginTop: "14px",
+                  fontSize: "clamp(12px, 1.4vw, 13px)",
+                  letterSpacing: language === "zh" ? "0.02em" : "0.01em",
+                  opacity: visitorCount !== null ? 1 : 0,
+                  transition: "opacity 1000ms ease 200ms",
+                }}
+              >
+                {visitorCount !== null
+                  ? t.counterLabel.replace("{count}", visitorCount.toLocaleString())
+                  : "\u00A0"}
+              </p>
             </div>
 
             {/* Hero copy - the emotional centre */}
@@ -406,7 +422,7 @@ export function StayAloneApp() {
             <p
               className="wordmark text-[#B8B3AD]"
               style={{
-                marginTop: "clamp(120px, 20vh, 240px)",
+                marginTop: "clamp(64px, 10vh, 110px)",
                 fontSize: "18px",
                 letterSpacing: "0.4em",
                 opacity: isVisible ? 1 : 0,
