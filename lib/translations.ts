@@ -27,8 +27,8 @@ export const translations = {
 
     // Quiet time choices
     choiceMoment: "stay for a moment",
-    choiceWhile: "stay for a while.",
-    choiceLonger: "or, stay longer.",
+    choiceWhile: "stay for a while",
+    choiceLonger: "or, stay longer",
     durationShort: "15 min",
     durationMid: "30 min",
     durationLong: "60 min",
