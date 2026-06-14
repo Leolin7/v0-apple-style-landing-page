@@ -315,7 +315,7 @@ export function StayAloneApp() {
                 <span
                   className="wordmark counter-text text-[#A8A8A8]"
                   style={{
-                    fontSize: "16px",
+                    fontSize: language === "zh" ? "14px" : "16px",
                     letterSpacing: "0.14em",
                     opacity: visitorCount !== null ? 1 : 0,
                     transition: "opacity 800ms ease",
@@ -330,7 +330,7 @@ export function StayAloneApp() {
                 className={`font-light text-[#A8A8A8] ${language === "zh" ? "editorial-zh" : "editorial"}`}
                 style={{
                   marginTop: "12px",
-                  fontSize: "clamp(14px, 1.7vw, 15px)",
+                  fontSize: language === "zh" ? "13px" : "clamp(14px, 1.7vw, 15px)",
                   letterSpacing: language === "zh" ? "0.04em" : "0.02em",
                   opacity: visitorCount !== null ? 1 : 0,
                   transition: "opacity 1000ms ease 200ms",
