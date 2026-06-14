@@ -20,15 +20,15 @@ export const translations = {
     signIn: "Sign in",
     
     // Time selection
-    timeQuestion: "There’s no rush. Stay for —",
+    timeQuestion: "There’s no rush. You can choose to —",
     minutes15: "15 minutes",
     minutes30: "30 minutes", 
     minutes60: "60 minutes",
 
     // Quiet time choices
-    choiceMoment: "a moment",
-    choiceWhile: "a while",
-    choiceLonger: "longer",
+    choiceMoment: "stay for a moment",
+    choiceWhile: "stay for a while.",
+    choiceLonger: "or, stay longer.",
     durationShort: "15 min",
     durationMid: "30 min",
     durationLong: "60 min",
@@ -127,26 +127,26 @@ export const translations = {
     heroLine2: "你回到自己",
 
     // Hero sub-line
-    heroSubline1: "留一段时间只属于你自己",
+    heroSubline1: "给自己一段只属于你的时间",
     heroSubline2: "",
 
     // Counter label - companionship under the number (no number, it annotates the count above)
-    counterLabel: "选择了把时间留给自己",
+    counterLabel: "把时间留给了自己",
     
     // CTA
     ctaButton: "开始",
     signIn: "登录",
     
     // Time selection
-    timeQuestion: "这一次，你选择留下多久？",
+    timeQuestion: "这一次，你可以选择 —",
     minutes15: "15 分钟",
     minutes30: "30 分钟",
     minutes60: "60 分钟",
 
     // Quiet time choices
-    choiceMoment: "片刻",
-    choiceWhile: "一会儿",
-    choiceLonger: "再久一点",
+    choiceMoment: "休息片刻",
+    choiceWhile: "留一会儿",
+    choiceLonger: "或者，再久一点",
     durationShort: "15 分钟",
     durationMid: "30 分钟",
     durationLong: "60 分钟",
