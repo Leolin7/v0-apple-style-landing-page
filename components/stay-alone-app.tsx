@@ -306,11 +306,17 @@ export function StayAloneApp() {
                 transition: "opacity 1600ms ease 400ms",
               }}
             >
-              <span className="counter-row" style={{ gap: "7px" }}>
-                <span className="breathing-dot" aria-hidden="true" style={{ width: "7px", height: "7px" }} />
+              <span className="counter-row" style={{ gap: "8px" }}>
                 <span
-                  className="wordmark counter-text text-[14px] text-[#A8A8A8] md:text-[15px]"
+                  className="breathing-dot"
+                  aria-hidden="true"
+                  style={{ width: "6px", height: "6px", minWidth: "6px", minHeight: "6px" }}
+                />
+                <span
+                  className="wordmark counter-text text-[#A8A8A8]"
                   style={{
+                    fontSize: "16px",
+                    letterSpacing: "0.14em",
                     opacity: visitorCount !== null ? 1 : 0,
                     transition: "opacity 800ms ease",
                   }}
@@ -401,8 +407,8 @@ export function StayAloneApp() {
               className="wordmark text-[#B8B3AD]"
               style={{
                 marginTop: "clamp(120px, 20vh, 240px)",
-                fontSize: "13px",
-                letterSpacing: "0.34em",
+                fontSize: "18px",
+                letterSpacing: "0.4em",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1400ms ease 900ms",
               }}
