@@ -336,9 +336,7 @@ export function StayAloneApp() {
                   transition: "opacity 1000ms ease 200ms",
                 }}
               >
-                {visitorCount !== null
-                  ? t.counterLabel.replace("{count}", visitorCount.toLocaleString())
-                  : "\u00A0"}
+                {visitorCount !== null ? t.counterLabel : "\u00A0"}
               </p>
             </div>
 
