@@ -14,6 +14,9 @@ export const translations = {
     // Hero sub-line
     heroSubline1: "A quiet exit from the noise.",
     heroSubline2: "A while that belongs to you.",
+
+    // Counter label - companionship under the number
+    counterLabel: "You're not alone — {count} others have stayed",
     
     // CTA
     ctaButton: "Make it yours",
@@ -133,6 +136,9 @@ export const translations = {
     // Hero sub-line
     heroSubline1: "离开所有喧嚣",
     heroSubline2: "一段只属于你的时光",
+
+    // Counter label - companionship under the number
+    counterLabel: "{count} 个人和你一起，选择把时间留给了自己",
     
     // CTA
     ctaButton: "开始",
