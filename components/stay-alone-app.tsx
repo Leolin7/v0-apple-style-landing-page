@@ -288,28 +288,28 @@ export function StayAloneApp() {
         {/* Landing - a quiet room */}
         {step === "landing" && (
           <div
-            className="flex min-h-[100dvh] w-full max-w-[560px] flex-col items-center justify-center text-center"
+            className="flex w-full max-w-[460px] flex-col items-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
-              paddingTop: "clamp(96px, 16vh, 160px)",
-              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + clamp(64px, 10vh, 120px))",
+              paddingTop: "clamp(96px, 16vh, 220px)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + clamp(96px, 16vh, 220px))",
             }}
           >
             {/* Standalone counter number */}
             <div
               className="quiet-breathe"
               style={{
-                marginBottom: "clamp(72px, 12vh, 140px)",
+                marginBottom: "clamp(80px, 14vh, 160px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1600ms ease 400ms",
               }}
             >
-              <span className="counter-row">
-                <span className="breathing-dot" aria-hidden="true" />
+              <span className="counter-row" style={{ gap: "7px" }}>
+                <span className="breathing-dot" aria-hidden="true" style={{ width: "7px", height: "7px" }} />
                 <span
-                  className="wordmark counter-text text-[18px] text-[#8A8A8A] md:text-[20px]"
+                  className="wordmark counter-text text-[14px] text-[#A8A8A8] md:text-[15px]"
                   style={{
                     opacity: visitorCount !== null ? 1 : 0,
                     transition: "opacity 800ms ease",
@@ -324,8 +324,8 @@ export function StayAloneApp() {
             <div
               className={`leading-[1.7] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                fontSize: "clamp(24px, 4vw, 34px)",
-                marginBottom: "clamp(20px, 3vh, 32px)",
+                fontSize: "clamp(26px, 4vw, 40px)",
+                marginBottom: "clamp(24px, 4vh, 40px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 250ms",
               }}
@@ -338,9 +338,9 @@ export function StayAloneApp() {
             <div
               className={`mx-auto font-light italic leading-[1.6] text-[#A8A8A8] ${language === "zh" ? "editorial-zh not-italic" : "editorial"}`}
               style={{
-                fontSize: "clamp(14px, 2vw, 16px)",
+                fontSize: "clamp(14px, 2vw, 17px)",
                 marginBottom: "clamp(56px, 9vh, 110px)",
-                maxWidth: "300px",
+                maxWidth: "340px",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 350ms",
               }}
@@ -353,7 +353,7 @@ export function StayAloneApp() {
             <p
               className={`font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                fontSize: "clamp(15px, 2vw, 17px)",
+                fontSize: "clamp(15px, 2vw, 18px)",
                 marginBottom: "clamp(28px, 4.5vh, 44px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 400ms",
@@ -400,9 +400,9 @@ export function StayAloneApp() {
             <p
               className="wordmark text-[#B8B3AD]"
               style={{
-                marginTop: "clamp(96px, 16vh, 180px)",
-                fontSize: "11px",
-                letterSpacing: "0.32em",
+                marginTop: "clamp(120px, 20vh, 240px)",
+                fontSize: "13px",
+                letterSpacing: "0.34em",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1400ms ease 900ms",
               }}
