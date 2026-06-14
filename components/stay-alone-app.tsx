@@ -327,11 +327,11 @@ export function StayAloneApp() {
 
               {/* Companionship label - gives the number meaning */}
               <p
-                className={`font-light text-[#B8B3AD] ${language === "zh" ? "editorial-zh" : "editorial"}`}
+                className={`font-light text-[#A8A8A8] ${language === "zh" ? "editorial-zh" : "editorial"}`}
                 style={{
-                  marginTop: "14px",
-                  fontSize: "clamp(12px, 1.4vw, 13px)",
-                  letterSpacing: language === "zh" ? "0.02em" : "0.01em",
+                  marginTop: "12px",
+                  fontSize: "clamp(14px, 1.7vw, 15px)",
+                  letterSpacing: language === "zh" ? "0.04em" : "0.02em",
                   opacity: visitorCount !== null ? 1 : 0,
                   transition: "opacity 1000ms ease 200ms",
                 }}
