@@ -123,7 +123,7 @@ export const translations = {
     // Counter line
     
     // Hero
-    heroLine1: "让世界继续向前",
+    heroLine1: "让世界继续",
     heroLine2: "你回到自己",
 
     // Hero sub-line
