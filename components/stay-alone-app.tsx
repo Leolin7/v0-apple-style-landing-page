@@ -260,7 +260,7 @@ export function StayAloneApp() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#F7F5F2] text-[#1A1A1A]">
+    <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-[#F7F5F2] text-[#1A1A1A]">
       {/* Top-left: Language switch */}
       {step === "landing" && (
         <button
@@ -284,24 +284,23 @@ export function StayAloneApp() {
       
 
       {/* Main content */}
-      <main className="flex flex-1 flex-col items-center justify-center px-6">
+      <main className="flex min-h-0 flex-1 flex-col items-center justify-center px-6">
         {/* Landing - a quiet room */}
         {step === "landing" && (
           <div
-            className="flex w-full max-w-[460px] flex-col items-center text-center"
+            className="flex h-full max-h-[760px] w-full max-w-[460px] flex-col items-center justify-between text-center"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(12px)",
               transition: "all 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
-              paddingTop: "clamp(32px, 5vh, 56px)",
-              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + clamp(32px, 5vh, 56px))",
+              paddingTop: "clamp(52px, 8vh, 84px)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + clamp(28px, 5vh, 60px))",
             }}
           >
             {/* Standalone counter number */}
             <div
               className="quiet-breathe"
               style={{
-                marginBottom: "clamp(48px, 7vh, 80px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1600ms ease 400ms",
               }}
@@ -351,6 +350,8 @@ export function StayAloneApp() {
               </p>
             </div>
 
+            {/* Core group - hero, sub-line, question, choices stay together */}
+            <div className="flex flex-col items-center">
             {/* Hero copy - the emotional centre */}
             <div
               className={`leading-[1.5] text-[#1A1A1A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
@@ -429,11 +430,13 @@ export function StayAloneApp() {
               ))}
             </div>
 
+            </div>
+            {/* end core group */}
+
             {/* Stay Alone - a quiet signature */}
             <p
               className="wordmark text-[#B8B3AD]"
               style={{
-                marginTop: "clamp(52px, 8vh, 88px)",
                 fontSize: "16px",
                 letterSpacing: "0.38em",
                 opacity: isVisible ? 1 : 0,
