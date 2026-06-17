@@ -368,9 +368,10 @@ export function StayAloneApp() {
 
             {/* Hero sub-line - quietly names what this is, without breaking the calm */}
             <div
-              className={`mx-auto font-light italic leading-[1.6] text-[#A8A8A8] ${language === "zh" ? "editorial-zh not-italic" : "editorial"}`}
+              className={`mx-auto flex flex-col items-center justify-center font-light italic leading-[1.6] text-[#A8A8A8] ${language === "zh" ? "editorial-zh not-italic" : "editorial"}`}
               style={{
                 fontSize: "clamp(13px, 1.7vw, 15px)",
+                height: "clamp(44px, 7vh, 52px)",
                 marginBottom: "clamp(44px, 6.5vh, 76px)",
                 maxWidth: "340px",
                 opacity: isVisible ? 1 : 0,
