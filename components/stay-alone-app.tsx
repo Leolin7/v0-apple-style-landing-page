@@ -308,7 +308,7 @@ export function StayAloneApp() {
             >
               <span
                 className="counter-row"
-                style={{ gap: "8px", height: "22px", lineHeight: "22px" }}
+                style={{ gap: "8px", height: "24px" }}
               >
                 <span
                   className="breathing-dot"
@@ -318,10 +318,13 @@ export function StayAloneApp() {
                 <span
                   className="counter-text text-[#A8A8A8]"
                   style={{
-                    fontFamily: '"IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace',
+                    display: "inline-flex",
+                    alignItems: "center",
+                    height: "24px",
+                    fontFamily: '"IBM Plex Mono", "JetBrains Mono", "Courier New", ui-monospace, monospace',
                     fontSize: "16px",
                     fontWeight: 300,
-                    lineHeight: "22px",
+                    lineHeight: "1",
                     letterSpacing: "0.14em",
                     opacity: visitorCount !== null ? 1 : 0,
                     transition: "opacity 800ms ease",
