@@ -546,55 +546,30 @@ export function StayAloneApp() {
               {getCompletionMessage()}
             </h2>
 
-            {/* Save prompt - only show if not logged in */}
-            {!isLoggedIn && (
-              <div className="mb-10 md:mb-12">
-                <p className="mb-8 font-light text-[#8A8A8A]"
-                  style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
-                >
-                  {t.savePrompt}
-                </p>
-                <div className="flex flex-col gap-3 md:flex-row md:gap-4">
-                  <button
-                    onClick={() => setAuthMode("create")}
-                    className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA]"
-                  >
-                    {t.createMySpace}
-                  </button>
-                  <button
-                    onClick={resetToLanding}
-                    className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#8A8A8A] transition-all hover:border-[#C5C0BA] hover:text-[#5A5A5A]"
-                  >
-                    {t.later}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Save message for logged in users */}
+            {/* Save confirmation for logged-in users */}
             {isLoggedIn && saveMessage && (
-              <p className="mb-6 text-sm font-light text-[#E8A87C] md:mb-8">
+              <p className="mb-8 text-sm font-light text-[#E8A87C]">
                 {saveMessage}
               </p>
             )}
 
-            {/* If logged in, just show a continue button */}
-            {isLoggedIn && (
-              <div className="flex flex-col gap-3 md:flex-row md:gap-4">
-                <button
-                  onClick={() => setMyTimeOpen(true)}
-                  className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA]"
-                >
-                  {t.mySpace}
-                </button>
-                <button
-                  onClick={resetToLanding}
-                  className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-3 text-sm font-light text-[#8A8A8A] transition-all hover:border-[#C5C0BA] hover:text-[#5A5A5A]"
-                >
-                  {t.back}
-                </button>
-              </div>
-            )}
+            {/* Gentle invitation — everyone can look, even without an account
+                (My Space reads local data; the "keep this" nudge lives inside it) */}
+            <button
+              onClick={() => setMyTimeOpen(true)}
+              className="font-light text-[#1A1A1A] underline decoration-[#D9CFC4] decoration-1 underline-offset-[6px] transition-colors hover:decoration-[#C5B8A8]"
+              style={{ fontSize: "clamp(15px, 2vw, 17px)" }}
+            >
+              {t.seeYourSpace}
+            </button>
+
+            <button
+              onClick={resetToLanding}
+              className="mt-7 font-light text-[#A8A8A8] transition-colors hover:text-[#7A7A7A]"
+              style={{ fontSize: "clamp(13px, 1.6vw, 14px)" }}
+            >
+              {t.backOutside}
+            </button>
           </div>
         )}
       </main>
