@@ -99,9 +99,12 @@ function Stars({ sessions }: { sessions: Session[] }) {
       const size = s.duration >= 60 ? 13 : s.duration >= 30 ? 8 : 4.5
       const daysAgo = (Date.now() - new Date(s.date).getTime()) / 86400000
       const depth = Math.max(0.32, 1 - daysAgo / 50)
+      // vertical spread shrinks when there are few points (so they stay compact)
+      const spread = Math.min(70, 18 + recent.length * 7)
+      const yTop = 50 - spread / 2
       return {
-        x: 7 + rx * 86,
-        y: 14 + ry * 70 + (jx - 0.5) * 6,
+        x: 10 + rx * 80,
+        y: yTop + ry * spread + (jx - 0.5) * 5,
         size,
         depth,
         big: s.duration >= 60,
@@ -109,6 +112,9 @@ function Stars({ sessions }: { sessions: Session[] }) {
       }
     })
   }, [recent])
+
+  // container height adapts: tight for few points, full for many
+  const fieldHeight = Math.min(168, 70 + recent.length * 14)
 
   const [lit, setLit] = useState(false)
   useEffect(() => {
@@ -118,7 +124,7 @@ function Stars({ sessions }: { sessions: Session[] }) {
   }, [sessions])
 
   return (
-    <div style={{ position: "relative", width: "100%", height: 168, marginTop: 8 }}>
+    <div style={{ position: "relative", width: "100%", height: fieldHeight, marginTop: 8 }}>
       <style>{`
         @keyframes saBreathe { 0%,100%{ opacity:.55; transform:translate(-50%,-50%) scale(1);} 50%{ opacity:1; transform:translate(-50%,-50%) scale(1.08);} }
         @media (prefers-reduced-motion: reduce){ .sa-recent-star{ animation:none !important; } }
