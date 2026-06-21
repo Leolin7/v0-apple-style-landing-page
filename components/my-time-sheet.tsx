@@ -1,12 +1,10 @@
 "use client"
 
+import { useEffect, useMemo, useState } from "react"
 import { useLanguage } from "@/lib/language-context"
-import { formatDuration, formatElapsedDuration } from "@/lib/translations"
-import type { UserStats, TriggerType } from "@/lib/storage"
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet"
+import { formatDuration } from "@/lib/translations"
+import type { UserStats, TriggerType, Session } from "@/lib/storage"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 
 interface MyTimeSheetProps {
   open: boolean
@@ -17,140 +15,276 @@ interface MyTimeSheetProps {
   isLoggedIn: boolean
 }
 
-export function MyTimeSheet({
-  open,
-  onOpenChange,
-  stats,
-  mostCommonTrigger,
-  onSignOut,
-  isLoggedIn,
-}: MyTimeSheetProps) {
+// ── greeting by time of day ──────────────────────────────────
+function getGreeting(lang: string): string {
+  const h = new Date().getHours()
+  if (lang === "zh") {
+    if (h < 5) return "夜深了"
+    if (h < 11) return "早安"
+    if (h < 18) return "午后好"
+    return "晚上好"
+  }
+  if (h < 5) return "Late night"
+  if (h < 11) return "Good morning"
+  if (h < 18) return "Good afternoon"
+  return "Good evening"
+}
+
+// ── relative time for the "recently" stream ──────────────────
+function relativeTime(dateStr: string, lang: string): string {
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000)
+  if (lang === "zh") {
+    if (days <= 0) return "今天"
+    if (days === 1) return "昨天"
+    if (days < 7) return `${days} 天前`
+    if (days < 14) return "上周"
+    return `${Math.floor(days / 7)} 周前`
+  }
+  if (days <= 0) return "today"
+  if (days === 1) return "yesterday"
+  if (days < 7) return `${days} days ago`
+  if (days < 14) return "last week"
+  return `${Math.floor(days / 7)} weeks ago`
+}
+
+// ── echo: the "we understand you" line · STRICT thresholds ───
+function buildEcho(
+  completed: Session[],
+  mostCommonTrigger: TriggerType | null,
+  triggerLabel: (t: TriggerType) => string,
+  lang: string
+): string {
+  const n = completed.length
+
+  // < 3 sessions: never fabricate a pattern (宁缺毋滥)
+  if (n < 3) {
+    return lang === "zh" ? "这是一个开始" : "This is a beginning"
+  }
+
+  // night pattern: only if > 50%
+  const nightCount = completed.filter((s) => {
+    const h = new Date(s.date).getHours()
+    return h >= 21 || h < 5
+  }).length
+  if (nightCount / n > 0.5) {
+    return lang === "zh" ? "你总在夜里，来到这里" : "You come here most often at night"
+  }
+
+  // trigger pattern: only if the top trigger is > 50% (strict)
+  if (mostCommonTrigger) {
+    const topCount = completed.filter((s) => s.trigger === mostCommonTrigger).length
+    if (topCount / n > 0.5) {
+      const label = triggerLabel(mostCommonTrigger)
+      return lang === "zh"
+        ? `这段时间，你最常想逃开的，是${label}`
+        : `Lately, what you most wanted to escape was ${label}`
+    }
+  }
+
+  // enough data but no strong pattern: a gentle, true line (not a fabricated "insight")
+  return lang === "zh" ? "你一直在为自己，守着这段时间" : "You keep making this time for yourself"
+}
+
+// ── star field · warm candlelight ────────────────────────────
+type StarPoint = { x: number; y: number; size: number; depth: number; big: boolean; delay: number }
+
+function Stars({ sessions }: { sessions: Session[] }) {
+  const recent = sessions.slice(0, 30)
+  const pts = useMemo<StarPoint[]>(() => {
+    return recent.map((s: Session, i: number): StarPoint => {
+      const seed = (parseInt(s.id, 10) || s.id.length * (i + 7)) + 1
+      const rx = (((Math.sin(seed * 12.9898) * 43758.5453) % 1) + 1) % 1
+      const ry = (((Math.sin(seed * 4.1414 + 1.7) * 24634.633) % 1) + 1) % 1
+      const jx = (((Math.sin(seed * 91.21) * 9123.7) % 1) + 1) % 1
+      const size = s.duration >= 60 ? 13 : s.duration >= 30 ? 8 : 4.5
+      const daysAgo = (Date.now() - new Date(s.date).getTime()) / 86400000
+      const depth = Math.max(0.32, 1 - daysAgo / 50)
+      return {
+        x: 7 + rx * 86,
+        y: 14 + ry * 70 + (jx - 0.5) * 6,
+        size,
+        depth,
+        big: s.duration >= 60,
+        delay: i * 55,
+      }
+    })
+  }, [recent])
+
+  const [lit, setLit] = useState(false)
+  useEffect(() => {
+    setLit(false)
+    const t = setTimeout(() => setLit(true), 80)
+    return () => clearTimeout(t)
+  }, [sessions])
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: 168, marginTop: 8 }}>
+      <style>{`
+        @keyframes saBreathe { 0%,100%{ opacity:.55; transform:translate(-50%,-50%) scale(1);} 50%{ opacity:1; transform:translate(-50%,-50%) scale(1.08);} }
+        @media (prefers-reduced-motion: reduce){ .sa-recent-star{ animation:none !important; } }
+      `}</style>
+      {pts.map((p: StarPoint, i: number) => {
+        const isRecent = i === 0
+        const color = isRecent ? "#E8A87C" : "#D9A06E"
+        return (
+          <span key={i} style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%,-50%)" }}>
+            {(p.big || isRecent) && (
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  transform: "translate(-50%,-50%)",
+                  width: p.size * 3.4,
+                  height: p.size * 3.4,
+                  borderRadius: "50%",
+                  background: `radial-gradient(circle, ${isRecent ? "rgba(232,168,124,0.40)" : "rgba(217,160,110,0.28)"} 0%, rgba(217,160,110,0) 70%)`,
+                  opacity: lit ? p.depth : 0,
+                  transition: `opacity 1100ms ease ${p.delay}ms`,
+                }}
+              />
+            )}
+            <span
+              className={isRecent ? "sa-recent-star" : undefined}
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                transform: "translate(-50%,-50%)",
+                width: p.size,
+                height: p.size,
+                borderRadius: "50%",
+                background: color,
+                opacity: lit ? p.depth : 0,
+                transition: `opacity 1000ms ease ${p.delay}ms`,
+                animation: isRecent ? "saBreathe 3.4s ease-in-out infinite 1200ms" : "none",
+                boxShadow: isRecent ? "0 0 6px rgba(232,168,124,0.7)" : "none",
+              }}
+            />
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
+export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger }: MyTimeSheetProps) {
   const { language, t } = useLanguage()
+  const lang = language
 
-  const formatSessionDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    if (language === "zh") {
-      return `${date.getMonth() + 1}月${date.getDate()}日`
-    }
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-  }
+  const completed = useMemo<Session[]>(() => (stats ? stats.sessions.filter((s) => s.completed) : []), [stats])
+  const blocks = stats?.completedBlocks ?? 0
+  const totalMinutes = stats?.totalMinutes ?? 0
 
-  // Format session duration for recent moments
-  const formatSessionDuration = (durationSeconds: number | undefined, duration: number) => {
-    if (durationSeconds !== undefined) {
-      return formatElapsedDuration(durationSeconds, language)
-    }
-    return formatDuration(duration, language)
-  }
+  const triggerLabel = (tr: TriggerType) => t.triggers[tr]
 
-  // Format the "most pulled away by" text
-  const getMostPulledAwayText = () => {
-    if (!mostCommonTrigger) return "—"
-    const triggerName = t.triggers[mostCommonTrigger]
-    if (language === "zh") {
-      return `${t.mostPulledAwayBy}${triggerName}${(t as typeof t & { mostPulledAwayBySuffix?: string }).mostPulledAwayBySuffix || ""}`
+  const echo = useMemo(
+    () => buildEcho(completed, mostCommonTrigger, triggerLabel, lang),
+    [completed, mostCommonTrigger, lang]
+  )
+
+  // long-term milestone (text) — only when enough data
+  const showMilestone = blocks >= 20
+  const milestone = useMemo(() => {
+    if (completed.length === 0) return ""
+    const oldest = completed[completed.length - 1]
+    const days = Math.max(1, Math.floor((Date.now() - new Date(oldest.date).getTime()) / 86400000))
+    const months = Math.round(days / 30)
+    if (lang === "zh") {
+      return months >= 2
+        ? `${months} 个月里，你回到这里 ${blocks} 次`
+        : `${days} 天里，你回到这里 ${blocks} 次`
     }
-    return `${t.mostPulledAwayBy} ${triggerName.toLowerCase()}`
-  }
+    return months >= 2
+      ? `over ${months} months, you've come back ${blocks} times`
+      : `over ${days} days, you've come back ${blocks} times`
+  }, [completed, blocks, lang])
+
+  const totalText = formatDuration(totalMinutes, language)
+
+  const hasSessions = completed.length > 0
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="w-full border-l border-[#DDD8D2] bg-[#F7F5F2] p-0 sm:max-w-[520px]"
-      >
-        {/* Content container - centered with max-width */}
-        <div className="mx-auto h-full max-w-[440px] overflow-y-auto px-6 pb-10 pt-16">
-          {/* Header */}
-          <div className="mb-10">
-            <h1 className="text-[28px] font-light tracking-tight text-[#1A1A1A] md:text-[32px]">
-              {t.mySpace}
-            </h1>
-            <p className="mt-1 text-[14px] font-light text-[#8A8A8A]">
-              {t.mySpaceSubline}
-            </p>
-          </div>
+      <SheetContent side="right" className="w-full border-l border-[#E5E0DA] bg-[#F7F5F2] p-0 sm:max-w-[480px]">
+        <div className="mx-auto h-full max-w-[400px] overflow-y-auto px-7 pb-16 pt-16 text-center sm:text-left">
+          {/* ① greeting */}
+          <p className="text-[15px] font-light text-[#8A8A8A]">{getGreeting(lang)}</p>
+          <p className="mt-1.5 text-[13px] font-light text-[#A8A8A8]">{t.mySpaceSubline}</p>
 
-          {stats ? (
-            <div className="flex flex-col gap-8">
-              {/* Main summary card */}
-              <div className="rounded-2xl border border-[#DDD8D2] bg-white px-6 py-7">
-                <p className="text-[36px] font-light leading-tight tracking-tight text-[#1A1A1A] md:text-[42px]">
-                  {formatDuration(stats.totalMinutes, language)}
+          {hasSessions ? (
+            <>
+              {/* ② accumulation */}
+              <div className="mt-14">
+                <p className="text-[15px] font-light text-[#8A8A8A]">{t.pausedForYourself}</p>
+                <p className="mt-2.5 text-[44px] font-medium leading-none tracking-tight text-[#1A1A1A]">
+                  {blocks}
+                  <span className="ml-2 text-[20px] font-light text-[#8A8A8A]">{t.timesUnit}</span>
                 </p>
-                <p className="mt-1 text-[14px] font-light text-[#8A8A8A]">
-                  {t.madeYours}
+                <p className="mt-3 text-[15px] font-light text-[#A8A8A8]">
+                  {lang === "zh" ? `一共 ${totalText}` : `${totalText} in all`}
                 </p>
               </div>
 
-              {/* Secondary stats - subtle rows */}
-              <div className="flex flex-col gap-3 px-1">
-                <p className="text-[14px] font-light text-[#1A1A1A]">
-                  <span className="text-[#8A8A8A]">{stats.completedBlocks}</span>
-                  {" "}
-                  {language === "zh" ? t.blocksCompleted : `${t.blocksCompleted}`}
+              {/* ③ trace: stars + milestone */}
+              <div className="mt-14">
+                <p className="text-[13px] font-light tracking-wide text-[#A8A8A8]">{t.traceTitle}</p>
+                <p className="mt-1 text-[12px] font-light leading-relaxed text-[#A8A8A8] opacity-85">
+                  {t.traceCaption}
                 </p>
-                <p className="text-[14px] font-light text-[#1A1A1A]">
-                  {getMostPulledAwayText()}
-                </p>
-              </div>
-
-              {/* Recent moments */}
-              {stats.sessions.filter(s => s.completed).length > 0 && (
-                <div className="mt-2">
-                  <p className="mb-4 px-1 text-[13px] font-light text-[#8A8A8A]">
-                    {t.recentMoments}
+                <Stars sessions={completed} />
+                {showMilestone && (
+                  <p className="mt-3.5 text-center text-[13px] font-light leading-relaxed text-[#8A8A8A]">
+                    {milestone}
                   </p>
-                  <div className="flex flex-col gap-2">
-                    {stats.sessions
-                      .filter((s) => s.completed)
-                      .slice(0, 5)
-                      .map((session) => (
-                        <div
-                          key={session.id}
-                          className="flex h-[56px] items-center justify-between rounded-xl border border-[#DDD8D2] bg-white px-4"
-                        >
-                          <p className="text-[13px] font-light text-[#1A1A1A]">
-                            {formatSessionDuration(session.durationSeconds, session.duration)}
-                            <span className="text-[#8A8A8A]"> · {t.triggers[session.trigger]}</span>
-                          </p>
-                          <p className="text-[12px] font-light text-[#8A8A8A]">
-                            {formatSessionDate(session.date)}
-                          </p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              {/* Future personalisation section */}
-              <div className="mt-4 rounded-xl border border-[#DDD8D2] px-5 py-4">
-                <p className="text-[13px] font-light text-[#8A8A8A]">
-                  {t.futureTitle}
-                </p>
-                <p className="mt-1 text-[12px] font-light leading-relaxed text-[#8A8A8A]">
-                  {t.futureSubcopy}
+              {/* ④ echo */}
+              <div className="mt-12 border-t border-[#1A1A1A]/10 pt-7">
+                <p
+                  className={`text-[#1A1A1A] ${lang === "zh" ? "text-[16px]" : "text-[15px] italic"} font-light leading-[1.7]`}
+                >
+                  {echo}
                 </p>
               </div>
 
-              {/* Sign out */}
-              {isLoggedIn && (
-                <button
-                  onClick={onSignOut}
-                  className="mt-4 self-start px-1 text-[12px] font-light text-[#8A8A8A] transition-colors hover:text-[#5A5A5A]"
-                >
-                  {t.signOut}
-                </button>
-              )}
-            </div>
+              {/* recently — text stream that supplements the stars */}
+              <div className="mt-11">
+                <p className="mb-3.5 text-[12px] font-light text-[#A8A8A8]">{t.recentMoments}</p>
+                {completed.slice(0, 4).map((s: Session) => (
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between border-b border-[#1A1A1A]/[0.05] py-2.5"
+                  >
+                    <span className="text-[13px] font-light text-[#1A1A1A]">
+                      {s.duration} {lang === "zh" ? "分钟" : "min"}
+                      <span className="text-[#A8A8A8]"> · {t.triggers[s.trigger]}</span>
+                    </span>
+                    <span className="text-[12px] font-light text-[#A8A8A8]">{relativeTime(s.date, lang)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
-            /* No stats yet */
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-[14px] font-light text-[#8A8A8A]">
-                {t.noSessions}
-              </p>
+            /* empty state — an invitation, not a void */
+            <div className="mt-24 text-center">
+              <span
+                className="sa-recent-star mx-auto mb-7 block h-3 w-3 rounded-full"
+                style={{ background: "#E8A87C", boxShadow: "0 0 8px rgba(232,168,124,0.7)" }}
+              />
+              <p className="text-[15px] font-light leading-relaxed text-[#8A8A8A]">{t.noSessions}</p>
             </div>
           )}
+
+          {/* signature */}
+          <p
+            className="wordmark mt-16 text-center text-[#B8B3AD]"
+            style={{ fontSize: "13px", letterSpacing: "0.34em" }}
+          >
+            Stay Alone
+          </p>
         </div>
       </SheetContent>
     </Sheet>
