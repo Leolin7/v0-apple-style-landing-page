@@ -64,6 +64,8 @@ export const translations = {
     // Completion
     completionPrefix: "This was your",
     savePrompt: "Save your time",
+    seeYourSpace: "See your space",
+    backOutside: "Back to the world",
     createMySpace: "Create My Space",
     later: "Later",
     
@@ -186,6 +188,8 @@ export const translations = {
     // Completion
     completionPrefix: "这是属于你的",
     savePrompt: "保存你的时间",
+    seeYourSpace: "看看你的空间",
+    backOutside: "回到外面",
     createMySpace: "创建我的空间",
     later: "稍后",
     
