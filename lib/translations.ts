@@ -38,13 +38,13 @@ export const translations = {
     // Trigger selection
     triggerQuestion: "What are you stepping away from?",
     triggers: {
-      shortVideos: "Short videos",
-      messages: "Messages",
-      work: "Work",
-      ai: "AI and endless searching",
-      anxiety: "Anxiety",
-      boredom: "Boredom",
-      world: "The world for a while",
+      shortVideos: "the endless scroll",
+      messages: "the messages",
+      work: "the work",
+      ai: "the noise on the screen",
+      anxiety: "the anxiety",
+      boredom: "the boredom",
+      world: "the world",
     },
     
     // Timer
@@ -160,13 +160,13 @@ export const translations = {
     // Trigger selection
     triggerQuestion: "你想暂时离开什么？",
     triggers: {
-      shortVideos: "短视频",
-      messages: "消息",
-      work: "工作",
-      ai: "AI 和无尽搜索",
-      anxiety: "焦虑",
-      boredom: "无聊",
-      world: "暂时离开世界一会儿",
+      shortVideos: "刷不完的视频",
+      messages: "回不完的消息",
+      work: "忙不完的事",
+      ai: "屏幕里的喧嚣",
+      anxiety: "心里的焦虑",
+      boredom: "无处安放的无聊",
+      world: "外面的一切",
     },
     
     // Timer
