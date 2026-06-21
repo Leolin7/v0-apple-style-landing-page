@@ -69,12 +69,16 @@ export const translations = {
     
     // My Space
     mySpace: "My Space",
-    mySpaceSubline: "The time you made yours.",
+    mySpaceSubline: "this is your space",
+    pausedForYourself: "you've paused for yourself",
+    timesUnit: "times",
+    traceTitle: "The light you've kept",
+    traceCaption: "Each one is time you kept for yourself. The larger the glow, the longer you stayed.",
     enterMySpace: "Enter My Space",
     madeYours: "made yours",
     blocksCompleted: "blocks completed",
     mostPulledAwayBy: "Most often pulled away by",
-    recentMoments: "Recent moments",
+    recentMoments: "recently",
     
     // Auth
     email: "Email address",
@@ -114,7 +118,7 @@ export const translations = {
     // Misc
     back: "Back",
     close: "Close",
-    noSessions: "No sessions yet",
+    noSessions: "Your first quiet moment will appear here.",
     block: "block",
     blocks: "blocks",
     or: "or",
@@ -187,13 +191,17 @@ export const translations = {
     
     // My Space
     mySpace: "我的空间",
-    mySpaceSubline: "你留给自己的时间。",
+    mySpaceSubline: "这里是你的空间",
+    pausedForYourself: "你为自己停下来过",
+    timesUnit: "次",
+    traceTitle: "你点亮过的时刻",
+    traceCaption: "每一个点，都是你留给自己的一段独处；形状大的时候，你把更多的时间留给了自己",
     enterMySpace: "进入我的空间",
     madeYours: "属于你",
     blocksCompleted: "次",
     mostPulledAwayBy: "最常被",
     mostPulledAwayBySuffix: "带走",
-    recentMoments: "最近的时间",
+    recentMoments: "最近",
     
     // Auth
     email: "邮箱",
@@ -233,7 +241,7 @@ export const translations = {
     // Misc
     back: "返回",
     close: "关闭",
-    noSessions: "暂无记录",
+    noSessions: "你的第一段独处，会出现在这里。",
     block: "次",
     blocks: "次",
     or: "或",
