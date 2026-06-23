@@ -66,6 +66,8 @@ export const translations = {
     savePrompt: "Save your time",
     seeYourSpace: "See your space",
     backOutside: "Back to the world",
+    lingerLead: "You can choose to",
+    lingerAction: "let the stars linger",
     createMySpace: "Create My Space",
     later: "Later",
     
@@ -190,6 +192,8 @@ export const translations = {
     savePrompt: "保存你的时间",
     seeYourSpace: "看看你的空间",
     backOutside: "回到外面",
+    lingerLead: "你可以选择",
+    lingerAction: "让这一片星空继续",
     createMySpace: "创建我的空间",
     later: "稍后",
     

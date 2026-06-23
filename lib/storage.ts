@@ -33,8 +33,6 @@ export interface UserStats {
   completedBlocks: number
   triggerCounts: Record<TriggerType, number>
   sessions: Session[]
-  currentStreak: number
-  lastSessionDate: string | null
 }
 
 const STORAGE_KEY = "stayalone_stats"
@@ -191,8 +189,6 @@ export function getDefaultStats(): UserStats {
       world: 0,
     },
     sessions: [],
-    currentStreak: 0,
-    lastSessionDate: null,
   }
 }
 
@@ -259,16 +255,35 @@ export function saveStats(stats: UserStats): void {
   }
 }
 
+// Local recording cap for users who haven't saved their space (not logged in).
+// Once they've genuinely accumulated something, local recording stops — the
+// invitation to "let the stars linger" (register) takes over.
+export const LOCAL_CAP_BLOCKS = 8
+export const LOCAL_CAP_MINUTES = 30
+
+export function isLocalCapReached(stats: UserStats): boolean {
+  return stats.completedBlocks >= LOCAL_CAP_BLOCKS && stats.totalMinutes >= LOCAL_CAP_MINUTES
+}
+
 export function addSession(
   duration: number,
   trigger: TriggerType,
   completed: boolean,
   pulledAwayCount: number,
-  durationSeconds?: number
+  durationSeconds?: number,
+  isLoggedIn = false
 ): UserStats {
   const stats = loadStats()
+
+  // If not logged in and the local cap is reached, stop recording new sessions.
+  // The session still "happened" (the timer worked) — it just isn't added to the
+  // local space. Registering lifts the cap.
+  if (!isLoggedIn && isLocalCapReached(stats)) {
+    return stats
+  }
+
   const now = new Date().toISOString()
-  
+
   const session: Session = {
     id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     date: now,
@@ -278,33 +293,15 @@ export function addSession(
     completed,
     pulledAwayCount,
   }
-  
+
   stats.sessions.unshift(session)
-  
+
   if (completed) {
     stats.totalMinutes += duration
     stats.completedBlocks += 1
     stats.triggerCounts[trigger] = (stats.triggerCounts[trigger] || 0) + 1
-    
-    // Update streak
-    const lastDate = stats.lastSessionDate
-    if (lastDate) {
-      const lastSessionDay = new Date(lastDate).toDateString()
-      const today = new Date().toDateString()
-      const yesterday = new Date(Date.now() - 86400000).toDateString()
-      
-      if (lastSessionDay === yesterday) {
-        stats.currentStreak += 1
-      } else if (lastSessionDay !== today) {
-        stats.currentStreak = 1
-      }
-    } else {
-      stats.currentStreak = 1
-    }
-    
-    stats.lastSessionDate = now
   }
-  
+
   const updatedStats = recalculateStats(stats)
   saveStats(updatedStats)
   return updatedStats
