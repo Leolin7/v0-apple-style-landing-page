@@ -175,18 +175,20 @@ export function StayAloneApp() {
           selectedTrigger,
           completed && !isPulledAway,
           pulledAwayCount,
-          elapsedSeconds
+          elapsedSeconds,
+          true
         )
         setStats(newStats)
       }
     } else {
-      // Not signed in - use localStorage only
+      // Not signed in - use localStorage only (cap applies once accumulated)
       const newStats = addSession(
         elapsedMinutes > 0 ? elapsedMinutes : 1,
         selectedTrigger,
         completed && !isPulledAway,
         pulledAwayCount,
-        elapsedSeconds
+        elapsedSeconds,
+        false
       )
       setStats(newStats)
     }
@@ -582,6 +584,10 @@ export function StayAloneApp() {
         mostCommonTrigger={stats ? getMostCommonTrigger(stats) : null}
         onSignOut={handleSignOut}
         isLoggedIn={isLoggedIn}
+        onCreateSpace={() => {
+          setMyTimeOpen(false)
+          setAuthMode("create")
+        }}
       />
 
       {/* Auth Modals */}

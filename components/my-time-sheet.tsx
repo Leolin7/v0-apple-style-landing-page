@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useLanguage } from "@/lib/language-context"
 import { formatDuration } from "@/lib/translations"
 import type { UserStats, TriggerType, Session } from "@/lib/storage"
+import { isLocalCapReached } from "@/lib/storage"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 
 interface MyTimeSheetProps {
@@ -13,6 +14,7 @@ interface MyTimeSheetProps {
   mostCommonTrigger: TriggerType | null
   onSignOut: () => void
   isLoggedIn: boolean
+  onCreateSpace?: () => void
 }
 
 // ── greeting by time of day ──────────────────────────────────
@@ -175,7 +177,7 @@ function Stars({ sessions }: { sessions: Session[] }) {
   )
 }
 
-export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger }: MyTimeSheetProps) {
+export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger, isLoggedIn, onCreateSpace }: MyTimeSheetProps) {
   const { language, t } = useLanguage()
   const lang = language
 
@@ -243,6 +245,21 @@ export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger }: My
                 {showMilestone && (
                   <p className="mt-3.5 text-center text-[13px] font-light leading-relaxed text-[#8A8A8A]">
                     {milestone}
+                  </p>
+                )}
+
+                {/* gentle invitation to register — only once they've truly
+                    accumulated (cap reached) and haven't saved their space yet.
+                    No mention of the limit; just a quiet, positive choice. */}
+                {!isLoggedIn && stats && isLocalCapReached(stats) && (
+                  <p className="mt-7 text-center text-[14px] font-light leading-relaxed text-[#8A8A8A]">
+                    {t.lingerLead}{" "}
+                    <button
+                      onClick={onCreateSpace}
+                      className="text-[#1A1A1A] underline decoration-[#D9CFC4] decoration-1 underline-offset-[5px] transition-colors hover:decoration-[#C5B8A8]"
+                    >
+                      {t.lingerAction}
+                    </button>
                   </p>
                 )}
               </div>
