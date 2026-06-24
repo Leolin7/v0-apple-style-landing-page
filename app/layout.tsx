@@ -28,21 +28,21 @@ const notoSerifSC = Noto_Serif_SC({
 
 export const metadata: Metadata = {
   title: "Stay Alone",
-  description: "Let the world move. Stay with yourself.",
+  description: "Here remembers you came home to yourself.",
   icons: {
     icon: "/icon.svg",
     apple: "/apple-icon.svg",
   },
   openGraph: {
     title: "Stay Alone",
-    description: "Let the world move. Stay with yourself.",
+    description: "Here remembers you came home to yourself.",
     images: ["/og-image.svg"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Stay Alone",
-    description: "Let the world move. Stay with yourself.",
+    description: "Here remembers you came home to yourself.",
     images: ["/og-image.svg"],
   },
 }
