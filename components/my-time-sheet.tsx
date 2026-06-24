@@ -98,7 +98,14 @@ function Stars({ sessions }: { sessions: Session[] }) {
       const rx = (((Math.sin(seed * 12.9898) * 43758.5453) % 1) + 1) % 1
       const ry = (((Math.sin(seed * 4.1414 + 1.7) * 24634.633) % 1) + 1) % 1
       const jx = (((Math.sin(seed * 91.21) * 9123.7) % 1) + 1) % 1
-      const size = s.duration >= 60 ? 13 : s.duration >= 30 ? 8 : 4.5
+      // size grows smoothly with actual duration, but the range is deliberately
+      // gentle (≈5px → ≈11px). sqrt compresses it so a 60-min point is a bit
+      // larger than a 1-min point — never dozens of times bigger.
+      const MIN_SIZE = 5
+      const MAX_SIZE = 11
+      const capped = Math.min(s.duration, 60)
+      const t = Math.sqrt(capped / 60) // 0..1, compressed
+      const size = MIN_SIZE + t * (MAX_SIZE - MIN_SIZE)
       const daysAgo = (Date.now() - new Date(s.date).getTime()) / 86400000
       const depth = Math.max(0.32, 1 - daysAgo / 50)
       // vertical spread shrinks when there are few points (so they stay compact)
@@ -109,7 +116,7 @@ function Stars({ sessions }: { sessions: Session[] }) {
         y: yTop + ry * spread + (jx - 0.5) * 5,
         size,
         depth,
-        big: s.duration >= 60,
+        big: s.duration >= 45,
         delay: i * 55,
       }
     })
