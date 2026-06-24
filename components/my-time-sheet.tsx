@@ -192,22 +192,28 @@ export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger, isLo
     [completed, mostCommonTrigger, lang]
   )
 
-  // long-term milestone (text) — only when enough data
-  const showMilestone = blocks >= 20
-  const milestone = useMemo(() => {
-    if (completed.length === 0) return ""
+  // long-term milestone (text) — only when the journey actually spans real time,
+  // not just when there are many sessions in a single day
+  const milestoneSpanDays = useMemo(() => {
+    if (completed.length === 0) return 0
     const oldest = completed[completed.length - 1]
-    const days = Math.max(1, Math.floor((Date.now() - new Date(oldest.date).getTime()) / 86400000))
+    return Math.floor((Date.now() - new Date(oldest.date).getTime()) / 86400000)
+  }, [completed])
+
+  const showMilestone = blocks >= 20 && milestoneSpanDays >= 14
+
+  const milestone = useMemo(() => {
+    if (!showMilestone) return ""
+    const days = milestoneSpanDays
     const months = Math.round(days / 30)
+    const weeks = Math.round(days / 7)
     if (lang === "zh") {
-      return months >= 2
-        ? `${months} 个月里，你回到这里 ${blocks} 次`
-        : `${days} 天里，你回到这里 ${blocks} 次`
+      if (months >= 2) return `${months} 个月里，你回到这里 ${blocks} 次`
+      return `${weeks} 周里，你回到这里 ${blocks} 次`
     }
-    return months >= 2
-      ? `over ${months} months, you've come back ${blocks} times`
-      : `over ${days} days, you've come back ${blocks} times`
-  }, [completed, blocks, lang])
+    if (months >= 2) return `over ${months} months, you've come back ${blocks} times`
+    return `over ${weeks} weeks, you've come back ${blocks} times`
+  }, [showMilestone, milestoneSpanDays, blocks, lang])
 
   const totalText = formatDuration(totalMinutes, language)
 
@@ -247,21 +253,6 @@ export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger, isLo
                     {milestone}
                   </p>
                 )}
-
-                {/* gentle invitation to register — only once they've truly
-                    accumulated (cap reached) and haven't saved their space yet.
-                    No mention of the limit; just a quiet, positive choice. */}
-                {!isLoggedIn && stats && isLocalCapReached(stats) && (
-                  <p className="mt-7 text-center text-[14px] font-light leading-relaxed text-[#8A8A8A]">
-                    {t.lingerLead}{" "}
-                    <button
-                      onClick={onCreateSpace}
-                      className="text-[#1A1A1A] underline decoration-[#D9CFC4] decoration-1 underline-offset-[5px] transition-colors hover:decoration-[#C5B8A8]"
-                    >
-                      {t.lingerAction}
-                    </button>
-                  </p>
-                )}
               </div>
 
               {/* ④ echo */}
@@ -289,6 +280,21 @@ export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger, isLo
                   </div>
                 ))}
               </div>
+
+              {/* gentle invitation to register — last of all, after they've seen
+                  everything. Only when not logged in and the local space is full.
+                  No mention of the limit; just a quiet, positive choice. */}
+              {!isLoggedIn && stats && isLocalCapReached(stats) && (
+                <p className="mt-12 border-t border-[#1A1A1A]/10 pt-7 text-center text-[14px] font-light leading-relaxed text-[#8A8A8A]">
+                  {t.lingerLead}{" "}
+                  <button
+                    onClick={onCreateSpace}
+                    className="text-[#1A1A1A] underline decoration-[#D9CFC4] decoration-1 underline-offset-[5px] transition-colors hover:decoration-[#C5B8A8]"
+                  >
+                    {t.lingerAction}
+                  </button>
+                </p>
+              )}
             </>
           ) : (
             /* empty state — an invitation, not a void */
