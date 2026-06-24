@@ -63,13 +63,11 @@ export const translations = {
     
     // Completion
     completionPrefix: "This was your",
-    savePrompt: "Save your time",
     seeYourSpace: "See your space",
     backOutside: "Back to the world",
     lingerLead: "You can choose to",
     lingerAction: "let the stars linger",
     createMySpace: "Create My Space",
-    later: "Later",
     
     // My Space
     mySpace: "My Space",
@@ -79,9 +77,6 @@ export const translations = {
     traceTitle: "The light you've kept",
     traceCaption: "Each one is time you kept for yourself. The larger the glow, the longer you stayed.",
     enterMySpace: "Enter My Space",
-    madeYours: "made yours",
-    blocksCompleted: "blocks completed",
-    mostPulledAwayBy: "Most often pulled away by",
     recentMoments: "recently",
     
     // Auth
@@ -94,7 +89,6 @@ export const translations = {
     createMySpaceButton: "Create My Space",
     noSpace: "No space yet?",
     haveSpace: "Have a space?",
-    signOut: "Sign out",
     
     // Validation
     emailRequired: "Email is required",
@@ -112,8 +106,6 @@ export const translations = {
     comingSoon: "Coming soon",
     
     // Future features
-    futureTitle: "Personal modes are coming",
-    futureSubcopy: "Soon, Stay Alone will learn what helps you return to your own time.",
     
     // Save messages
     savedToMySpace: "Saved to My Space",
@@ -189,13 +181,11 @@ export const translations = {
     
     // Completion
     completionPrefix: "这是属于你的",
-    savePrompt: "保存你的时间",
     seeYourSpace: "看看你的空间",
     backOutside: "回到外面",
     lingerLead: "你可以选择",
     lingerAction: "让这一片星空继续",
     createMySpace: "创建我的空间",
-    later: "稍后",
     
     // My Space
     mySpace: "我的空间",
@@ -205,9 +195,6 @@ export const translations = {
     traceTitle: "你点亮过的时刻",
     traceCaption: "每一个点，都是你留给自己的一段独处；形状大的时候，你把更多的时间留给了自己",
     enterMySpace: "进入我的空间",
-    madeYours: "属于你",
-    blocksCompleted: "次",
-    mostPulledAwayBy: "最常被",
     mostPulledAwayBySuffix: "带走",
     recentMoments: "最近",
     
@@ -221,7 +208,6 @@ export const translations = {
     createMySpaceButton: "创建我的空间",
     noSpace: "还没有空间？",
     haveSpace: "已有空间？",
-    signOut: "退出登录",
     
     // Validation
     emailRequired: "请输入邮箱",
@@ -239,8 +225,6 @@ export const translations = {
     comingSoon: "即将推出",
     
     // Future features
-    futureTitle: "属于你的模式，即将开放",
-    futureSubcopy: "之后，Stay Alone 会更懂你如何回到自己的时间。",
     
     // Save messages
     savedToMySpace: "已保存到我的空间",
