@@ -455,7 +455,7 @@ export function StayAloneApp() {
         {/* Trigger selection */}
         {step === "trigger" && (
           <div
-            className="flex flex-col items-center text-center"
+            className="my-auto flex flex-col items-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(20px)",
@@ -495,7 +495,7 @@ export function StayAloneApp() {
         {/* Timer */}
         {step === "timer" && (
           <div
-            className="flex flex-col items-center text-center"
+            className="my-auto flex flex-col items-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
               transition: "all 600ms ease",
@@ -534,7 +534,7 @@ export function StayAloneApp() {
         {/* Completion */}
         {step === "complete" && (
           <div
-            className="flex flex-col items-center text-center"
+            className="my-auto flex flex-col items-center text-center"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(20px)",
