@@ -119,6 +119,37 @@ export function StayAloneApp() {
     startDateRef.current = new Date()
     setSaveMessage(null)
     setStep("timer")
+    // Enter fullscreen for a true "the world falls away" feel.
+    // Silently ignored where unsupported (notably iOS Safari) — we fall back
+    // to an in-page immersive layer there.
+    try {
+      const el = document.documentElement as HTMLElement & {
+        webkitRequestFullscreen?: () => Promise<void>
+      }
+      if (el.requestFullscreen) {
+        void el.requestFullscreen().catch(() => {})
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen()
+      }
+    } catch {
+      /* no-op */
+    }
+  }
+
+  const exitFullscreenSafely = () => {
+    try {
+      const doc = document as Document & {
+        webkitExitFullscreen?: () => Promise<void>
+        webkitFullscreenElement?: Element | null
+      }
+      if (document.fullscreenElement && document.exitFullscreen) {
+        void document.exitFullscreen().catch(() => {})
+      } else if (doc.webkitFullscreenElement && doc.webkitExitFullscreen) {
+        doc.webkitExitFullscreen()
+      }
+    } catch {
+      /* no-op */
+    }
   }
 
   const completeSession = async (completed: boolean, isPulledAway: boolean = false) => {
@@ -207,6 +238,7 @@ export function StayAloneApp() {
   }
 
   const resetToLanding = () => {
+    exitFullscreenSafely()
     setStep("landing")
     setSelectedTime(30)
     setSelectedTrigger("world")
@@ -260,6 +292,34 @@ export function StayAloneApp() {
     const duration = formatElapsedDuration(completedElapsedSeconds, language)
     return `${t.completionPrefix} ${duration}`
   }
+
+  // ── Daylight: time expressed as a slow shift from afternoon to dusk ──
+  // progress 0 → 1 across the whole session. The space drifts from a soft,
+  // warm afternoon into a deep amber dusk, so you *feel* time pass without
+  // staring at a number.
+  const totalSeconds = selectedTime * 60
+  const daylightProgress =
+    totalSeconds > 0 ? Math.min(1, Math.max(0, 1 - timeRemaining / totalSeconds)) : 0
+
+  // interpolate between two hex colors
+  const lerpColor = (a: string, b: string, t: number) => {
+    const ah = a.replace("#", "")
+    const bh = b.replace("#", "")
+    const ar = parseInt(ah.slice(0, 2), 16)
+    const ag = parseInt(ah.slice(2, 4), 16)
+    const ab = parseInt(ah.slice(4, 6), 16)
+    const br = parseInt(bh.slice(0, 2), 16)
+    const bg = parseInt(bh.slice(2, 4), 16)
+    const bb = parseInt(bh.slice(4, 6), 16)
+    const r = Math.round(ar + (br - ar) * t)
+    const g = Math.round(ag + (bg - ag) * t)
+    const bl = Math.round(ab + (bb - ab) * t)
+    return `rgb(${r}, ${g}, ${bl})`
+  }
+
+  // afternoon → dusk palette (top & bottom of a soft vertical gradient)
+  const skyTop = lerpColor("#F4EFE8", "#E9C9A6", daylightProgress) // soft cream → warm sand
+  const skyBottom = lerpColor("#F7F1E9", "#D89B6C", daylightProgress) // light → deep amber dusk
 
   return (
     <div className="relative flex min-h-[100dvh] flex-col bg-[#F7F5F2] text-[#1A1A1A]">
@@ -495,35 +555,82 @@ export function StayAloneApp() {
         {/* Timer */}
         {step === "timer" && (
           <div
-            className="my-auto flex flex-col items-center text-center"
+            className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-hidden"
             style={{
+              background: `linear-gradient(to bottom, ${skyTop}, ${skyBottom})`,
+              transition: "background 1500ms linear",
               opacity: isVisible ? 1 : 0,
-              transition: "all 600ms ease",
+              animation: "saSpaceIn 1400ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <p className={`mb-10 font-light text-[#8A8A8A] md:mb-12 ${language === "zh" ? "editorial-zh" : "editorial"}`}
-              style={{ fontSize: "clamp(16px, 2vw, 20px)" }}
+            <style>{`
+              @keyframes saSpaceIn { 0%{ opacity:0; } 100%{ opacity:1; } }
+              @keyframes saGlowBreath {
+                0%,100%{ transform:scale(1); opacity:.5; }
+                50%{ transform:scale(1.12); opacity:.8; }
+              }
+              @media (prefers-reduced-motion: reduce){
+                .sa-breath-glow{ animation:none !important; }
+              }
+            `}</style>
+
+            {/* Companion breathing light — the warmth of "now" */}
+            <div
+              className="sa-breath-glow"
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                width: "min(46vw, 280px)",
+                height: "min(46vw, 280px)",
+                borderRadius: "50%",
+                backgroundImage: `radial-gradient(circle, rgba(255,250,244,0.55) 0%, rgba(255,250,244,0) 70%)`,
+                animation: "saGlowBreath 6s ease-in-out infinite",
+                filter: "blur(2px)",
+              }}
+            />
+
+            {/* Faint title, fades away as you settle in (first ~12% of the time) */}
+            <p
+              className={`relative z-10 mb-2 font-light ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{
+                fontSize: "clamp(15px, 2vw, 19px)",
+                color: "rgba(60,48,38,0.55)",
+                opacity: Math.max(0, 1 - daylightProgress * 8),
+                transition: "opacity 2000ms ease",
+              }}
             >
               {t.timerTitle}
             </p>
 
+            {/* Very faint time, tucked low — there if you need it, never demanding */}
             <div
-              className="wordmark mb-10 text-[#1A1A1A] md:mb-12"
-              style={{ fontSize: "clamp(4rem, 15vw, 8rem)" }}
+              className="wordmark absolute z-10"
+              style={{
+                bottom: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
+                fontSize: "13px",
+                letterSpacing: "0.3em",
+                color: "rgba(60,48,38,0.32)",
+              }}
             >
               {formatTime(timeRemaining)}
             </div>
 
-            <div className="flex gap-4 md:gap-5">
+            {/* Gentle controls, low and quiet */}
+            <div
+              className="absolute z-10 flex items-center gap-6"
+              style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 40px)" }}
+            >
               <button
                 onClick={handlePulledAway}
-                className="rounded-full border border-[#DDD8D2] bg-transparent px-5 py-2.5 text-[13px] font-light text-[#8A8A8A] transition-all hover:border-[#C5C0BA] hover:text-[#5A5A5A]"
+                className="font-light transition-colors"
+                style={{ fontSize: "13px", color: "rgba(60,48,38,0.4)" }}
               >
                 {t.pulledAway}
               </button>
               <button
                 onClick={() => completeSession(true, false)}
-                className="rounded-full border border-[#DDD8D2] bg-transparent px-6 py-2.5 text-[13px] font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA]"
+                className="font-light transition-colors"
+                style={{ fontSize: "13px", color: "rgba(60,48,38,0.6)" }}
               >
                 {t.finish}
               </button>
