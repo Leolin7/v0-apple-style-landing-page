@@ -261,13 +261,13 @@ export function getOrdinal(n: number, lang: Language): string {
 
 export function formatDuration(minutes: number, lang: Language): string {
   if (minutes < 60) {
-    return lang === "en" ? `${minutes} minutes` : `${minutes} 分钟`
+    return lang === "en" ? `${minutes} minute${minutes === 1 ? "" : "s"}` : `${minutes} 分钟`
   }
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
   if (lang === "en") {
     if (mins === 0) return `${hours} hour${hours > 1 ? "s" : ""}`
-    return `${hours} hour${hours > 1 ? "s" : ""} ${mins} minutes`
+    return `${hours} hour${hours > 1 ? "s" : ""} ${mins} minute${mins === 1 ? "" : "s"}`
   }
   if (mins === 0) return `${hours} 小时`
   return `${hours} 小时 ${mins} 分钟`
