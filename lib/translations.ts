@@ -21,6 +21,9 @@ export const translations = {
     
     // Time selection
     timeQuestion: "There’s no rush. You can choose to —",
+    enterPrefix: "There’s no rush. You can choose to ",
+    enterAction: "stay",
+    enterSuffix: "",
     minutes15: "15 minutes",
     minutes30: "30 minutes", 
     minutes60: "60 minutes",
@@ -37,6 +40,8 @@ export const translations = {
     
     // Trigger selection
     triggerQuestion: "What are you stepping away from?",
+    triggerQuestionAfter: "What did you step away from?",
+    chooseTimeTitle: "How long will you stay?",
     triggers: {
       shortVideos: "the endless scroll",
       messages: "the messages",
@@ -139,6 +144,9 @@ export const translations = {
     
     // Time selection
     timeQuestion: "这一次，你可以选择 —",
+    enterPrefix: "这一次，你可以",
+    enterAction: "选择",
+    enterSuffix: " —",
     minutes15: "15 分钟",
     minutes30: "30 分钟",
     minutes60: "60 分钟",
@@ -155,6 +163,8 @@ export const translations = {
     
     // Trigger selection
     triggerQuestion: "你想暂时离开什么？",
+    triggerQuestionAfter: "刚才，你想暂时离开的是什么？",
+    chooseTimeTitle: "你想停留多久？",
     triggers: {
       shortVideos: "刷不完的视频",
       messages: "回不完的消息",
