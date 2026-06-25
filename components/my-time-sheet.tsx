@@ -241,7 +241,9 @@ export function MyTimeSheet({ open, onOpenChange, stats, mostCommonTrigger, isLo
                 <p className="text-[15px] font-light text-[#8A8A8A]">{t.pausedForYourself}</p>
                 <p className="mt-2.5 text-[44px] font-medium leading-none tracking-tight text-[#1A1A1A]">
                   {blocks}
-                  <span className="ml-2 text-[20px] font-light text-[#8A8A8A]">{t.timesUnit}</span>
+                  <span className="ml-2 text-[20px] font-light text-[#8A8A8A]">
+                    {lang === "en" && blocks === 1 ? "time" : t.timesUnit}
+                  </span>
                 </p>
                 <p className="mt-3 text-[15px] font-light text-[#A8A8A8]">
                   {lang === "zh" ? `一共 ${totalText}` : `${totalText} in all`}
