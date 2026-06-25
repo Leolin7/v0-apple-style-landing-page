@@ -141,8 +141,9 @@ export function StayAloneApp() {
     setStep("chooseTime")
   }
 
-  const startTimer = () => {
-    setTimeRemaining(selectedTime * 60)
+  const startTimer = (minutes: number) => {
+    setSelectedTime(minutes)
+    setTimeRemaining(minutes * 60)
     setPulledAwayCount(0)
     startTimestampRef.current = Date.now()
     startDateRef.current = new Date()
@@ -339,8 +340,8 @@ export function StayAloneApp() {
   }
 
   // afternoon → dusk palette (top & bottom of a soft vertical gradient)
-  const skyTop = lerpColor("#F4EFE8", "#E9C9A6", daylightProgress) // soft cream → warm sand
-  const skyBottom = lerpColor("#F7F1E9", "#D89B6C", daylightProgress) // light → deep amber dusk
+  const skyTop = lerpColor("#F4EFE8", "#EAD4BC", daylightProgress) // soft cream → soft warm sand
+  const skyBottom = lerpColor("#F7F1E9", "#DCB78F", daylightProgress) // light → gentle dusk amber
 
   return (
     <div className="relative flex min-h-[100dvh] flex-col bg-[#F7F5F2] text-[#1A1A1A]">
@@ -551,8 +552,7 @@ export function StayAloneApp() {
                 <button
                   key={time}
                   onClick={() => {
-                    setSelectedTime(time)
-                    startTimer()
+                    startTimer(time)
                   }}
                   className="group flex flex-col items-center bg-transparent transition-opacity duration-300"
                 >
@@ -583,7 +583,7 @@ export function StayAloneApp() {
           <div
             className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-hidden px-6"
             style={{
-              background: "linear-gradient(to bottom, #E9C9A6, #D89B6C)",
+              background: "linear-gradient(to bottom, #EAD4BC, #DCB78F)",
               animation: "saSpaceIn 900ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
@@ -655,12 +655,16 @@ export function StayAloneApp() {
               }}
             />
 
-            {/* Faint title, fades away as you settle in (first ~12% of the time) */}
+            {/* Faint title, sits just below the glow's core so it stays
+                readable instead of lost in the brightest light. Fades away as
+                you settle in (first ~12% of the time). */}
             <p
-              className={`relative z-10 mb-2 font-light ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              className={`relative z-10 font-light ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
+                marginTop: "clamp(120px, 22vh, 200px)",
                 fontSize: "clamp(15px, 2vw, 19px)",
-                color: "rgba(60,48,38,0.55)",
+                letterSpacing: "0.01em",
+                color: "rgba(54,42,32,0.7)",
                 opacity: Math.max(0, 1 - daylightProgress * 8),
                 transition: "opacity 2000ms ease",
               }}
