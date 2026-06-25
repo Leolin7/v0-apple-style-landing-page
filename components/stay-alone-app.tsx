@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, type KeyboardEvent } from "react"
 import { useLanguage } from "@/lib/language-context"
 import { formatElapsedDuration } from "@/lib/translations"
 import {
@@ -19,7 +19,7 @@ import {
 import { MyTimeSheet } from "./my-time-sheet"
 import { AuthModals } from "./auth-modals"
 
-type AppStep = "landing" | "trigger" | "timer" | "complete"
+type AppStep = "landing" | "chooseTime" | "timer" | "trigger" | "complete"
 
 const TRIGGER_KEYS: TriggerType[] = [
   "shortVideos",
@@ -50,6 +50,17 @@ export function StayAloneApp() {
   const startTimestampRef = useRef<number | null>(null)
   const startDateRef = useRef<Date | null>(null)
   const hasCalledApi = useRef(false)
+  // Frozen timing of a just-ended session, captured before we ask "what were
+  // you escaping?" so the trigger screen's own duration isn't counted.
+  const endedSessionRef = useRef<{
+    startDate: Date
+    endDate: Date
+    elapsedSeconds: number
+    elapsedMinutes: number
+    status: SessionStatus
+    completed: boolean
+    isPulledAway: boolean
+  } | null>(null)
 
   // Fetch visitor count
   const fetchVisitorCount = useCallback(async () => {
@@ -98,7 +109,7 @@ export function StayAloneApp() {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
             if (timerRef.current) clearInterval(timerRef.current)
-            completeSession(true, false)
+            endSession(true, false)
             return 0
           }
           return prev - 1
@@ -112,16 +123,9 @@ export function StayAloneApp() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
 
-  const startTimer = () => {
-    setTimeRemaining(selectedTime * 60)
-    setPulledAwayCount(0)
-    startTimestampRef.current = Date.now()
-    startDateRef.current = new Date()
-    setSaveMessage(null)
-    setStep("timer")
-    // Enter fullscreen for a true "the world falls away" feel.
-    // Silently ignored where unsupported (notably iOS Safari) — we fall back
-    // to an in-page immersive layer there.
+  // Step 1 of entering: cross the threshold. Request fullscreen so the world
+  // falls away, then reveal the time choices inside the space.
+  const enterSpace = () => {
     try {
       const el = document.documentElement as HTMLElement & {
         webkitRequestFullscreen?: () => Promise<void>
@@ -132,8 +136,18 @@ export function StayAloneApp() {
         el.webkitRequestFullscreen()
       }
     } catch {
-      /* no-op */
+      /* no-op — iOS Safari falls back to the in-page immersive layer */
     }
+    setStep("chooseTime")
+  }
+
+  const startTimer = () => {
+    setTimeRemaining(selectedTime * 60)
+    setPulledAwayCount(0)
+    startTimestampRef.current = Date.now()
+    startDateRef.current = new Date()
+    setSaveMessage(null)
+    setStep("timer")
   }
 
   const exitFullscreenSafely = () => {
@@ -152,89 +166,96 @@ export function StayAloneApp() {
     }
   }
 
-  const completeSession = async (completed: boolean, isPulledAway: boolean = false) => {
+  // Timer ended (countdown hit 0, Finish, or pulled away). Freeze the timing,
+  // then ask "what were you escaping?" — the trigger is chosen AFTER, when it's
+  // natural to look back, not demanded before you've even begun.
+  const endSession = (completed: boolean, isPulledAway: boolean = false) => {
     if (timerRef.current) clearInterval(timerRef.current)
-    
-    // Calculate actual elapsed time
     const endTimestamp = Date.now()
     const endDate = new Date()
     const startTimestamp = startTimestampRef.current || endTimestamp
     const startDate = startDateRef.current || endDate
-    const elapsedMs = endTimestamp - startTimestamp
-    const elapsedSeconds = Math.floor(elapsedMs / 1000)
+    const elapsedSeconds = Math.floor((endTimestamp - startTimestamp) / 1000)
     const elapsedMinutes = Math.floor(elapsedSeconds / 60)
-    const selectedDurationSeconds = selectedTime * 60
-    
-    // Determine status
+
     let status: SessionStatus
-    if (isPulledAway) {
-      status = "pulled_away"
-    } else if (timeRemaining > 0) {
-      status = "finished_early"
-    } else {
-      status = "completed"
+    if (isPulledAway) status = "pulled_away"
+    else if (timeRemaining > 0) status = "finished_early"
+    else status = "completed"
+
+    endedSessionRef.current = {
+      startDate,
+      endDate,
+      elapsedSeconds,
+      elapsedMinutes,
+      status,
+      completed,
+      isPulledAway,
     }
-    
     setCompletedElapsedSeconds(elapsedSeconds)
-    
-    // Check if user is signed in to Supabase
+    setStep("trigger")
+  }
+
+  // Record the session with the trigger the user just chose, then show completion.
+  const recordSession = async (trigger: TriggerType) => {
+    const ended = endedSessionRef.current
+    if (!ended) {
+      setStep("complete")
+      return
+    }
+    setSelectedTrigger(trigger)
+    const selectedDurationSeconds = selectedTime * 60
+
     const { isSignedIn: supabaseSignedIn } = await checkSupabaseAuth()
-    
+
     if (supabaseSignedIn) {
-      // Save to Supabase
       const result = await saveSessionToSupabase(
-        startDate,
-        endDate,
-        elapsedSeconds,
+        ended.startDate,
+        ended.endDate,
+        ended.elapsedSeconds,
         selectedDurationSeconds,
-        selectedTrigger,
-        status
+        trigger,
+        ended.status
       )
-      
       if (result.success) {
         setSaveMessage(t.savedToMySpace)
-        // Reload stats from Supabase
         const { sessions } = await loadSessionsFromSupabase()
         if (sessions.length > 0) {
           setStats(buildStatsFromSessions(sessions))
         }
       } else {
         setSaveMessage(t.couldNotSave)
-        // Fallback to localStorage
         const newStats = addSession(
-          elapsedMinutes > 0 ? elapsedMinutes : 1,
-          selectedTrigger,
-          completed && !isPulledAway,
+          ended.elapsedMinutes > 0 ? ended.elapsedMinutes : 1,
+          trigger,
+          ended.completed && !ended.isPulledAway,
           pulledAwayCount,
-          elapsedSeconds,
+          ended.elapsedSeconds,
           true
         )
         setStats(newStats)
       }
     } else {
-      // Not signed in - use localStorage only (cap applies once accumulated)
       const newStats = addSession(
-        elapsedMinutes > 0 ? elapsedMinutes : 1,
-        selectedTrigger,
-        completed && !isPulledAway,
+        ended.elapsedMinutes > 0 ? ended.elapsedMinutes : 1,
+        trigger,
+        ended.completed && !ended.isPulledAway,
         pulledAwayCount,
-        elapsedSeconds,
+        ended.elapsedSeconds,
         false
       )
       setStats(newStats)
     }
-    
+
     setStep("complete")
-    
-    // Clear save message after 3 seconds
     if (supabaseSignedIn) {
       setTimeout(() => setSaveMessage(null), 3000)
     }
   }
 
   const handlePulledAway = () => {
-    // End the session with pulled_away status
-    completeSession(false, true)
+    // End the session with pulled_away status, then ask the trigger question
+    endSession(false, true)
   }
 
   const resetToLanding = () => {
@@ -446,52 +467,44 @@ export function StayAloneApp() {
               {t.heroSubline2 ? <p>{t.heroSubline2}</p> : null}
             </div>
 
-            {/* Transition question - bridges the sub-line into the choices */}
+            {/* The entry — the action word is the threshold. Clicking it makes
+                the world fall away (fullscreen) and reveals the time choices. */}
             <p
               className={`font-light text-[#8A8A8A] ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                fontSize: "clamp(13px, 1.7vw, 15px)",
+                fontSize: "clamp(14px, 1.9vw, 16px)",
                 marginBottom: "clamp(24px, 3.5vh, 36px)",
                 opacity: isVisible ? 1 : 0,
                 transition: "opacity 1100ms ease 400ms",
               }}
             >
-              {t.timeQuestion}
+              <style>{`
+                @keyframes saWordBreath { 0%,100%{ opacity:.78; } 50%{ opacity:1; } }
+                .sa-enter-word{
+                  color:#1A1A1A;
+                  cursor:pointer;
+                  border-bottom:1px solid rgba(232,168,124,0.55);
+                  padding-bottom:1px;
+                  animation:saWordBreath 3.6s ease-in-out infinite;
+                  transition:border-color 300ms ease;
+                }
+                .sa-enter-word:hover{ border-color:rgba(232,168,124,0.9); }
+                @media (prefers-reduced-motion: reduce){ .sa-enter-word{ animation:none; } }
+              `}</style>
+              {t.enterPrefix}
+              <span
+                role="button"
+                tabIndex={0}
+                className="sa-enter-word"
+                onClick={enterSpace}
+                onKeyDown={(e: KeyboardEvent) => {
+                  if (e.key === "Enter" || e.key === " ") enterSpace()
+                }}
+              >
+                {t.enterAction}
+              </span>
+              {t.enterSuffix}
             </p>
-
-            {/* Quiet time choices */}
-            <div
-              className="flex flex-col items-center gap-6 md:gap-7"
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transition: "opacity 1100ms ease 450ms",
-              }}
-            >
-              {([
-                { time: 15, label: t.choiceMoment, duration: t.durationShort },
-                { time: 30, label: t.choiceWhile, duration: t.durationMid },
-                { time: 60, label: t.choiceLonger, duration: t.durationLong },
-              ] as const).map(({ time, label, duration }) => (
-                <button
-                  key={time}
-                  onClick={() => {
-                    setSelectedTime(time)
-                    setStep("trigger")
-                  }}
-                  className="group flex flex-col items-center bg-transparent transition-opacity duration-300"
-                >
-                  <span
-                    className={`text-[#1A1A1A] opacity-80 transition-opacity duration-300 group-hover:opacity-100 ${language === "zh" ? "editorial-zh" : "editorial"}`}
-                    style={{ fontSize: "clamp(18px, 2.6vw, 22px)" }}
-                  >
-                    {label}
-                  </span>
-                  <span className={`mt-1.5 text-[12px] font-light text-[#A8A8A8] ${language === "zh" ? "editorial-zh" : ""}`}>
-                    {duration}
-                  </span>
-                </button>
-              ))}
-            </div>
 
             </div>
             {/* end core group */}
@@ -513,42 +526,85 @@ export function StayAloneApp() {
         )}
 
         {/* Trigger selection */}
-        {step === "trigger" && (
+        {/* Choose how long — revealed inside the space, after crossing the threshold */}
+        {step === "chooseTime" && (
           <div
-            className="my-auto flex flex-col items-center text-center"
+            className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-hidden px-6"
             style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "all 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+              background: "linear-gradient(to bottom, #F4EFE8, #F7F1E9)",
+              animation: "saSpaceIn 900ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <h2 className={`mb-12 max-w-md font-light leading-relaxed text-[#1A1A1A] md:mb-14 ${language === "zh" ? "editorial-zh" : "editorial"}`}
-              style={{ fontSize: "clamp(20px, 3vw, 26px)" }}
+            <style>{`@keyframes saSpaceIn { 0%{ opacity:0; } 100%{ opacity:1; } }`}</style>
+            <p
+              className={`mb-12 font-light text-[#8A8A8A] md:mb-14 ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{ fontSize: "clamp(15px, 2vw, 18px)" }}
             >
-              {t.triggerQuestion}
+              {t.chooseTimeTitle}
+            </p>
+            <div className="flex flex-col items-center gap-7 md:gap-8">
+              {([
+                { time: 15, label: t.choiceMoment, duration: t.durationShort },
+                { time: 30, label: t.choiceWhile, duration: t.durationMid },
+                { time: 60, label: t.choiceLonger, duration: t.durationLong },
+              ] as const).map(({ time, label, duration }) => (
+                <button
+                  key={time}
+                  onClick={() => {
+                    setSelectedTime(time)
+                    startTimer()
+                  }}
+                  className="group flex flex-col items-center bg-transparent transition-opacity duration-300"
+                >
+                  <span
+                    className={`text-[#1A1A1A] opacity-80 transition-opacity duration-300 group-hover:opacity-100 ${language === "zh" ? "editorial-zh" : "editorial"}`}
+                    style={{ fontSize: "clamp(20px, 2.8vw, 24px)" }}
+                  >
+                    {label}
+                  </span>
+                  <span className={`mt-1.5 text-[12px] font-light text-[#A8A8A8] ${language === "zh" ? "editorial-zh" : ""}`}>
+                    {duration}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={resetToLanding}
+              className="absolute text-[13px] font-light text-[#A8A8A8] transition-colors hover:text-[#7A7A7A]"
+              style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 40px)" }}
+            >
+              {t.backOutside}
+            </button>
+          </div>
+        )}
+
+        {/* Trigger reflection — asked AFTER, looking back on what you stepped away from */}
+        {step === "trigger" && (
+          <div
+            className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-hidden px-6"
+            style={{
+              background: "linear-gradient(to bottom, #E9C9A6, #D89B6C)",
+              animation: "saSpaceIn 900ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <h2 className={`mb-12 max-w-md font-light leading-relaxed md:mb-14 ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              style={{ fontSize: "clamp(20px, 3vw, 26px)", color: "rgba(50,38,28,0.85)" }}
+            >
+              {t.triggerQuestionAfter}
             </h2>
 
             <div className="flex max-w-lg flex-wrap justify-center gap-3 md:gap-4">
               {TRIGGER_KEYS.map((key) => (
                 <button
                   key={key}
-                  onClick={() => {
-                    setSelectedTrigger(key)
-                    startTimer()
-                  }}
-                  className="rounded-full border border-[#DDD8D2] bg-transparent px-5 py-2.5 text-sm font-light text-[#1A1A1A] transition-all hover:border-[#C5C0BA] md:px-6 md:py-3"
+                  onClick={() => recordSession(key)}
+                  className="rounded-full border bg-transparent px-5 py-2.5 text-sm font-light transition-all md:px-6 md:py-3"
+                  style={{ borderColor: "rgba(80,55,38,0.28)", color: "rgba(50,38,28,0.9)" }}
                 >
                   {t.triggers[key]}
                 </button>
               ))}
             </div>
-
-            <button
-              onClick={() => setStep("landing")}
-              className="mt-12 text-[13px] font-light text-[#8A8A8A] transition-colors hover:text-[#5A5A5A]"
-            >
-              {t.back}
-            </button>
           </div>
         )}
 
@@ -566,26 +622,36 @@ export function StayAloneApp() {
             <style>{`
               @keyframes saSpaceIn { 0%{ opacity:0; } 100%{ opacity:1; } }
               @keyframes saGlowBreath {
-                0%,100%{ transform:scale(1); opacity:.5; }
-                50%{ transform:scale(1.12); opacity:.8; }
+                0%,100%{ transform:translate(-50%,-50%) scale(1); opacity:.62; }
+                50%{ transform:translate(-50%,-50%) scale(1.14); opacity:.95; }
               }
               @media (prefers-reduced-motion: reduce){
                 .sa-breath-glow{ animation:none !important; }
               }
             `}</style>
 
-            {/* Companion breathing light — the warmth of "now" */}
+            {/* Companion breathing light — a warm sun/lamp that grows more
+                present as the light deepens toward dusk. Sits above the
+                gradient with a real, visible warm core. */}
             <div
               className="sa-breath-glow"
               aria-hidden="true"
               style={{
                 position: "absolute",
-                width: "min(46vw, 280px)",
-                height: "min(46vw, 280px)",
+                left: "50%",
+                top: "44%",
+                transform: "translate(-50%,-50%)",
+                width: "min(64vw, 360px)",
+                height: "min(64vw, 360px)",
                 borderRadius: "50%",
-                backgroundImage: `radial-gradient(circle, rgba(255,250,244,0.55) 0%, rgba(255,250,244,0) 70%)`,
-                animation: "saGlowBreath 6s ease-in-out infinite",
-                filter: "blur(2px)",
+                backgroundImage: `radial-gradient(circle, rgba(255,${236 - daylightProgress * 40},${
+                  205 - daylightProgress * 55
+                },${0.55 + daylightProgress * 0.3}) 0%, rgba(255,225,180,${
+                  0.22 + daylightProgress * 0.18
+                }) 38%, rgba(255,210,160,0) 70%)`,
+                animation: "saGlowBreath 6.5s ease-in-out infinite",
+                filter: "blur(1px)",
+                transition: "background-image 1500ms linear",
               }}
             />
 
@@ -609,7 +675,7 @@ export function StayAloneApp() {
                 bottom: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
                 fontSize: "13px",
                 letterSpacing: "0.3em",
-                color: "rgba(60,48,38,0.32)",
+                color: "rgba(60,48,38,0.34)",
               }}
             >
               {formatTime(timeRemaining)}
@@ -628,9 +694,9 @@ export function StayAloneApp() {
                 {t.pulledAway}
               </button>
               <button
-                onClick={() => completeSession(true, false)}
+                onClick={() => endSession(true, false)}
                 className="font-light transition-colors"
-                style={{ fontSize: "13px", color: "rgba(60,48,38,0.6)" }}
+                style={{ fontSize: "13px", color: "rgba(60,48,38,0.62)" }}
               >
                 {t.finish}
               </button>
