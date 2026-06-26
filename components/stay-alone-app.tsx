@@ -254,11 +254,6 @@ export function StayAloneApp() {
     }
   }
 
-  const handlePulledAway = () => {
-    // End the session with pulled_away status, then ask the trigger question
-    endSession(false, true)
-  }
-
   const resetToLanding = () => {
     exitFullscreenSafely()
     setStep("landing")
@@ -655,13 +650,14 @@ export function StayAloneApp() {
               }}
             />
 
-            {/* Faint title, sits just below the glow's core so it stays
-                readable instead of lost in the brightest light. Fades away as
-                you settle in (first ~12% of the time). */}
+            {/* Faint title, anchored just below the glow's core (the glow sits
+                at top:44%) so it stays readable and consistently placed across
+                phone and desktop. Fades away as you settle in. */}
             <p
-              className={`relative z-10 font-light ${language === "zh" ? "editorial-zh" : "editorial"}`}
+              className={`absolute z-10 w-full px-6 text-center font-light ${language === "zh" ? "editorial-zh" : "editorial"}`}
               style={{
-                marginTop: "clamp(120px, 22vh, 200px)",
+                top: "calc(44% + clamp(120px, 16vw, 175px))",
+                left: 0,
                 fontSize: "clamp(15px, 2vw, 19px)",
                 letterSpacing: "0.01em",
                 color: "rgba(54,42,32,0.7)",
@@ -685,18 +681,11 @@ export function StayAloneApp() {
               {formatTime(timeRemaining)}
             </div>
 
-            {/* Gentle controls, low and quiet */}
+            {/* Gentle control — just one quiet way out */}
             <div
-              className="absolute z-10 flex items-center gap-6"
+              className="absolute z-10 flex items-center justify-center"
               style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 40px)" }}
             >
-              <button
-                onClick={handlePulledAway}
-                className="font-light transition-colors"
-                style={{ fontSize: "13px", color: "rgba(60,48,38,0.4)" }}
-              >
-                {t.pulledAway}
-              </button>
               <button
                 onClick={() => endSession(true, false)}
                 className="font-light transition-colors"
