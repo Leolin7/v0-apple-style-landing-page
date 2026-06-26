@@ -146,7 +146,7 @@ export const translations = {
     timeQuestion: "这一次，你可以选择 —",
     enterPrefix: "这一次，你可以",
     enterAction: "选择",
-    enterSuffix: " —",
+    enterSuffix: "",
     minutes15: "15 分钟",
     minutes30: "30 分钟",
     minutes60: "60 分钟",
